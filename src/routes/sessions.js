@@ -36,4 +36,29 @@ module.exports = (app) => {
     save(data);
     res.json({ deleted: req.params.id });
   });
+app.post('/save-session', async (req, res) => {
+try {
+const { content } = req.body;
+
+if (!content) {
+return res.status(400).json({ error: 'No content provided' });
+}
+
+const record = {
+id: uuidv4(),
+created_at: new Date().toISOString(),
+content
+};
+
+const data = load();
+data.push(record);
+save(data);
+
+res.status(200).json({ success: true, record });
+
+} catch (err) {
+console.error(err);
+res.status(500).json({ error: 'Failed to save session' });
+}
+});
 };
