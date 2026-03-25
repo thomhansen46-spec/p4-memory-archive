@@ -10,9 +10,9 @@
   "author": "",
   "license": "ISC",
   "type": "commonjs",
-  "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
-    "uuid": "^13.0.0"
-  }
+  ""dependencies": {
+  "cors": "^2.8.6",
+  "express": "^5.2.1",
+  "uuid": "^13.0.0",
+  "@notionhq/client": "^2.2.0"
 }
