@@ -7,7 +7,29 @@ const load = () => fs.existsSync(DB) ? JSON.parse(fs.readFileSync(DB)) : [];
 const save = (data) => fs.writeFileSync(DB, JSON.stringify(data, null, 2));
 
 module.exports = (app) => {
-  app.get('/sessions', (req, res) => res.json(load()));
+  const { Client } = require("@notionhq/client");
+const notion = new Client({ auth: process.env.NOTION_TOKEN });
+
+app.get('/sessions', async (req, res) => {
+  try {
+    const response = await notion.databases.query({
+      database_id: process.env.NOTION_DATABASE_ID,
+    });
+
+    const results = response.results.map(page => ({
+      id: page.id,
+      module: page.properties.Module?.select?.name || "",
+      prompt: page.properties.Prompt?.rich_text?.[0]?.plain_text || "",
+      response: page.properties.Response?.rich_text?.[0]?.plain_text || "",
+      created: page.created_time
+    }));
+
+    res.json(results);
+  } catch (error) {
+    console.error("Notion query error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
   
   app.get('/sessions/:id', (req, res) => {
     const record = load().find(r => r.id === req.params.id);
