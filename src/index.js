@@ -5,7 +5,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
+app.use(express.static(__dirname + '/../'));
 app.get('/', (req, res) => {
   res.json({ status: 'P4 Memory Archive running', version: '1.0.0' });
 });
