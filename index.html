@@ -1,1 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>P4 Memory Archive</title>
+</head>
+<body>
+  <h1>P4 Memory Archive</h1>
+  <p>Frontend is working</p>
 
+  <input id="prompt" placeholder="Enter prompt" />
+  <button onclick="send()">Send</button>
+
+  <p id="result"></p>
+
+  <script>
+    async function send() {
+      const prompt = document.getElementById('prompt').value;
+
+      const res = await fetch('/api/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })
+      });
+
+      const data = await res.json();
+      document.getElementById('result').innerText = data.message;
+    }
+  </script>
+</body>
+</html>
