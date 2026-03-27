@@ -49,9 +49,8 @@ app.post('/api/add', async (req, res) => {
     res.status(500).json({ message: 'Error saving' });
   }
 });
-const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+const PORT = process.env.PORT || 3000;
   console.log(`Server running on port ${PORT}`);
 });
 
