@@ -11,14 +11,14 @@ app.get('/session-log', (req, res) => {
 app.use(express.json());
 
 // 👇 ADD THESE TWO LINES RIGHT HERE
-app.use('/session-log', require('./routes/session-log'));
-app.use('/api/fda', require('./routes/fda-pipeline'));
+const sessionLog = require('./routes/session-log');
+app.use('/session-log', sessionLog);
+const fdaPipeline = require('./routes/fda-pipeline');
+app.use('/api/fda', fdaPipeline);
 app.use(express.static(__dirname + '/../'));
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/../index.html');
 });
-app.use('/session-log', require('./routes/session-log'));
-app.use('/api/fda', require('./routes/fda-pipeline'));
 
 require('./routes/sessions')(app);
 require('./routes/assets')(app);
