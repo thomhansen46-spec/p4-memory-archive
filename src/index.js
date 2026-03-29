@@ -9,8 +9,8 @@ app.use(express.json());
 // 👇 ADD THESE TWO LINES RIGHT HERE
 const sessionLog = require('./routes/session-log');
 app.use('/session-log', sessionLog);
-const fdaPipeline = require('./routes/fda-pipeline');
-app.use('/api/fda', fdaPipeline);
+// const fdaPipeline = require('./routes/fda-pipeline');
+// app.use('/api/fda', fdaPipeline);
 app.use(express.static(__dirname + '/../'));
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/../index.html');
