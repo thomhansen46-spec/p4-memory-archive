@@ -9,7 +9,8 @@ app.use(express.static(__dirname + '/../'));
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/../index.html');
 });
- 
+app.use('/session-log', require('./routes/session-log'));
+app.use('/api/fda', require('./routes/fda-pipeline'));
 
 require('./routes/sessions')(app);
 require('./routes/assets')(app);
