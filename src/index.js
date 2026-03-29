@@ -2,12 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 const app = express();
-
+console.log("🚀 DEPLOY TEST");
 app.use(cors());
-app.use(express.json());
-app.get('/session-log', (req, res) => {
-  res.json({ working: true });
-});
 app.use(express.json());
 
 // 👇 ADD THESE TWO LINES RIGHT HERE
@@ -19,12 +15,12 @@ app.use(express.static(__dirname + '/../'));
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/../index.html');
 });
+// require('./routes/sessions')(app);
+// require('./routes/assets')(app);
+// require('./routes/sops')(app);
+// require('./routes/sequences')(app);
+// require('./routes/seeds')(app);
 
-require('./routes/sessions')(app);
-require('./routes/assets')(app);
-require('./routes/sops')(app);
-require('./routes/sequences')(app);
-require('./routes/seeds')(app);
 app.post('/api/add', async (req, res) => {
   try {
     const { prompt } = req.body;
