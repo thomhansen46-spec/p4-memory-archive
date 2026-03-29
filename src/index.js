@@ -1,26 +1,26 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+
 const app = express();
+
 console.log("🚀 DEPLOY TEST");
+
 app.use(cors());
 app.use(express.json());
 
-// 👇 ADD THESE TWO LINES RIGHT HERE
+// ✅ ROUTES (MUST COME FIRST)
 const sessionLog = require('./routes/session-log');
-app.use('/session-log', sessionLog);
-// const fdaPipeline = require('./routes/fda-pipeline');
-// app.use('/api/fda', fdaPipeline);
+app.use('/api/session-log', sessionLog);
+
+// ✅ STATIC + FRONTEND
 app.use(express.static(__dirname + '/../'));
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/../index.html');
 });
-// require('./routes/sessions')(app);
-// require('./routes/assets')(app);
-// require('./routes/sops')(app);
-// require('./routes/sequences')(app);
-// require('./routes/seeds')(app);
 
+// ✅ NOTION API
 app.post('/api/add', async (req, res) => {
   try {
     const { prompt } = req.body;
@@ -55,7 +55,6 @@ app.post('/api/add', async (req, res) => {
   }
 });
 
-
-
-const PORT = process.env.PORT || 3000;
+// ✅ PORT (RENDER SAFE)
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
