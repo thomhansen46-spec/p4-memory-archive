@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>P4 FDA Dashboard</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #000;
+      color: #fff;
+      padding: 20px;
+    }
+    h1 { color: #A100FF; }
+    .card {
+      background: #111;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>⚡ P4 FDA Intelligence Dashboard</h1>
+
+<div class="card" id="summary">Loading...</div>
+
+<script>
+async function loadData() {
+  try {
+    const res = await fetch('/api/fda/pma?term=pacemaker&limit=5');
+    const data = await res.json();
+
+    document.getElementById('summary').innerHTML = `
+      PMA Count: ${data.summary.pma_count_returned}<br>
+      MAUDE Count: ${data.summary.maude_count_returned}<br>
+      Recall Count: ${data.summary.recall_count_returned}
+    `;
+  } catch (err) {
+    document.getElementById('summary').innerHTML = 'Error loading data';
+  }
+}
+
+loadData();
+</script>
+
+</body>
+</html>

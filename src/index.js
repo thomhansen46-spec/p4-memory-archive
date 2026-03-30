@@ -56,11 +56,7 @@ app.get('/api/health', (req, res) => {
   res.json({ ok: true, ts: new Date().toISOString() });
 });
 
-app.use(express.static(path.join(__dirname, '../public')));
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/dashboard.html'));
-});
+app.use(express.static(path.join(__dirname, '..')));
 
 app.use((err, req, res, next) => {
   console.error('[unhandled error]', err.stack || err.message);
@@ -68,4 +64,8 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 10000;
+require('./routes/fda-pipeline')(app);
 app.listen(PORT, () => console.log(`✅ Server on port ${PORT}`));
+
+
+

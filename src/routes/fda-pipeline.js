@@ -90,3 +90,189 @@ module.exports = (app) => {
 
   console.log('[fda-pipeline] registered');
 };
+'use strict';
+
+const fetch = require('node-fetch');
+
+const OPENFDA_BASE = 'https://api.fda.gov';
+
+// Pacemaker / CRM-oriented keywords to start with
+const CRM_TERMS = [
+  'pacemaker',
+  'implantable pulse generator',
+  'cardiac resynchronization',
+  'CRT-P',
+  'CRT-D',
+  'Micra',
+  'AVEIR',
+  'Azure',
+  'Assurity'
+];
+
+// Simple helper
+async function fetchJson(url) {
+  const response = await fetch(url);
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(`openFDA error ${response.status}: ${text}`);
+  }
+
+  return JSON.parse(text);
+}
+
+function encodeSearch(search) {
+  return encodeURIComponent(search);
+}
+
+module.exports = (app) => {
+  // Health check for the FDA route module
+  app.get('/api/fda/health', async (req, res) => {
+    return res.json({
+      ok: true,
+      module: 'fda-pipeline',
+      endpoints: ['/api/fda/pma', '/api/fda/maude', '/api/fda/recalls', '/api/fda/dashboard']
+    });
+  });
+
+  // PMA approvals
+  app.get('/api/fda/pma', async (req, res) => {
+    try {
+      const limit = Number(req.query.limit || 10);
+      const term = (req.query.term || 'pacemaker').trim();
+
+      // Start broad and useful for PMA/device product descriptions
+      const search = `device_name:"${term}"`;
+      const url = `${OPENFDA_BASE}/device/pma.json?search=${encodeSearch(search)}&limit=${limit}`;
+
+      const data = await fetchJson(url);
+
+      const results = (data.results || []).map((item) => ({
+        pma_number: item.pma_number || null,
+        decision_date: item.decision_date || null,
+        applicant: item.applicant || null,
+        advisory_committee: item.advisory_committee || null,
+        device_name: item.device_name || null,
+        generic_name: item.generic_name || null,
+        product_code: item.product_code || null
+      }));
+
+      return res.json({
+        ok: true,
+        source: 'openFDA PMA',
+        query_term: term,
+        meta: data.meta || null,
+        results
+      });
+    } catch (err) {
+      return res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
+  // MAUDE adverse events
+  app.get('/api/fda/maude', async (req, res) => {
+    try {
+      const limit = Number(req.query.limit || 25);
+      const brand = (req.query.brand || 'pacemaker').trim();
+
+      // openFDA examples show fielded search syntax on device event
+      const search =
+        `device.brand_name:"${brand}"+OR+device.generic_name:"${brand}"`;
+      const url = `${OPENFDA_BASE}/device/event.json?search=${encodeSearch(search)}&limit=${limit}`;
+
+      const data = await fetchJson(url);
+
+      const results = (data.results || []).map((item) => ({
+        report_number: item.mdr_report_key || item.report_number || null,
+        date_received: item.date_received || null,
+        event_type: item.event_type || null,
+        manufacturer_name: item.manufacturer_name || null,
+        brand_name: item.device?.[0]?.brand_name || null,
+        generic_name: item.device?.[0]?.generic_name || null,
+        model_number: item.device?.[0]?.model_number || null,
+        manufacturer_d_name: item.device?.[0]?.manufacturer_d_name || null
+      }));
+
+      return res.json({
+        ok: true,
+        source: 'openFDA Device Event / MAUDE',
+        query_brand: brand,
+        meta: data.meta || null,
+        results
+      });
+    } catch (err) {
+      return res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
+  // Recalls
+  app.get('/api/fda/recalls', async (req, res) => {
+    try {
+      const limit = Number(req.query.limit || 10);
+      const term = (req.query.term || 'pacemaker').trim();
+
+      const search = `product_description:"${term}"`;
+      const url = `${OPENFDA_BASE}/device/recall.json?search=${encodeSearch(search)}&limit=${limit}`;
+
+      const data = await fetchJson(url);
+
+      const results = (data.results || []).map((item) => ({
+        recall_number: item.recall_number || null,
+        recall_initiation_date: item.recall_initiation_date || null,
+        status: item.status || null,
+        classification: item.classification || null,
+        product_description: item.product_description || null,
+        code_info: item.code_info || null,
+        recalling_firm: item.recalling_firm || null,
+        reason_for_recall: item.reason_for_recall || null
+      }));
+
+      return res.json({
+        ok: true,
+        source: 'openFDA Device Recall',
+        query_term: term,
+        meta: data.meta || null,
+        results
+      });
+    } catch (err) {
+      return res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
+  // Simple combined dashboard endpoint
+  app.get('/api/fda/dashboard', async (req, res) => {
+    try {
+      const terms = CRM_TERMS;
+
+      const [pmaData, maudeData, recallData] = await Promise.all([
+        fetchJson(
+          `${OPENFDA_BASE}/device/pma.json?search=${encodeSearch('device_name:"pacemaker"')}&limit=5`
+        ),
+        fetchJson(
+          `${OPENFDA_BASE}/device/event.json?search=${encodeSearch('device.generic_name:"pacemaker" OR device.brand_name:"Micra" OR device.brand_name:"AVEIR"')}&limit=10`
+        ),
+        fetchJson(
+          `${OPENFDA_BASE}/device/recall.json?search=${encodeSearch('product_description:"pacemaker"')}&limit=5`
+        )
+      ]);
+
+      return res.json({
+        ok: true,
+        therapy_area: 'Cardiac Rhythm Management',
+        tracked_terms: terms,
+        summary: {
+          pma_count_returned: (pmaData.results || []).length,
+          maude_count_returned: (maudeData.results || []).length,
+          recall_count_returned: (recallData.results || []).length
+        },
+        pma: pmaData.results || [],
+        maude: maudeData.results || [],
+        recalls: recallData.results || []
+      });
+    } catch (err) {
+      return res.status(500).json({ ok: false, error: err.message });
+    }
+  });
+
+  console.log('[fda-pipeline] registered');
+};
