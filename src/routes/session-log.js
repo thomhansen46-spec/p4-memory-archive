@@ -41,3 +41,4 @@ module.exports = (app) => {
 
   console.log('[session-log] registered');
 };
+
