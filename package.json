@@ -13,6 +13,7 @@
   "type": "commonjs",
   "dependencies": {
     "@notionhq/client": "^2.2.0",
+    "@supabase/supabase-js": "^2.101.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "node-fetch": "^2.6.9",
