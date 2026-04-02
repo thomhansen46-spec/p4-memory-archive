@@ -599,7 +599,7 @@
     document.getElementById('pmaContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching PMA records…</div>`;
     try {
       const data = await apiFetch('/api/fda-pipeline/crm-pma');
-      const records = data.results || data.data || data || [];
+      const records = data.logs || data.results || data.data || [];
       document.getElementById('ovPmaCount').textContent = records.length;
       renderStats('pmaStats', [
         { label: 'Total Records', value: records.length },
