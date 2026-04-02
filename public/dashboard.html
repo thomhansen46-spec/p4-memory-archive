@@ -605,10 +605,25 @@
 
   // Chart helpers
   const _charts = {};
-  function countBy(records, field, limit) {
+  function normalizeName(v) {
+    v = v.toString().trim();
+    if (/medtronic/i.test(v)) return 'Medtronic';
+    if (/boston scientific/i.test(v)) return 'Boston Scientific';
+    if (/abbott/i.test(v)) return 'Abbott';
+    if (/biotronik/i.test(v)) return 'Biotronik';
+    if (/microport/i.test(v)) return 'MicroPort';
+    if (/edwards/i.test(v)) return 'Edwards';
+    return v.slice(0, 30);
+  }
+  function countBy(records, field, limit, normalize) {
     limit = limit || 10;
     var map = {};
-    records.forEach(function(r) { var v=(r[field]||'Unknown').toString().slice(0,40); map[v]=(map[v]||0)+1; });
+    records.forEach(function(r) {
+      var v = (r[field]||'Unknown').toString();
+      if (normalize) v = normalizeName(v);
+      v = v.slice(0,40);
+      map[v]=(map[v]||0)+1;
+    });
     return Object.entries(map).sort(function(a,b){return b[1]-a[1];}).slice(0,limit);
   }
   function renderBarChart(canvasId, entries, label, color) {
@@ -622,7 +637,7 @@
         responsive:true, maintainAspectRatio:true,
         plugins: { legend:{display:false} },
         scales: {
-          x: { ticks:{color:'#a78bfa',font:{size:10},maxRotation:35}, grid:{color:'rgba(139,92,246,0.08)'} },
+          x: { ticks:{color:'#c0c0c0',font:{size:12},maxRotation:40}, grid:{color:'rgba(139,92,246,0.08)'} },
           y: { ticks:{color:'#a78bfa',font:{size:10},stepSize:1}, grid:{color:'rgba(139,92,246,0.12)'}, beginAtZero:true }
         }
       }
@@ -644,7 +659,7 @@
       if (!records.length) { document.getElementById('pmaContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['applicant','device_name','decision_date','decision_code','supplement_number','advisory_committee']);
       document.getElementById('pmaContent').innerHTML = buildTable('pmaTable', cols, records);
-      renderBarChart('pmaChart', countBy(records,'applicant'), 'PMA by Applicant', '#8b5cf6');
+      renderBarChart('pmaChart', countBy(records,'applicant',10,true), 'PMA by Applicant', '#8b5cf6');
     } catch(e) {
       document.getElementById('pmaContent').innerHTML = errBox(e.message);
     }
