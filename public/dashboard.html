@@ -598,7 +598,7 @@
     pmaLoaded = true;
     document.getElementById('pmaContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching PMA records…</div>`;
     try {
-      const data = await apiFetch('/api/fda-pipeline/crm-pma');
+      const data = await apiFetch('/api/fda/pma');
       const records = data.logs || data.results || data.data || [];
       document.getElementById('ovPmaCount').textContent = records.length;
       renderStats('pmaStats', [
@@ -619,7 +619,7 @@
     maudeLoaded = true;
     document.getElementById('maudeContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching MAUDE records…</div>`;
     try {
-      const data = await apiFetch('/api/fda-pipeline/maude');
+      const data = await apiFetch('/api/fda/maude');
       const records = data.results || data.data || data || [];
       document.getElementById('ovMaudeCount').textContent = records.length;
       const serious = records.filter(r => (r.event_type||'').toLowerCase().includes('death') || (r.event_type||'').toLowerCase().includes('injury')).length;
@@ -648,7 +648,7 @@
     recallsLoaded = true;
     document.getElementById('recallContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching recall data…</div>`;
     try {
-      const data = await apiFetch('/api/fda-pipeline/recalls');
+      const data = await apiFetch('/api/fda/recalls');
       const records = data.results || data.data || data || [];
       document.getElementById('ovRecallCount').textContent = records.length;
       const cls1 = records.filter(r => (r.recalling_firm||r.classification||'').includes('Class I') || (r.classification||'') === 'Class I').length;
