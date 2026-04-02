@@ -37,10 +37,10 @@ try {
 const range = `${daysAgo(365)}+TO+${daysAgo(0)}`;
 const [pma, maude, recall, mfr, evtType, cls] = await Promise.all([
 fdaFetch(`${BASE}/pma.json?search=${CRM_QUERY}&limit=1`),
-fdaFetch(`${BASE}/event.json?search=${CRM_QUERY}+AND+date_received:[${range}]&limit=1`),
+fdaFetch(`${BASE}/event.json?search=device.generic_name:(pacemaker+OR+defibrillator+OR+cardioverter)&limit=${limit}&skip=${skip}&sort=date_received:desc`),
 fdaFetch(`${BASE}/recall.json?search=${CRM_QUERY}&limit=1`),
 fdaFetch(`${BASE}/pma.json?search=${CRM_QUERY}&count=applicant.exact&limit=10`),
-fdaFetch(`${BASE}/event.json?search=${CRM_QUERY}&count=event_type&limit=6`),
+fdaFetch(`${BASE}/event.json?search=device.generic_name:(pacemaker+OR+defibrillator+OR+cardioverter)&limit=${limit}&skip=${skip}&sort=date_received:desc`),
 fdaFetch(`${BASE}/recall.json?search=${CRM_QUERY}&count=classification&limit=5`)
 ]);
 res.json({ ok: true, retrieved_at: new Date().toISOString(),
@@ -65,7 +65,7 @@ const skip = Math.max(Number(req.query.skip) || 0, 0);
 const days = Math.min(Number(req.query.days) || 365, 3650);
 const range = `${daysAgo(days)}+TO+${daysAgo(0)}`;
 try {
-const d = await fdaFetch(`${BASE}/event.json?search=${CRM_QUERY}+AND+date_received:[${range}]&limit=${limit}&skip=${skip}&sort=date_received:desc`);
+const d = await fdaFetch(`${BASE}/event.json?search=device.generic_name:(pacemaker+OR+defibrillator+OR+cardioverter)&limit=${limit}&skip=${skip}&sort=date_received:desc`);
 res.json({ ok: true, total: d.meta?.results?.total ?? 0, count: safeArr(d.results).length, days_window: days,
 results: safeArr(d.results).map(r => ({ mdr_report_key: safeStr(r.mdr_report_key), date_received: safeStr(r.date_received), event_type: safeStr(r.event_type), device: { brand_name: safeStr(safeArr(r.device)[0]?.brand_name), manufacturer: safeStr(safeArr(r.device)[0]?.manufacturer_d_name) }, description: safeStr(safeArr(r.mdr_text).find(t => t.text_type_code === 'Description of Event or Problem')?.text) })) });
 } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
