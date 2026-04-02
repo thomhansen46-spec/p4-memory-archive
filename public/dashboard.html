@@ -559,7 +559,7 @@
   // ── Status check ──
   async function checkStatus() {
     try {
-      await apiFetch('/api/session-log');
+      await apiFetch('/api/health');
       document.getElementById('statusDot').style.background = 'var(--success)';
       document.getElementById('statusDot').style.boxShadow = '0 0 8px var(--success)';
       document.getElementById('statusLabel').textContent = 'LIVE';
