@@ -680,16 +680,21 @@
   // ── Sessions ──
   async function loadSessions() {
     sessionsLoaded = true;
-    document.getElementById('sessionContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Loading session log…</div>`;
+    document.getElementById('sessionContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Loading session log…</div>';
     try {
-      const data = await apiFetch('/api/session-log');
-      const records = Array.isArray(data) ? data : data.results || data.data || [];
+      const r = await fetch('https://lhgqexopbqfivoubzzeg.supabase.co/rest/v1/session_logs?select=*&order=created_at.desc', {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZ3FleG9wYnFmaXZvdWJ6emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY5ODcsImV4cCI6MjA5MDQwMjk4N30.NBh-bjOfqHbYG06r6D8GwHL3NXte2hKAoMEHpN-ueug',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZ3FleG9wYnFmaXZvdWJ6emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY5ODcsImV4cCI6MjA5MDQwMjk4N30.NBh-bjOfqHbYG06r6D8GwHL3NXte2hKAoMEHpN-ueug'
+        }
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const records = await r.json();
       document.getElementById('ovSessionCount').textContent = records.length;
-      if (!records.length) { document.getElementById('sessionContent').innerHTML = `<div class="state-box">No sessions logged yet.</div>`; return; }
-      const sorted = [...records].sort((a,b) => new Date(b.date||b.created_at||0) - new Date(a.date||a.created_at||0));
-      document.getElementById('sessionContent').innerHTML = `<div class="log-list">${sorted.map(s => renderSession(s)).join('')}</div>`;
+      if (!records.length) { document.getElementById('sessionContent').innerHTML = '<div class="state-box">No sessions logged yet.</div>'; return; }
+      document.getElementById('sessionContent').innerHTML = '<div class="log-list">' + records.map(s => renderSession(s)).join('') + '</div>';
     } catch(e) {
-      document.getElementById('sessionContent').innerHTML = errBox(e.message);
+      document.getElementById('sessionContent').innerHTML = '<div class="state-box"><div class="error-icon">⚠</div><div class="error-msg">' + e.message + '</div></div>';
     }
   }
 
