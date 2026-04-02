@@ -374,7 +374,12 @@
   }
   .page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent2); }
   .page-btn:disabled { opacity: 0.3; cursor: default; }
-</style>
+
+    .chart-wrap { background:rgba(255,255,255,0.03); border:1px solid rgba(139,92,246,0.15); border-radius:10px; padding:20px 20px 12px; margin-bottom:18px; max-height:260px; display:flex; align-items:center; justify-content:center; }
+    .chart-wrap canvas { max-height:220px; }
+
+  </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -463,6 +468,7 @@
         <span class="table-label">CRM Device PMA Records</span>
         <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'pmaTable')" />
       </div>
+      <div class="chart-wrap"><canvas id="pmaChart"></canvas></div>
       <div id="pmaContent"><div class="state-box"><div class="spinner"></div>Loading PMA data…</div></div>
     </div>
   </div>
@@ -482,6 +488,7 @@
         <span class="table-label">CRM Device Event Reports</span>
         <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'maudeTable')" />
       </div>
+      <div class="chart-wrap"><canvas id="maudeChart"></canvas></div>
       <div id="maudeContent"><div class="state-box"><div class="spinner"></div>Loading MAUDE data…</div></div>
     </div>
   </div>
@@ -501,6 +508,7 @@
         <span class="table-label">CRM Recall Actions</span>
         <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'recallTable')" />
       </div>
+      <div class="chart-wrap"><canvas id="recallChart"></canvas></div>
       <div id="recallContent"><div class="state-box"><div class="spinner"></div>Loading recall data…</div></div>
     </div>
   </div>
@@ -594,6 +602,33 @@
   }
 
   // ── PMA ──
+
+  // Chart helpers
+  const _charts = {};
+  function countBy(records, field, limit) {
+    limit = limit || 10;
+    var map = {};
+    records.forEach(function(r) { var v=(r[field]||'Unknown').toString().slice(0,40); map[v]=(map[v]||0)+1; });
+    return Object.entries(map).sort(function(a,b){return b[1]-a[1];}).slice(0,limit);
+  }
+  function renderBarChart(canvasId, entries, label, color) {
+    var ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    if (_charts[canvasId]) _charts[canvasId].destroy();
+    _charts[canvasId] = new Chart(ctx, {
+      type: 'bar',
+      data: { labels: entries.map(function(e){return e[0];}), datasets: [{ label: label, data: entries.map(function(e){return e[1];}), backgroundColor: color+'cc', borderColor: color, borderWidth:1, borderRadius:4 }] },
+      options: {
+        responsive:true, maintainAspectRatio:true,
+        plugins: { legend:{display:false} },
+        scales: {
+          x: { ticks:{color:'#a78bfa',font:{size:10},maxRotation:35}, grid:{color:'rgba(139,92,246,0.08)'} },
+          y: { ticks:{color:'#a78bfa',font:{size:10},stepSize:1}, grid:{color:'rgba(139,92,246,0.12)'}, beginAtZero:true }
+        }
+      }
+    });
+  }
+
   async function loadPma() {
     pmaLoaded = true;
     document.getElementById('pmaContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching PMA records…</div>`;
@@ -609,6 +644,7 @@
       if (!records.length) { document.getElementById('pmaContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['applicant','device_name','decision_date','decision_code','supplement_number','advisory_committee']);
       document.getElementById('pmaContent').innerHTML = buildTable('pmaTable', cols, records);
+      renderBarChart('pmaChart', countBy(records,'applicant'), 'PMA by Applicant', '#8b5cf6');
     } catch(e) {
       document.getElementById('pmaContent').innerHTML = errBox(e.message);
     }
@@ -630,6 +666,7 @@
       ]);
       if (!records.length) { document.getElementById('maudeContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['brand_name','manufacturer_d_name','event_type','date_received','device_sequence_no','mdr_report_key']);
+      renderBarChart('maudeChart', countBy(records,'event_type'), 'Events by Type', '#06b6d4');
       document.getElementById('maudeContent').innerHTML = buildTable('maudeTable', cols, records, (row, key) => {
         if (key === 'event_type') {
           const v = (row[key]||'').toLowerCase();
@@ -659,6 +696,7 @@
       ]);
       if (!records.length) { document.getElementById('recallContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['recalling_firm','product_description','classification','recall_initiation_date','status','reason_for_recall']);
+      renderBarChart('recallChart', countBy(records,'classification'), 'Recalls by Class', '#f59e0b');
       document.getElementById('recallContent').innerHTML = buildTable('recallTable', cols, records, (row, key) => {
         if (key === 'classification') {
           const v = row[key]||'';
