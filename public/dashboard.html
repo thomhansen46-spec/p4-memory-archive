@@ -376,7 +376,7 @@
   .page-btn:disabled { opacity: 0.3; cursor: default; }
 
     .chart-wrap { background:rgba(255,255,255,0.03); border:1px solid rgba(139,92,246,0.15); border-radius:10px; padding:20px 20px 12px; margin-bottom:18px; max-height:260px; display:flex; align-items:center; justify-content:center; }
-    .chart-wrap canvas { max-height:220px; }
+    .chart-wrap canvas { max-height:170px; }
 
   </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -634,7 +634,7 @@
       type: 'bar',
       data: { labels: entries.map(function(e){return e[0];}), datasets: [{ label: label, data: entries.map(function(e){return e[1];}), backgroundColor: color+'cc', borderColor: color, borderWidth:1, borderRadius:4 }] },
       options: {
-        responsive:true, maintainAspectRatio:true,
+        responsive:true, maintainAspectRatio:true, barThickness:48,
         plugins: { legend:{display:false} },
         scales: {
           x: { ticks:{color:'#c0c0c0',font:{size:12},maxRotation:40}, grid:{color:'rgba(139,92,246,0.08)'} },
