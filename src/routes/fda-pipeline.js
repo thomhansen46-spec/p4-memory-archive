@@ -87,11 +87,11 @@ results: safeArr(d.results).map(r => ({ recall_number: safeStr(r.recall_number),
 app.get('/api/fda/samd', async (req, res) => {
     const from = daysAgo(1825); const to = daysAgo(0);
     const companies = [
-        { name: 'Medtronic',         q: 'manufacturer_d_name:Medtronic' },
-        { name: 'Boston Scientific',  q: 'manufacturer_d_name:"Boston+Scientific"' },
-        { name: 'Abbott',             q: 'manufacturer_d_name:Abbott' },
-        { name: 'Biotronik',          q: 'manufacturer_d_name:Biotronik' },
-        { name: 'MicroPort',          q: 'manufacturer_d_name:MicroPort' }
+        { name: 'Medtronic',         q: 'device.manufacturer_d_name:Medtronic' },
+        { name: 'Boston Scientific',  q: 'device.manufacturer_d_name:"Boston+Scientific"' },
+        { name: 'Abbott',             q: 'device.manufacturer_d_name:Abbott' },
+        { name: 'Biotronik',          q: 'device.manufacturer_d_name:Biotronik' },
+        { name: 'MicroPort',          q: 'device.manufacturer_d_name:MicroPort' }
     ];
     try {
         const perCo = 20;
