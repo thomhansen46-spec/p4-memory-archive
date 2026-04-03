@@ -20,6 +20,7 @@ app.use(express.json());
 
 require('./routes/session-log')(app);
 require('./routes/fda-pipeline')(app);
+require('./routes/supabase-routes')(app);
 
 app.post('/api/add', async (req, res) => {
   try {
