@@ -62,7 +62,7 @@ results: safeArr(d.results).map(r => ({ pma_number: safeStr(r.pma_number), trade
 app.get('/api/fda/maude', async (req, res) => {
 const limit = Math.min(Number(req.query.limit) || 25, 100);
 const skip = Math.max(Number(req.query.skip) || 0, 0);
-const days = Math.min(Number(req.query.days) || 730, 3650);
+const days = Math.min(Number(req.query.days) || 1825, 3650);
 const range = `${daysAgo(days)}+TO+${daysAgo(0)}`;
 try {
 const d = await fdaFetch(`${BASE}/event.json?search=device.generic_name:(pacemaker+OR+defibrillator+OR+cardioverter)+AND+date_received:[${range}]&limit=${limit}&skip=${skip}&sort=date_received:desc`);
@@ -79,6 +79,27 @@ const d = await fdaFetch(`${BASE}/recall.json?search=${CRM_QUERY}&limit=${limit}
 res.json({ ok: true, total: d.meta?.results?.total ?? 0, count: safeArr(d.results).length,
 results: safeArr(d.results).map(r => ({ recall_number: safeStr(r.recall_number), recalling_firm: safeStr(r.recalling_firm), product_description: safeStr(r.product_description), classification: safeStr(r.classification), date_initiated: safeStr(r.event_date_initiated), reason: safeStr(r.reason_for_recall) })) });
 } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
+});
+
+
+app.get('/api/fda/samd', async (req, res) => {
+    const limit = Math.min(Number(req.query.limit) || 100, 100);
+    const skip = Math.max(Number(req.query.skip) || 0, 0);
+    const from = daysAgo(1825); const to = daysAgo(0);
+    const SAMD_Q = 'device.brand_name:(CareLink+OR+Latitude+OR+Merlin+OR+"remote+monitoring"+OR+"cardiac+monitor")';
+    try {
+        const d = await fdaFetch(`${BASE}/event.json?search=${SAMD_Q}+AND+date_received:[${from}+TO+${to}]&limit=${limit}&skip=${skip}&sort=date_received:desc`);
+        res.json({ ok: true, total: d.meta?.results?.total ?? 0, count: safeArr(d.results).length,
+            results: safeArr(d.results).map(r => ({
+                mdr_report_key: safeStr(r.mdr_report_key),
+                date_received: safeStr(r.date_received),
+                event_type: safeStr(r.event_type),
+                brand_name: safeStr(safeArr(r.device)[0]?.brand_name),
+                manufacturer: safeStr(safeArr(r.device)[0]?.manufacturer_d_name),
+                product_code: safeStr(safeArr(r.device)[0]?.device_report_product_code)
+            }))
+        });
+    } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
 });
 
 app.get('/api/fda/health', async (req, res) => {

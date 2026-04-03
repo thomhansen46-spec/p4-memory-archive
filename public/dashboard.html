@@ -403,6 +403,7 @@
   <div class="tab" data-tab="pma">PMA Approvals</div>
   <div class="tab" data-tab="maude">MAUDE Events</div>
   <div class="tab" data-tab="recalls">Recalls</div>
+  <div class="tab" data-tab="samd">SaMD Analysis</div>
   <div class="tab" data-tab="sessions">Session Log</div>
 </nav>
 
@@ -554,11 +555,12 @@
     if (name === 'pma' && !pmaLoaded) loadPma();
     if (name === 'maude' && !maudeLoaded) loadMaude();
     if (name === 'recalls' && !recallsLoaded) loadRecalls();
+    if (name === 'samd' && !samdLoaded) loadSamd();
     if (name === 'sessions' && !sessionsLoaded) loadSessions();
   }
 
   // ── Load flags ──
-  let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false;
+  let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false, samdLoaded = false;
 
   // ── API fetch helper ──
   async function apiFetch(path) {
@@ -881,6 +883,7 @@
     loadPma().catch(()=>{});
     loadMaude().catch(()=>{});
     loadRecalls().catch(()=>{});
+    loadSamd().catch(()=>{});
     loadSessions().catch(()=>{});
   }
 
