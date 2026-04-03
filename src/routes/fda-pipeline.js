@@ -50,7 +50,7 @@ top_manufacturers: safeArr(mfr.results), maude_event_types: safeArr(evtType.resu
 });
 
 app.get('/api/fda/pma', async (req, res) => {
-const limit = Math.min(Number(req.query.limit) || 25, 100);
+const limit = Math.min(Number(req.query.limit) || 100, 100);
 const skip = Math.max(Number(req.query.skip) || 0, 0);
 try {
     const pmaFrom = daysAgo(1825).replace(/-/g,"");
@@ -62,7 +62,7 @@ results: safeArr(d.results).map(r => ({ pma_number: safeStr(r.pma_number), trade
 });
 
 app.get('/api/fda/maude', async (req, res) => {
-const limit = Math.min(Number(req.query.limit) || 25, 100);
+const limit = Math.min(Number(req.query.limit) || 100, 100);
 const skip = Math.max(Number(req.query.skip) || 0, 0);
 const days = Math.min(Number(req.query.days) || 1825, 3650);
 const range = `${daysAgo(days)}+TO+${daysAgo(0)}`;
@@ -74,7 +74,7 @@ results: safeArr(d.results).map(r => ({ mdr_report_key: safeStr(r.mdr_report_key
 });
 
 app.get('/api/fda/recalls', async (req, res) => {
-const limit = Math.min(Number(req.query.limit) || 25, 100);
+const limit = Math.min(Number(req.query.limit) || 100, 100);
 const skip = Math.max(Number(req.query.skip) || 0, 0);
 try {
 const d = await fdaFetch(`${BASE}/recall.json?search=${CRM_QUERY}&limit=${limit}&skip=${skip}&sort=event_date_initiated:desc`);
