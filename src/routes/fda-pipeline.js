@@ -88,7 +88,7 @@ app.get('/api/fda/samd', async (req, res) => {
     const limit = Math.min(Number(req.query.limit) || 100, 100);
     const skip = Math.max(Number(req.query.skip) || 0, 0);
     const from = daysAgo(1825); const to = daysAgo(0);
-    const SAMD_Q = 'device.brand_name:(CareLink+OR+Latitude+OR+Merlin+OR+"remote+monitoring"+OR+"cardiac+monitor")';
+    const SAMD_Q = 'device.generic_name:(pacemaker+OR+defibrillator+OR+cardioverter+OR+"cardiac+monitor")+OR+device.brand_name:(CareLink+OR+Latitude+OR+Merlin)';
     try {
         const d = await fdaFetch(`${BASE}/event.json?search=${SAMD_Q}+AND+date_received:[${from}+TO+${to}]&limit=${limit}&skip=${skip}&sort=date_received:desc`);
         res.json({ ok: true, total: d.meta?.results?.total ?? 0, count: safeArr(d.results).length,
