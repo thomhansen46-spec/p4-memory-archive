@@ -85,22 +85,34 @@ results: safeArr(d.results).map(r => ({ recall_number: safeStr(r.recall_number),
 
 
 app.get('/api/fda/samd', async (req, res) => {
-    const limit = Math.min(Number(req.query.limit) || 100, 100);
-    const skip = Math.max(Number(req.query.skip) || 0, 0);
     const from = daysAgo(1825); const to = daysAgo(0);
-    const SAMD_Q = 'device.generic_name:(pacemaker+OR+defibrillator+OR+cardioverter+OR+"cardiac+monitor")+OR+device.brand_name:(CareLink+OR+Latitude+OR+Merlin)';
+    const companies = [
+        { name: 'Medtronic',         q: 'manufacturer_d_name:Medtronic' },
+        { name: 'Boston Scientific',  q: 'manufacturer_d_name:"Boston+Scientific"' },
+        { name: 'Abbott',             q: 'manufacturer_d_name:Abbott' },
+        { name: 'Biotronik',          q: 'manufacturer_d_name:Biotronik' },
+        { name: 'MicroPort',          q: 'manufacturer_d_name:MicroPort' }
+    ];
     try {
-        const d = await fdaFetch(`${BASE}/event.json?search=${SAMD_Q}+AND+date_received:[${from}+TO+${to}]&limit=${limit}&skip=${skip}&sort=date_received:desc`);
-        res.json({ ok: true, total: d.meta?.results?.total ?? 0, count: safeArr(d.results).length,
-            results: safeArr(d.results).map(r => ({
-                mdr_report_key: safeStr(r.mdr_report_key),
-                date_received: safeStr(r.date_received),
-                event_type: safeStr(r.event_type),
-                brand_name: safeStr(safeArr(r.device)[0]?.brand_name),
-                manufacturer: safeStr(safeArr(r.device)[0]?.manufacturer_d_name),
-                product_code: safeStr(safeArr(r.device)[0]?.device_report_product_code)
-            }))
-        });
+        const perCo = 20;
+        const fetches = companies.map(co =>
+            fdaFetch(`${BASE}/event.json?search=${co.q}+AND+device.generic_name:(pacemaker+OR+defibrillator+OR+cardioverter)+AND+date_received:[${from}+TO+${to}]&limit=${perCo}&sort=date_received:desc`)
+            .then(d => ({ co: co.name, total: d.meta?.results?.total ?? 0, results: safeArr(d.results) }))
+            .catch(() => ({ co: co.name, total: 0, results: [] }))
+        );
+        const all = await Promise.all(fetches);
+        const totalByco = {};
+        all.forEach(x => { totalByco[x.co] = x.total; });
+        const merged = all.flatMap(x => x.results.map(r => ({
+            mdr_report_key: safeStr(r.mdr_report_key),
+            date_received: safeStr(r.date_received),
+            event_type: safeStr(r.event_type),
+            brand_name: safeStr(safeArr(r.device)[0]?.brand_name),
+            manufacturer: safeStr(safeArr(r.device)[0]?.manufacturer_d_name),
+            product_code: safeStr(safeArr(r.device)[0]?.device_report_product_code)
+        })));
+        const grandTotal = Object.values(totalByco).reduce((a,b)=>a+b,0);
+        res.json({ ok: true, total: grandTotal, count: merged.length, by_company: totalByco, results: merged });
     } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
 });
 
