@@ -681,7 +681,7 @@
       ]);
       if (!records.length) { document.getElementById('maudeContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['brand_name','manufacturer_d_name','event_type','date_received','device_sequence_no','mdr_report_key']);
-      renderBarChart('maudeChart', countBy(records,'event_type'), 'Events by Type', '#06b6d4');
+      renderBarChart('maudeChart', countBy(records,'manufacturer_d_name',8,true), 'Events by Manufacturer', '#06b6d4');
       document.getElementById('maudeContent').innerHTML = buildTable('maudeTable', cols, records, (row, key) => {
         if (key === 'event_type') {
           const v = (row[key]||'').toLowerCase();
@@ -711,7 +711,7 @@
       ]);
       if (!records.length) { document.getElementById('recallContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['recalling_firm','product_description','classification','recall_initiation_date','status','reason_for_recall']);
-      renderBarChart('recallChart', countBy(records,'classification'), 'Recalls by Class', '#f59e0b');
+      renderBarChart('recallChart', countBy(records,'recalling_firm',10,true), 'Recalls by Firm', '#f59e0b');
       document.getElementById('recallContent').innerHTML = buildTable('recallTable', cols, records, (row, key) => {
         if (key === 'classification') {
           const v = row[key]||'';
