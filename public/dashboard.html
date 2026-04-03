@@ -417,6 +417,7 @@
       </div>
       <button class="refresh-btn" onclick="loadAllOverview()">↺ Refresh All</button>
     </div>
+    <div class="chart-wrap" style="margin:0 0 18px"><canvas id="overviewChart"></canvas></div>
     <div class="overview-grid" id="overviewGrid">
       <div class="overview-card" onclick="switchTab('pma')">
         <div class="ov-icon">📋</div>
@@ -469,6 +470,7 @@
         <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'pmaTable')" />
       </div>
       <div class="chart-wrap"><canvas id="pmaChart"></canvas></div>
+      <div class="chart-wrap"><canvas id="pmaTrendChart"></canvas></div>
       <div id="pmaContent"><div class="state-box"><div class="spinner"></div>Loading PMA data…</div></div>
     </div>
   </div>
@@ -489,6 +491,7 @@
         <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'maudeTable')" />
       </div>
       <div class="chart-wrap"><canvas id="maudeChart"></canvas></div>
+      <div class="chart-wrap"><canvas id="maudeTrendChart"></canvas></div>
       <div id="maudeContent"><div class="state-box"><div class="spinner"></div>Loading MAUDE data…</div></div>
     </div>
   </div>
@@ -603,6 +606,61 @@
 
   // ── PMA ──
 
+
+  var _pmaRecords = [], _maudeRecords = [], _recallRecords = [];
+
+  function groupByMonth(records, dateField) {
+    var map = {};
+    records.forEach(function(r) {
+      var raw = r[dateField];
+      if (!raw) return;
+      var s = raw.toString();
+      var month = s.slice(0,4) + '-' + s.slice(4,6);
+      map[month] = (map[month] || 0) + 1;
+    });
+    var keys = Object.keys(map).sort();
+    return { labels: keys, data: keys.map(function(k){ return map[k]; }) };
+  }
+
+  function renderLineChart(canvasId, labels, datasets) {
+    var ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    if (_charts[canvasId]) _charts[canvasId].destroy();
+    _charts[canvasId] = new Chart(ctx, {
+      type: 'line',
+      data: { labels: labels, datasets: datasets },
+      options: {
+        responsive: true, maintainAspectRatio: true,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#c0c0c0', font: { size: 10 }, maxRotation: 35 }, grid: { color: 'rgba(139,92,246,0.08)' } },
+          y: { ticks: { color: '#a78bfa', font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(139,92,246,0.12)' }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  function renderOverviewChart() {
+    var ctx = document.getElementById('overviewChart');
+    if (!ctx) return;
+    if (_charts['overviewChart']) _charts['overviewChart'].destroy();
+    _charts['overviewChart'] = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['PMA Approvals', 'MAUDE Events', 'Recalls'],
+        datasets: [{ label: 'Records', data: [_pmaRecords.length, _maudeRecords.length, _recallRecords.length], backgroundColor: ['#8b5cf6cc','#06b6d4cc','#f59e0bcc'], borderColor: ['#8b5cf6','#06b6d4','#f59e0b'], borderWidth:1, borderRadius:6 }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:true, barThickness:60,
+        plugins: { legend: { display:false } },
+        scales: {
+          x: { ticks:{color:'#c0c0c0',font:{size:12}}, grid:{color:'rgba(139,92,246,0.08)'} },
+          y: { ticks:{color:'#a78bfa',font:{size:10},stepSize:5}, grid:{color:'rgba(139,92,246,0.12)'}, beginAtZero:true }
+        }
+      }
+    });
+  }
+
   // Chart helpers
   const _charts = {};
   function normalizeName(v) {
@@ -659,7 +717,11 @@
       if (!records.length) { document.getElementById('pmaContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['applicant','device_name','decision_date','decision_code','supplement_number','advisory_committee']);
       document.getElementById('pmaContent').innerHTML = buildTable('pmaTable', cols, records);
+      _pmaRecords = records;
       renderBarChart('pmaChart', countBy(records,'applicant',5,true), 'PMA by Applicant', '#8b5cf6');
+      var pt = groupByMonth(records, 'decision_date');
+      renderLineChart('pmaTrendChart', pt.labels, [{ label: 'Approvals/Month', data: pt.data, borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', tension: 0.3, fill: true, pointRadius: 4, pointBackgroundColor: '#8b5cf6' }]);
+      renderOverviewChart();
     } catch(e) {
       document.getElementById('pmaContent').innerHTML = errBox(e.message);
     }
@@ -681,7 +743,11 @@
       ]);
       if (!records.length) { document.getElementById('maudeContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['brand_name','manufacturer_d_name','event_type','date_received','device_sequence_no','mdr_report_key']);
+      _maudeRecords = records;
       renderBarChart('maudeChart', countBy(records,'event_type',5,false), 'Events by Type', '#06b6d4');
+      var mt = groupByMonth(records, 'date_received');
+      renderLineChart('maudeTrendChart', mt.labels, [{ label: 'Events/Month', data: mt.data, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.3, fill: true, pointRadius: 4, pointBackgroundColor: '#06b6d4' }]);
+      renderOverviewChart();
       document.getElementById('maudeContent').innerHTML = buildTable('maudeTable', cols, records, (row, key) => {
         if (key === 'event_type') {
           const v = (row[key]||'').toLowerCase();
@@ -711,7 +777,9 @@
       ]);
       if (!records.length) { document.getElementById('recallContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['recalling_firm','product_description','classification','recall_initiation_date','status','reason_for_recall']);
+      _recallRecords = records;
       renderBarChart('recallChart', countBy(records,'recalling_firm',5,true), 'Recalls by Firm', '#f59e0b');
+      renderOverviewChart();
       document.getElementById('recallContent').innerHTML = buildTable('recallTable', cols, records, (row, key) => {
         if (key === 'classification') {
           const v = row[key]||'';
