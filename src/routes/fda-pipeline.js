@@ -101,9 +101,7 @@ app.get('/api/fda/samd', async (req, res) => {
             }))
         });
     } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
-}); }
 });
-
 app.get('/api/fda/health', async (req, res) => {
 try {
 const d = await fdaFetch(`${BASE}/pma.json?search=${CRM_QUERY}&limit=1`);
