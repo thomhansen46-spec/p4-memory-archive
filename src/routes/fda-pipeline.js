@@ -53,7 +53,9 @@ app.get('/api/fda/pma', async (req, res) => {
 const limit = Math.min(Number(req.query.limit) || 25, 100);
 const skip = Math.max(Number(req.query.skip) || 0, 0);
 try {
-    const d = await fdaFetch(`${BASE}/pma.json?search=${CRM_QUERY}&limit=${limit}&skip=${skip}&sort=decision_date:desc`);
+    const pmaFrom = daysAgo(1825).replace(/-/g,"");
+    const pmaTo = daysAgo(0).replace(/-/g,"");
+    const d = await fdaFetch(`${BASE}/pma.json?search=${CRM_QUERY}+AND+decision_date:[${pmaFrom}+TO+${pmaTo}]&limit=${limit}&skip=${skip}&sort=decision_date:desc`);
 res.json({ ok: true, total: d.meta?.results?.total ?? 0, count: safeArr(d.results).length,
 results: safeArr(d.results).map(r => ({ pma_number: safeStr(r.pma_number), trade_name: safeStr(r.trade_name), applicant: safeStr(r.applicant), decision_date: safeStr(r.decision_date), decision_code: safeStr(r.decision_code), product_code: safeStr(r.product_code) })) });
 } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
