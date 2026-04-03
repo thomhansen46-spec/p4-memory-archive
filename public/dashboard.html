@@ -518,6 +518,21 @@
   </div>
 
   <!-- SESSION LOG -->
+<div class="panel" id="panel-samd">
+<div class="section-header"><div>
+<div class="section-title">SentinelRWE - SaMD Intelligence</div>
+<div class="section-name">SaMD <span>Failure Analysis</span></div>
+</div><button class="refresh-btn" onclick="loadSamd()">&#8634; Refresh</button></div>
+<div id="samdStats" class="stats-row"></div>
+<div class="panel-card">
+<div class="panel-card-header"><div class="panel-card-title">SAMD ADVERSE EVENTS - 5-YEAR WINDOW</div>
+<input class="filter-input" type="text" placeholder="Filter records..." oninput="filterTable('samdTable', this.value)"></div>
+<div class="chart-wrap"><canvas id="samdTotalChart"></canvas></div>
+<div class="chart-wrap"><canvas id="samdTrendChart"></canvas></div>
+<div class="chart-wrap"><canvas id="samdByCompanyChart"></canvas></div>
+<div class="chart-wrap"><canvas id="samdCompanyYearChart"></canvas></div>
+<div id="samdContent"><div class="state-box"><div class="spinner"></div>Loading SaMD data...</div></div>
+</div></div>
   <div class="panel" id="panel-sessions">
     <div class="section-header">
       <div>
