@@ -1,15 +1,12 @@
-
-
+k=k
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-const path = require('path');
-
 
 app.use(express.json());
 app.use(express.static('public'));
-app.use('/session-log', require('./src/routes/session-log'));
+
 // Supabase connection
 const supabase = createClient(
   process.env.SUPABASE_URL,
