@@ -57,6 +57,8 @@ app.get('/api/health', (req, res) => {
   res.json({ ok: true, ts: new Date().toISOString() });
 });
 
+app.use('/session-log', require('./routes/session-log'));  // ✅ ADD HERE
+
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use((err, req, res, next) => {
