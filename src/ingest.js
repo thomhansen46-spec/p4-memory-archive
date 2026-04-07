@@ -42,7 +42,7 @@ async function paginateAll(urlFn) {
 
 async function ingestPMA() {
   console.log('\n[PMA] Fetching 5yr approvals...');
-  const from = daysAgo(1825).replace(/-/g, '');
+  const from = daysAgo(3650).replace(/-/g, '');
   const to   = daysAgo(0).replace(/-/g, '');
   const rows = await paginateAll((limit, skip) =>
     `${BASE}/pma.json?search=${CRM_QUERY}+AND+decision_date:[${from}+TO+${to}]&limit=${limit}&skip=${skip}&sort=decision_date:desc`
@@ -65,7 +65,7 @@ async function ingestPMA() {
 
 async function ingestMAUDE() {
   console.log('\n[MAUDE] Fetching 5yr events...');
-  const range = `${daysAgo(1825)}+TO+${daysAgo(0)}`;
+  const range = `${daysAgo(3650)}+TO+${daysAgo(0)}`;
   const rows = await paginateAll((limit, skip) =>
     `${BASE}/event.json?search=device.generic_name:(pacemaker+OR+defibrillator+OR+cardioverter)+AND+date_received:[${range}]&limit=${limit}&skip=${skip}&sort=date_received:desc`
   );
@@ -79,7 +79,7 @@ async function ingestMAUDE() {
     device_problem: Array.isArray(r.device_problem_codes) ? r.device_problem_codes.join(',') : null,
     report_number:  r.report_number || null,
   }));
-  const { error } = await supabase.from('maude_events').upsert(records, { onConflict: 'id' });
+  const { error } = await supabase.from('maude_events').insert(records);
   if (error) throw error;
   console.log(`[MAUDE] Upserted ${records.length} rows`);
   return records.length;
@@ -87,7 +87,7 @@ async function ingestMAUDE() {
 
 async function ingestRecalls() {
   console.log('\n[RECALLS] Fetching 5yr recalls...');
-  const range = `${daysAgo(1825)}+TO+${daysAgo(0)}`;
+  const range = `${daysAgo(3650)}+TO+${daysAgo(0)}`;
   const rows = await paginateAll((limit, skip) =>
     `${BASE}/recall.json?search=${CRM_QUERY}&limit=${limit}&skip=${skip}&sort=event_date_initiated:desc`
   );
@@ -101,7 +101,7 @@ async function ingestRecalls() {
     reason:         r.reason_for_recall || null,
     status:         r.status || null,
   }));
-  const { error } = await supabase.from('recalls').upsert(records, { onConflict: 'id' });
+  const { error } = await supabase.from('recalls').insert(records);
   if (error) throw error;
   console.log(`[RECALLS] Upserted ${records.length} rows`);
   return records.length;
