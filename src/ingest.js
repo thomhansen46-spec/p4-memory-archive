@@ -9,7 +9,7 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 const BASE = 'https://api.fda.gov/device';
 const LIMIT = 100;
 const CRM_CODES = 'DSQ,DTB,DXX,LWS,MKJ';
-const CRM_QUERY = `product_code:(${CRM_CODES.split(',').join('+')})`;
+const CRM_QUERY = '(product_code:DQN+OR+product_code:MRX+OR+product_code:LWS+OR+device_name:pacemaker+OR+device_name:defibrillator+OR+device_name:cardioverter)';
 
 function daysAgo(n) {
   const d = new Date();
@@ -57,7 +57,7 @@ async function ingestPMA() {
     advisory_committee: r.advisory_committee || null,
     supplement_number:  r.supplement_number || null,
   }));
-  const { error } = await supabase.from('pma_approvals').upsert(records, { onConflict: 'id' });
+  const { error } = await supabase.from('pma_approvals').insert(records);
   if (error) throw error;
   console.log(`[PMA] Upserted ${records.length} rows`);
   return records.length;
@@ -67,7 +67,7 @@ async function ingestMAUDE() {
   console.log('\n[MAUDE] Fetching 5yr events...');
   const range = `${daysAgo(1825)}+TO+${daysAgo(0)}`;
   const rows = await paginateAll((limit, skip) =>
-    `${BASE}/event.json?search=${CRM_QUERY}+AND+date_received:[${range}]&limit=${limit}&skip=${skip}&sort=date_received:desc`
+    `${BASE}/event.json?search=device.generic_name:(pacemaker+OR+defibrillator+OR+cardioverter)+AND+date_received:[${range}]&limit=${limit}&skip=${skip}&sort=date_received:desc`
   );
   const records = rows.map(r => ({
     id:             r.report_number || `${r.manufacturer_d_name}-${r.date_received}-${Math.random().toString(36).slice(2,7)}`,
@@ -89,7 +89,7 @@ async function ingestRecalls() {
   console.log('\n[RECALLS] Fetching 5yr recalls...');
   const range = `${daysAgo(1825)}+TO+${daysAgo(0)}`;
   const rows = await paginateAll((limit, skip) =>
-    `${BASE}/enforcement.json?search=${CRM_QUERY}+AND+recall_initiation_date:[${range}]&limit=${limit}&skip=${skip}&sort=recall_initiation_date:desc`
+    `${BASE}/recall.json?search=${CRM_QUERY}&limit=${limit}&skip=${skip}&sort=event_date_initiated:desc`
   );
   const records = rows.map(r => ({
     id:             r.recall_number || `${r.recalling_firm}-${r.recall_initiation_date}`,
