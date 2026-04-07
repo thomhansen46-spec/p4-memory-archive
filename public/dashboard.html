@@ -475,7 +475,7 @@ async function checkStatus() {
   const dot = document.getElementById('statusDot');
   const lbl = document.getElementById('statusLabel');
   try {
-    await apiFetch('/api/fda/health');
+    await apiFetch('/api/db/health');
     dot.style.cssText = 'background:var(--success);box-shadow:0 0 8px var(--success)';
     lbl.textContent = 'LIVE';
   } catch {
@@ -658,7 +658,7 @@ async function loadPma() {
   pmaLoaded = true;
   document.getElementById('pmaContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Fetching PMA records…</div>';
   try {
-    const data = await apiFetch('/api/fda/pma');
+    const data = await apiFetch('/api/pma');
     const records = extractRecords(data);
     _pmaN = records.length;
     document.getElementById('ovPmaCount').textContent = records.length.toLocaleString();
@@ -691,7 +691,7 @@ async function loadMaude() {
   maudeLoaded = true;
   document.getElementById('maudeContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Fetching MAUDE records…</div>';
   try {
-    const data = await apiFetch('/api/fda/maude');
+    const data = await apiFetch('/api/maude');
     const records = extractRecords(data);
     _maudeN = records.length;
     document.getElementById('ovMaudeCount').textContent = records.length.toLocaleString();
@@ -734,7 +734,7 @@ async function loadRecalls() {
   recallsLoaded = true;
   document.getElementById('recallContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Fetching recall data…</div>';
   try {
-    const data = await apiFetch('/api/fda/recalls');
+    const data = await apiFetch('/api/recalls');
     const records = extractRecords(data);
     _recallN = records.length;
     document.getElementById('ovRecallCount').textContent = records.length.toLocaleString();
@@ -782,7 +782,7 @@ async function loadSamd() {
   samdLoaded = true;
   document.getElementById('samdContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Fetching SaMD data…</div>';
   try {
-    const data = await apiFetch('/api/fda/maude');
+    const data = await apiFetch('/api/maude');
     const records = extractRecords(data);
     _samdN = records.length;
     const byYear = groupByYear(records, 'date_received');
