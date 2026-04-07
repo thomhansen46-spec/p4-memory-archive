@@ -82,10 +82,10 @@ module.exports = function(app) {
       const { limit, order, asc, year, search } = parseQuery(req.query);
       let q = supabase
         .from('recalls')
-        .select('id,recalling_firm,device_name,product_code,classification,date_initiated,reason,status')
+        .select('product_res_number,recalling_firm,product_description,product_code,recall_status,event_date_initiated,reason_for_recall,status')
         .limit(limit)
-        .order(order || 'date_initiated', { ascending: asc });
-      if (year)   q = q.gte('date_initiated', year + '-01-01').lte('date_initiated', year + '-12-31');
+        .order(order || 'event_date_initiated', { ascending: asc });
+      if (year)   q = q.gte('event_date_initiated', year + '-01-01').lte('event_date_initiated', year + '-12-31');
       if (search) q = q.or('recalling_firm.ilike.%' + search + '%,device_name.ilike.%' + search + '%');
       const { data, error } = await q;
       if (error) throw error;
