@@ -735,12 +735,7 @@
     sessionsLoaded = true;
     document.getElementById('sessionContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Loading session log…</div>';
     try {
-      const r = await fetch('https://lhgqexopbqfivoubzzeg.supabase.co/rest/v1/session_logs?select=*&order=created_at.desc', {
-        headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZ3FleG9wYnFmaXZvdWJ6emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY5ODcsImV4cCI6MjA5MDQwMjk4N30.NBh-bjOfqHbYG06r6D8GwHL3NXte2hKAoMEHpN-ueug',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZ3FleG9wYnFmaXZvdWJ6emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY5ODcsImV4cCI6MjA5MDQwMjk4N30.NBh-bjOfqHbYG06r6D8GwHL3NXte2hKAoMEHpN-ueug'
-        }
-      });
+      const r = await fetch('/api/session-log');
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const records = await r.json();
       document.getElementById('ovSessionCount').textContent = records.length;
