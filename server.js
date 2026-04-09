@@ -22,7 +22,6 @@ app.get('/', (req, res) => {
 
 // All routes
 require('./src/routes/session-log')(app);
-require('./src/routes/fda-pipeline')(app);
 require('./src/routes/supabase-routes')(app);
 
 const PORT = process.env.PORT || 10000;
