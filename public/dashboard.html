@@ -824,7 +824,7 @@
     samdLoaded = true;
     document.getElementById('samdContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Fetching SaMD data...</div>';
     try {
-      const data = await apiFetch('/api/samd-events')1;
+      const data = await apiFetch('/api/samd-events');
       const records = data.results || [];
       const total = data.total || records.length;
       renderStats('samdStats', [
