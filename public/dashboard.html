@@ -967,7 +967,15 @@
       loadMaude().catch(()=>{}),
       loadRecalls().catch(()=>{})
     ]);
-    setTimeout(renderOverviewChart, 300);
+    // Retry until data is confirmed loaded
+    var attempts = 0;
+    var ovTimer = setInterval(function() {
+      attempts++;
+      if ((_pmaRecords.length > 0 && _maudeRecords.length > 0 && _recallRecords.length > 0) || attempts > 20) {
+        clearInterval(ovTimer);
+        renderOverviewChart();
+      }
+    }, 500);
     loadSamd().catch(()=>{});
     loadSessions().catch(()=>{});
   }
