@@ -66,7 +66,7 @@ app.get('/sessions', async (req, res) => {
 // Start server
 const PORT = process.env.PORT || 3000;
 
-app.get( => {'/api/samd-events', async (req, res)
+app.get('/api/samd-events', async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('samd_events')
