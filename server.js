@@ -8,18 +8,27 @@ const path = require('path');
 
 
 app.use(express.json());
-app.use(express.static('public'));
+app.get('/api/health', (req, res) => {
+  res.json({
+    ok: true,
+    service: 'P4 API LIVE',
+    time: new Date()
+  });
+});
+
 app.use('/session-log', require('./src/routes/session-log'));
 // Supabase connection
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
+  
 
 // Root route
 app.get('/', (req, res) => {
-  res.send('P4 Memory Archive running v2');
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
 });
+app.use(express.static('public'));
 
 // Test route
 app.get('/test', (req, res) => {
@@ -57,6 +66,22 @@ app.get('/sessions', async (req, res) => {
 // Start server
 const PORT = process.env.PORT || 3000;
 
+app.get( => {'/api/samd-events', async (req, res)
+  try {
+    const { data, error } = await supabase
+      .from('samd_events')
+      .select('*')
+      .limit(1000);
+
+    if (error) throw error;
+
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.listen(PORT, () => {
+
   console.log(`Server running on port ${PORT}`);
 });
