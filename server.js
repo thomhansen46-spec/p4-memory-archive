@@ -71,7 +71,7 @@ app.get('/api/samd-events', async (req, res) => {
     const { data, error } = await supabase
       .from('samd_events')
       .select('*')
-      .limit(1000);
+      .limit(100);
 
     if (error) throw error;
 
@@ -80,6 +80,7 @@ app.get('/api/samd-events', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+    
 
 app.listen(PORT, () => {
 
