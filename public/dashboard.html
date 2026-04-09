@@ -965,10 +965,12 @@
   // ── Overview loader ──
   async function loadAllOverview() {
     checkStatus();
-    // fire all, don't block overview render
-    loadPma().catch(()=>{});
-    loadMaude().catch(()=>{});
-    loadRecalls().catch(()=>{});
+    await Promise.all([
+      loadPma().catch(()=>{}),
+      loadMaude().catch(()=>{}),
+      loadRecalls().catch(()=>{})
+    ]);
+    renderOverviewChart();
     loadSamd().catch(()=>{});
     loadSessions().catch(()=>{});
   }
