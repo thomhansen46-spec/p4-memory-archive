@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+754
+
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -751,9 +753,10 @@
       document.getElementById('pmaContent').innerHTML = buildTable('pmaTable', cols, records);
       _pmaRecords = records;
       renderBarChart('pmaChart', countBy(records,'applicant',5,true), 'PMA by Applicant', '#8b5cf6');
-      var pt = groupByHalf(records, 'decision_date');
-      renderLineChart('pmaTrendChart', pt.labels, [{ label: 'Approvals/Month', data: pt.data, borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', tension: 0.3, fill: true, pointRadius: 4, pointBackgroundColor: '#8b5cf6' }]);
-    } catch(e) {
+var cos=['Medtronic','Boston Scientific','Abbott','Biotronik'],coC={'Medtronic':'#8b5cf6','Boston Scientific':'#06b6d4','Abbott':'#f59e0b','Biotronik':'#10b981'},per={};
+      records.forEach(function(r){var s=(r.decision_date||'').toString(),yr=s.slice(0,4),mo=parseInt(s[4]==='-'?s.slice(5,7):s.slice(4,6));if(!mo)return;var h=yr+(mo<=6?'-H1':'-H2'),co=normalizeName(r.applicant||'');if(!per[h])per[h]={};per[h][co]=(per[h][co]||0)+1;});
+      var hl=Object.keys(per).sort(),pctx=document.getElementById('pmaTrendChart');
+      if(pctx){if(_charts.pmaTrendChart)_charts.pmaTrendChart.destroy();_charts.pmaTrendChart=new Chart(pctx,{type:'bar',data:{labels:hl,datasets:cos.map(function(co){return{label:co,data:hl.map(function(h){return(per[h]&&per[h][co])||0;}),backgroundColor:(coC[co]||'#888')+'cc',borderColor:coC[co]||'#888',borderWidth:1};})},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:true,labels:{color:'#c0c0c0',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#c0c0c0',font:{size:10},maxRotation:40},grid:{color:'rgba(139,92,246,0.08)'}},y:{stacked:true,ticks:{color:'#a78bfa'},grid:{color:'rgba(139,92,246,0.12)'},beginAtZero:true}}}});}    } catch(e) {
       document.getElementById('pmaContent').innerHTML = errBox(e.message);
     }
   }
@@ -1008,6 +1011,7 @@ async function loadLogs() {
   const data = await res.json();
 
   document.getElementById('output').innerText =
+
     JSON.stringify(data, null, 2);
 }
 
