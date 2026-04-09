@@ -1,127 +1,59 @@
 'use strict';
 
-const { createClient } = require('@supabase/supabase-js');
+const fetch = require('node-fetch');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://lhgqexopbqfivoubzzeg.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZ3FleG9wYnFmaXZvdWJ6emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY5ODcsImV4cCI6MjA5MDQwMjk4N30.NBh-bjOfqHbYG06r6D8GwHL3NXte2hKAoMEHpN-ueug';
+const SUPABASE_KEY = process.env.SUPABASE_KEY || '';
 
-function sendError(res, msg, status) {
-  console.error('[supabase-routes]', msg);
-  res.status(status || 500).json({ error: msg });
+function headers() {
+  return { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
 }
 
-function parseQuery(q) {
-  return {
-    limit:  Math.min(parseInt(q.limit)  || 500, 2000),
-    order:  q.order  || null,
-    asc:    q.dir === 'asc',
-    year:   q.year   ? parseInt(q.year) : null,
-    search: q.search || null,
-  };
+async function query(table, params) {
+  const url = SUPABASE_URL + '/rest/v1/' + table + '?' + params;
+  const r = await fetch(url, { headers: headers() });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
 }
 
 module.exports = function(app) {
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // ── Health ──────────────────────────────────────────────────────────────
   app.get('/api/db/health', async (req, res) => {
     try {
-      const tables = ['pma_approvals','maude_events','recalls','samd_events'];
+      const tables = ['pma_approvals','maude_events','recalls'];
       const counts = {};
-      await Promise.all(tables.map(async t => {
-        const { count, error } = await supabase.from(t).select('*', { count: 'exact', head: true });
-        counts[t] = error ? 'error: ' + error.message : count;
-      }));
-      res.json({ status: 'ok', counts, timestamp: new Date().toISOString() });
-    } catch(e) { sendError(res, e.message); }
+      for (const t of tables) {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/' + t + '?select=id&limit=1', {
+          headers: { ...headers(), 'Prefer': 'count=exact' }
+        });
+        counts[t] = r.headers.get('content-range') || '?';
+      }
+      res.json({ ok: true, counts });
+    } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-  // ── PMA Approvals ───────────────────────────────────────────────────────
-  // Schema: id, applicant, device_name, product_code, decision_code,
-  //         decision_date, advisory_committee, supplement_number
   app.get('/api/pma', async (req, res) => {
     try {
-      const { limit, order, asc, year, search } = parseQuery(req.query);
-      let q = supabase
-        .from('pma_approvals')
-        .select('id,applicant,device_name,product_code,decision_code,decision_date,advisory_committee,supplement_number')
-        .limit(limit)
-        .order(order || 'decision_date', { ascending: asc });
-      if (year)   q = q.gte('decision_date', year + '-01-01').lte('decision_date', year + '-12-31');
-      if (search) q = q.or('applicant.ilike.%' + search + '%,device_name.ilike.%' + search + '%');
-      const { data, error } = await q;
-      if (error) throw error;
+      const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
+      const data = await query('pma_approvals', 'select=id,applicant,device_name,product_code,decision_code,decision_date,advisory_committee,supplement_number&order=decision_date.desc&limit=' + limit);
       res.json({ total: data.length, results: data });
-    } catch(e) { sendError(res, e.message); }
+    } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-  // ── MAUDE Events ────────────────────────────────────────────────────────
-  // Schema: id, manufacturer, brand_name, product_code, event_type,
-  //         date_received, device_problem, report_number
   app.get('/api/maude', async (req, res) => {
     try {
-      const { limit, order, asc, year, search } = parseQuery(req.query);
-      let q = supabase
-        .from('maude_events')
-        .select('id,manufacturer,brand_name,product_code,event_type,date_received,device_problem,report_number')
-        .limit(limit)
-        .order(order || 'date_received', { ascending: asc });
-      if (year)   q = q.gte('date_received', year + '-01-01').lte('date_received', year + '-12-31');
-      if (search) q = q.or('manufacturer.ilike.%' + search + '%,brand_name.ilike.%' + search + '%');
-      const { data, error } = await q;
-      if (error) throw error;
+      const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
+      const data = await query('maude_events', 'select=id,manufacturer,brand_name,product_code,event_type,date_received,device_problem,report_number&order=date_received.desc&limit=' + limit);
       res.json({ total: data.length, results: data });
-    } catch(e) { sendError(res, e.message); }
+    } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-  // ── Recalls ─────────────────────────────────────────────────────────────
-  // Schema: id, recalling_firm, device_name, product_code, classification,
-  //         date_initiated, reason, status
   app.get('/api/recalls', async (req, res) => {
     try {
-      const { limit, order, asc, year, search } = parseQuery(req.query);
-      let q = supabase
-        .from('recalls')
-        .select('product_res_number,recalling_firm,product_description,product_code,recall_status,event_date_initiated,reason_for_recall,status')
-        .limit(limit)
-        .order(order || 'event_date_initiated', { ascending: asc });
-      if (year)   q = q.gte('event_date_initiated', year + '-01-01').lte('event_date_initiated', year + '-12-31');
-      if (search) q = q.or('recalling_firm.ilike.%' + search + '%,device_name.ilike.%' + search + '%');
-      const { data, error } = await q;
-      if (error) throw error;
+      const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
+      const data = await query('recalls', 'select=product_res_number,recalling_firm,product_description,product_code,recall_status,event_date_initiated,reason_for_recall,status&order=event_date_initiated.desc&limit=' + limit);
       res.json({ total: data.length, results: data });
-    } catch(e) { sendError(res, e.message); }
-  });
-
-  // ── SaMD Events ─────────────────────────────────────────────────────────
-  // Schema: id, manufacturer, brand_name, product_code, event_type,
-  //         date_received, device_problem, report_number
-  app.get('/api/samd', async (req, res) => {
-    try {
-      const { limit, order, asc, year, search } = parseQuery(req.query);
-      let q = supabase
-        .from('samd_events')
-        .select('id,manufacturer,brand_name,product_code,event_type,date_received,device_problem,report_number')
-        .limit(limit)
-        .order(order || 'date_received', { ascending: asc });
-      if (year)   q = q.gte('date_received', year + '-01-01').lte('date_received', year + '-12-31');
-      if (search) q = q.or('manufacturer.ilike.%' + search + '%,brand_name.ilike.%' + search + '%');
-      const { data, error } = await q;
-      if (error) throw error;
-      res.json({ total: data.length, results: data });
-    } catch(e) { sendError(res, e.message); }
-  });
-
-  // ── Session log proxy ────────────────────────────────────────────────────
-  app.get('/api/sessions', async (req, res) => {
-    try {
-      const { data, error } = await supabase
-        .from('session_logs')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      res.json(data);
-    } catch(e) { sendError(res, e.message); }
+    } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
 };
