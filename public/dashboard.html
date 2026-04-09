@@ -421,7 +421,7 @@
       </div>
       <button class="refresh-btn" onclick="loadAllOverview()">↺ Refresh All</button>
     </div>
-    <div class="chart-wrap" style="margin:0 0 18px"><canvas id="overviewChart" height="120"></canvas></div>
+    <div class="chart-wrap" style="margin:0 0 18px"><canvas id="overviewChart" style="height:220px;width:100%"></canvas></div>
     <div class="overview-grid" id="overviewGrid">
       <div class="overview-card" onclick="switchTab('pma')">
         <div class="ov-icon">📋</div>
@@ -671,7 +671,7 @@
         datasets: [{ label: 'Records', data: [_pmaRecords.length, _maudeRecords.length, _recallRecords.length], backgroundColor: ['#8b5cf6cc','#06b6d4cc','#f59e0bcc'], borderColor: ['#8b5cf6','#06b6d4','#f59e0b'], borderWidth:1, borderRadius:6 }]
       },
       options: {
-        responsive:true, maintainAspectRatio:true, barThickness:60,
+        responsive:true, maintainAspectRatio:false, barThickness:60,
         plugins: { legend: { display:false } },
         scales: {
           x: { ticks:{color:'#c0c0c0',font:{size:12}}, grid:{color:'rgba(139,92,246,0.08)'} },
