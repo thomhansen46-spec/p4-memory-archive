@@ -476,6 +476,8 @@ toggle
         <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'pmaTable')" />
       </div>
       <div class="chart-wrap"><canvas id="pmaChart"></canvas></div>
+      <button onclick="togglePmaChart()" id="pmaToggleBtn" style="background:#1b1530;color:#a78bfa;border:1px solid #2a2240;padding:4px 12px;border-radius:4px;font-size:11px;cursor:pointer;margin-bottom:8px">Switch to Grouped</button>
+
       <div class="chart-wrap"><canvas id="pmaTrendChart"></canvas></div>
       <div id="pmaContent"><div class="state-box"><div class="spinner"></div>Loading PMA data…</div></div>
     </div>
@@ -752,9 +754,11 @@ toggle
       const cols = detectCols(records[0], ['applicant','device_name','decision_date','decision_code','supplement_number','advisory_committee']);
       document.getElementById('pmaContent').innerHTML = buildTable('pmaTable', cols, records);
       _pmaRecords = records;
+      var _pmaStacked = true; function togglePmaChart(){_pmaStacked=!_pmaStacked;document.getElementById('pmaToggleBtn').textContent=_pmaStacked?'Switch to Grouped':'Switch to Stacked';var pctx=document.getElementById('pmaTrendChart');if(!pctx||!_pmaRecords.length)return;var per={},cos=['Medtronic','Boston Scientific','Abbott','Biotronik'],coC={'Medtronic':'#8b5cf6','Boston Scientific':'#06b6d4','Abbott':'#f59e0b','Biotronik':'#10b981'};_pmaRecords.forEach(function(r){var s=(r.decision_date||'').toString(),yr=s.slice(0,4),co=normalizeName(r.applicant||'');if(!yr)return;if(!per[yr])per[yr]={};per[yr][co]=(per[yr][co]||0)+1;});var yl=Object.keys(per).sort();if(_charts.pmaTrendChart)_charts.pmaTrendChart.destroy();_charts.pmaTrendChart=new Chart(pctx,{type:'bar',data:{labels:yl,datasets:cos.map(function(co){return{label:co,data:yl.map(function(y){return(per[y]&&per[y][co])||0;}),backgroundColor:(coC[co]||'#888')+'cc',borderColor:coC[co]||'#888',borderWidth:1};})},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#c0c0c0',font:{size:11}}}},scales:{x:{stacked:_pmaStacked,ticks:{color:'#a78bfa'},grid:{color:'rgba(139,92,246,0.12)'},beginAtZero:true},y:{stacked:_pmaStacked,ticks:{color:'#c0c0c0',font:{size:11}},grid:{color:'rgba(139,92,246,0.08)'}}}}});}
+      
       renderBarChart('pmaChart', countBy(records,'applicant',5,true), 'PMA by Applicant', '#8b5cf6');
      var per={},cos=['Medtronic','Boston Scientific','Abbott','Biotronik'],coC={'Medtronic':'#8b5cf6','Boston Scientific':'#06b6d4','Abbott':'#f59e0b','Biotronik':'#10b981'};records.forEach(function(r){var s=(r.decision_date||'').toString(),yr=s.slice(0,4),co=normalizeName(r.applicant||'');if(!yr)return;if(!per[yr])per[yr]={};per[yr][co]=(per[yr][co]||0)+1;});var yl=Object.keys(per).sort(),pctx=document.getElementById('pmaTrendChart');if(pctx){if(_charts.pmaTrendChart)_charts.pmaTrendChart.destroy();_charts.pmaTrendChart=new Chart(pctx,{type:'bar',data:{labels:yl,datasets:cos.map(function(co){return{label:co,data:yl.map(function(y){return(per[y]&&per[y][co])||0;}),backgroundColor:(coC[co]||'#888')+'cc',borderColor:coC[co]||'#888',borderWidth:1};})},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#c0c0c0',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#a78bfa'},grid:{color:'rgba(139,92,246,0.12)'},beginAtZero:true},y:{stacked:true,ticks:{color:'#c0c0c0',font:{size:11}},grid:{color:'rgba(139,92,246,0.08)'}}}}});}
-     
+
     } catch(e) {
       document.getElementById('pmaContent').innerHTML = errBox(e.message);
     }
