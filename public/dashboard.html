@@ -762,7 +762,7 @@
         { label: 'Data Source',     value: 'MAUDE' },
       ]);
       if (!records.length) { document.getElementById('maudeContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
-      const cols = detectCols(records[0], ['brand_name','manufacturer_d_name','event_type','date_received','device_sequence_no','mdr_report_key']);
+      const cols = detectCols(records[0], ['brand_name','manufacturer','event_type','date_received','device_problem','report_number']);
       _maudeRecords = records;
       renderBarChart('maudeChart', countBy(records,'event_type',5,false), 'Events by Type', '#06b6d4');
       var mt = groupByMonth(records, 'date_received');
@@ -789,19 +789,19 @@
       const data = await apiFetch('/api/recalls');
       const records = data.results || data.data || data || [];
       document.getElementById('ovRecallCount').textContent = records.length;
-      const cls1 = records.filter(r => (r.recalling_firm||r.classification||'').includes('Class I') || (r.classification||'') === 'Class I').length;
+      const cls1 = records.filter(r => (r.recalling_firm||r.recall_status||'').includes('Class I') || (r.recall_status||'') === 'Class I').length;
       renderStats('recallStats', [
         { label: 'Total Recalls', value: records.length },
         { label: 'Class I',       value: cls1, accent: true },
         { label: 'Data Source',   value: 'openFDA' },
       ]);
       if (!records.length) { document.getElementById('recallContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
-      const cols = detectCols(records[0], ['recalling_firm','product_description','classification','recall_initiation_date','status','reason_for_recall']);
+      const cols = detectCols(records[0], ['recalling_firm','product_description','recall_status','event_date_initiated','status','reason_for_recall']);
       _recallRecords = records;
       renderBarChart('recallChart', countBy(records,'recalling_firm',5,true), 'Recalls by Firm', '#f59e0b');
       renderOverviewChart();
       document.getElementById('recallContent').innerHTML = buildTable('recallTable', cols, records, (row, key) => {
-        if (key === 'classification') {
+        if (key === 'recall_status') {
           const v = row[key]||'';
           const cls = v.includes('Class I') ? 'badge-red' : v.includes('Class II') ? 'badge-yellow' : 'badge-green';
           return `<td><span class="badge ${cls}">${v||'—'}</span></td>`;
@@ -885,7 +885,7 @@
           }
         });
       }
-      var cols = ['brand_name','manufacturer','event_type','date_received','mdr_report_key'];
+      var cols = ['brand_name','manufacturer','event_type','date_received','report_number'];
       document.getElementById('samdContent').innerHTML = buildTable('samdTable', cols, records, null);
     } catch(e) {
       document.getElementById('samdContent').innerHTML = '<div class="state-box"><div class="error-icon">&#9888;</div><div class="error-msg">' + e.message + '</div></div>';
