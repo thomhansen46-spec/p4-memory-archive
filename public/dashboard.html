@@ -635,7 +635,7 @@
       var raw = r[dateField];
       if (!raw) return;
       var s = raw.toString();
-      var month = s.slice(0,4) + '-' + s.slice(4,6);
+      var month = s.length >= 7 && s[4] === '-' ? s.slice(0,7) : s.slice(0,4) + '-' + s.slice(4,6);
       map[month] = (map[month] || 0) + 1;
     });
     var keys = Object.keys(map).sort();
