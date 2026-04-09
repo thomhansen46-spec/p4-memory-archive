@@ -741,7 +741,6 @@
       renderBarChart('pmaChart', countBy(records,'applicant',5,true), 'PMA by Applicant', '#8b5cf6');
       var pt = groupByMonth(records, 'decision_date');
       renderLineChart('pmaTrendChart', pt.labels, [{ label: 'Approvals/Month', data: pt.data, borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', tension: 0.3, fill: true, pointRadius: 4, pointBackgroundColor: '#8b5cf6' }]);
-      renderOverviewChart();
     } catch(e) {
       document.getElementById('pmaContent').innerHTML = errBox(e.message);
     }
@@ -767,7 +766,6 @@
       renderBarChart('maudeChart', countBy(records,'event_type',5,false), 'Events by Type', '#06b6d4');
       var mt = groupByMonth(records, 'date_received');
       renderLineChart('maudeTrendChart', mt.labels, [{ label: 'Events/Month', data: mt.data, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.3, fill: true, pointRadius: 4, pointBackgroundColor: '#06b6d4' }]);
-      renderOverviewChart();
       document.getElementById('maudeContent').innerHTML = buildTable('maudeTable', cols, records, (row, key) => {
         if (key === 'event_type') {
           const v = (row[key]||'').toLowerCase();
@@ -799,7 +797,6 @@
       const cols = detectCols(records[0], ['recalling_firm','product_description','recall_status','event_date_initiated','status','reason_for_recall']);
       _recallRecords = records;
       renderBarChart('recallChart', countBy(records,'recalling_firm',5,true), 'Recalls by Firm', '#f59e0b');
-      renderOverviewChart();
       document.getElementById('recallContent').innerHTML = buildTable('recallTable', cols, records, (row, key) => {
         if (key === 'recall_status') {
           const v = row[key]||'';
@@ -970,7 +967,7 @@
       loadMaude().catch(()=>{}),
       loadRecalls().catch(()=>{})
     ]);
-    renderOverviewChart();
+    setTimeout(renderOverviewChart, 300);
     loadSamd().catch(()=>{});
     loadSessions().catch(()=>{});
   }
