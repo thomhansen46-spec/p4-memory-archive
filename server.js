@@ -9,7 +9,8 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://p4-memory-archive.onrender.com'
+    'https://p4-memory-archive.onrender.com',
+    'null'
   ]
 }));
 
