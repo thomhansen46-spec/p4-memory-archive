@@ -147,3 +147,4 @@ module.exports = function(app) {
       res.json({ title, blocks: blocks.results || [] });
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
+};
