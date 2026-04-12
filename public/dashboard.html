@@ -382,6 +382,7 @@ toggle
 
   </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 </head>
 <body>
 <button onclick="sendTest()">Send Test</button>
@@ -526,20 +527,22 @@ toggle
 
   <!-- SESSION LOG -->
 <div class="panel" id="panel-samd">
-<div class="section-header"><div>
-<div class="section-title">SentinelRWE - SaMD Intelligence</div>
+<div class="section-title">SentinelRWE™ — SaMD Intelligence</div>
 <div class="section-name">SaMD <span>Failure Analysis</span></div>
-</div><button class="refresh-btn" onclick="loadSamd()">&#8634; Refresh</button></div>
 <div id="samdStats" class="stats-row"></div>
-<div class="panel-card">
-<div class="panel-card-header"><div class="panel-card-title">SAMD ADVERSE EVENTS - 5-YEAR WINDOW</div>
-<input class="filter-input" type="text" placeholder="Filter records..." oninput="filterTable('samdTable', this.value)"></div>
-<div class="chart-wrap"><canvas id="samdTotalChart"></canvas></div>
-<div class="chart-wrap"><canvas id="samdTrendChart"></canvas></div>
-<div class="chart-wrap"><canvas id="samdByCompanyChart"></canvas></div>
-<div class="chart-wrap"><canvas id="samdCompanyYearChart"></canvas></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+  <div class="chart-wrap" style="height:320px;">
+    <div style="color:var(--accent);font-size:11px;font-weight:600;letter-spacing:.08em;margin-bottom:8px;">FAILURES BY MANUFACTURER</div>
+    <div id="ec_samdMfr" style="height:280px;width:100%;"></div>
+  </div>
+  <div class="chart-wrap" style="height:320px;">
+    <div style="color:var(--accent);font-size:11px;font-weight:600;letter-spacing:.08em;margin-bottom:8px;">FAILURES &amp; SEVERITY INDEX</div>
+    <div id="ec_samdDual" style="height:280px;width:100%;"></div>
+  </div>
+</div>
+<div class="filter-row"><input class="filter-input" type="text" placeholder="Filter records..." oninput="filterTable(this, 'samdTable')"></div>
 <div id="samdContent"><div class="state-box"><div class="spinner"></div>Loading SaMD data...</div></div>
-</div></div>
+</div>
   <div class="panel" id="panel-sessions">
     <div class="section-header">
       <div>
@@ -839,71 +842,76 @@ toggle
     samdLoaded = true;
     document.getElementById('samdContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Fetching SaMD data...</div>';
     try {
-      const data = await apiFetch('/api/samd-events');
-      const records = data.results || [];
-      const total = data.total || records.length;
-      renderStats('samdStats', [
-        { label: 'Total SaMD Failures', value: total, accent: true },
-        { label: 'Records Loaded', value: records.length },
-        { label: 'Window', value: '5 Years' }
-      ]);
-      if (!records.length) {
-        document.getElementById('samdContent').innerHTML = '<div class="state-box">No SaMD records found.</div>';
-        return;
-      }
-      var byType = countBy(records, 'event_type', 10, false);
-      var ctx1 = document.getElementById('samdTotalChart');
-      if (ctx1) {
-        if (_charts['samdTotalChart']) _charts['samdTotalChart'].destroy();
-        _charts['samdTotalChart'] = new Chart(ctx1, {
-          type: 'doughnut',
-          data: { labels: byType.map(function(e){return e[0];}), datasets: [{ data: byType.map(function(e){return e[1];}), backgroundColor: ['#8b5cf6','#06b6d4','#f59e0b','#ef4444','#10b981'], borderWidth: 0 }] },
-          options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: true, position: 'right', labels: { color: '#c0c0c0', font: { size: 11 } } } } }
-        });
-      }
-      var yearMap = {};
+      var data    = await apiFetch('/api/samd-events');
+      var records = data.results || [];
+      var total   = data.total   || records.length;
+      var byMfr={}, byYear={}, byType={};
       records.forEach(function(r) {
-        var raw = r.date_received;
-        if (!raw) return;
-        var yr = raw.toString().slice(0,4);
-        yearMap[yr] = (yearMap[yr] || 0) + 1;
+        var m=(r.manufacturer||'Unknown').slice(0,30);
+        var yr=(r.date_received||'').slice(0,4);
+        byMfr[m]=(byMfr[m]||0)+1;
+        if(yr) byYear[yr]=(byYear[yr]||0)+1;
+        byType[r.event_type]=(byType[r.event_type]||0)+1;
       });
-      var years = Object.keys(yearMap).sort();
-      renderLineChart('samdTrendChart', years, [{ label: 'Failures/Year', data: years.map(function(y){return yearMap[y];}), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', tension: 0.3, fill: true, pointRadius: 5, pointBackgroundColor: '#ef4444' }]);
-      renderBarChart('samdByCompanyChart', countBy(records, 'manufacturer', 5, true), 'Failures by Manufacturer', '#f59e0b');
-      var companies = countBy(records, 'manufacturer', 5, true).map(function(e){return e[0];});
-      var companyColors = ['#8b5cf6','#06b6d4','#f59e0b','#ef4444','#10b981'];
-      var datasets = companies.map(function(co, i) {
-        return {
-          label: co,
-          data: years.map(function(yr) {
-            return records.filter(function(r){ return normalizeName(r.manufacturer||'') === co && (r.date_received||'').toString().slice(0,4) === yr; }).length;
-          }),
-          backgroundColor: companyColors[i % 5] + 'cc',
-          borderColor: companyColors[i % 5],
-          borderWidth: 1, borderRadius: 3
-        };
-      });
-      var ctx4 = document.getElementById('samdCompanyYearChart');
-      if (ctx4) {
-        if (_charts['samdCompanyYearChart']) _charts['samdCompanyYearChart'].destroy();
-        _charts['samdCompanyYearChart'] = new Chart(ctx4, {
-          type: 'bar',
-          data: { labels: years, datasets: datasets },
-          options: {
-            responsive: true, maintainAspectRatio: true,
-            plugins: { legend: { display: true, labels: { color: '#c0c0c0', font: { size: 10 } } } },
-            scales: {
-              x: { ticks: { color: '#c0c0c0', font: { size: 10 } }, grid: { color: 'rgba(139,92,246,0.08)' } },
-              y: { ticks: { color: '#a78bfa', font: { size: 10 }, stepSize: 1 }, grid: { color: 'rgba(139,92,246,0.12)' }, beginAtZero: true }
-            }
-          }
+      renderStats('samdStats',[
+        {label:'Total Failures',value:total,accent:true},
+        {label:'Records Loaded',value:records.length},
+        {label:'Deaths',value:byType['Death']||0},
+        {label:'Injuries',value:byType['Injury']||0},
+        {label:'Manufacturers',value:Object.keys(byMfr).length}
+      ]);
+      var mfrE=Object.entries(byMfr).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
+      var el1=document.getElementById('ec_samdMfr');
+      if(el1){
+        if(window._ec1) window._ec1.dispose();
+        window._ec1=echarts.init(el1,null,{renderer:'svg'});
+        window._ec1.setOption({
+          backgroundColor:'transparent',
+          tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
+          grid:{left:'2%',right:'10%',top:'4%',bottom:'4%',containLabel:true},
+          xAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
+          yAxis:{type:'category',data:mfrE.map(function(e){return e[0].length>20?e[0].slice(0,18)+'…':e[0];}).reverse(),axisLabel:{color:'#c0c0c0',fontSize:10}},
+          series:[{type:'bar',data:mfrE.map(function(e){return e[1];}).reverse(),barMaxWidth:26,
+            itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#3b1f8c'},{offset:1,color:'#8b5cf6'}])},
+            label:{show:true,position:'right',color:'#94a3b8',fontSize:10,formatter:function(p){return p.value;}}}]
         });
       }
-      var cols = ['brand_name','manufacturer','event_type','date_received','report_number'];
-      document.getElementById('samdContent').innerHTML = buildTable('samdTable', cols, records, null);
+      var years=Object.keys(byYear).sort();
+      var el2=document.getElementById('ec_samdDual');
+      if(el2){
+        if(window._ec2) window._ec2.dispose();
+        window._ec2=echarts.init(el2,null,{renderer:'svg'});
+        window._ec2.setOption({
+          backgroundColor:'transparent',
+          tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
+          legend:{data:['Failures','Severity'],textStyle:{color:'#94a3b8',fontSize:10},top:0},
+          grid:{left:'4%',right:'6%',top:'28px',bottom:'4%',containLabel:true},
+          xAxis:{type:'category',data:years,axisLabel:{color:'#94a3b8',fontSize:10}},
+          yAxis:[
+            {type:'value',name:'Failures',nameTextStyle:{color:'#8b5cf6',fontSize:9},axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
+            {type:'value',name:'Severity',nameTextStyle:{color:'#06b6d4',fontSize:9},axisLabel:{color:'#06b6d4',fontSize:10},splitLine:{show:false}}
+          ],
+          series:[
+            {name:'Failures',type:'bar',yAxisIndex:0,data:years.map(function(y){return byYear[y]||0;}),barMaxWidth:30,
+              itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#8b5cf6'},{offset:1,color:'#3b1f8c'}])}},
+            {name:'Severity',type:'line',yAxisIndex:1,data:years.map(function(y){
+              var yr=records.filter(function(r){return (r.date_received||'').slice(0,4)===y;});
+              var d=yr.filter(function(r){return r.event_type==='Death';}).length;
+              var inj=yr.filter(function(r){return r.event_type==='Injury';}).length;
+              return yr.length?Math.round((d*2+inj)/yr.length*100)/10:0;
+            }),smooth:true,symbol:'circle',symbolSize:6,
+              lineStyle:{color:'#06b6d4',width:2},itemStyle:{color:'#06b6d4'},areaStyle:{color:'rgba(6,182,212,0.07)'}}
+          ]
+        });
+      }
+      if(!records.length){document.getElementById('samdContent').innerHTML='<div class="state-box">No records found.</div>';return;}
+      var cols=['manufacturer','brand_name','product_code','event_type','date_received','report_number'];
+      document.getElementById('samdContent').innerHTML=buildTable('samdTable',cols,records.slice(0,200),function(row,key){
+        if(key==='event_type'){var v=row[key]||'';var cl=v==='Death'?'badge-red':v==='Injury'?'badge-yellow':'badge-green';return '<td><span class="badge '+cl+'">'+v+'</span></td>';}
+        return null;
+      });
     } catch(e) {
-      document.getElementById('samdContent').innerHTML = '<div class="state-box"><div class="error-icon">&#9888;</div><div class="error-msg">' + e.message + '</div></div>';
+      document.getElementById('samdContent').innerHTML='<div class="state-box"><div class="error-icon">&#9888;</div><div class="error-msg">'+e.message+'</div></div>';
     }
   }
 
