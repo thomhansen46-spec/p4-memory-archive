@@ -56,7 +56,7 @@ module.exports = function(app) {
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-};
+
 app.get('/api/samd-events', async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
@@ -64,3 +64,4 @@ app.get('/api/samd-events', async (req, res) => {
       res.json({ total: data.length, results: data });
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
+};
