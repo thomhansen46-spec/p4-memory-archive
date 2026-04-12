@@ -171,7 +171,6 @@ async function verify() {
     await ingestPMA();
     await ingestMAUDE();
     await ingestRecalls();
-    await ingestSaMD();
     await verify();
     console.log('\nIngest complete.');
   } catch(e) {
@@ -179,27 +178,3 @@ async function verify() {
     process.exit(1);
   }
 })();
-
-async function ingestSaMD() {
-  console.log('\n[SAMD] Fetching 10yr SaMD events (OZO, date-chunked)...');
-  const raw = await paginateChunked((limit, skip, from, to) => {
-    const Q = `product_code:OZO+AND+date_received:[${from}+TO+${to}]`;
-    return `${BASE}/event.json?api_key=${process.env.FDA_API_KEY}&search=${Q}&limit=${limit}&skip=${skip}`;
-  });
-  const records = raw.map(r => {
-    const dev = (Array.isArray(r.device) && r.device[0]) || {};
-    return {
-      report_number:      r.report_number || null,
-      manufacturer:       dev.manufacturer_d_name || null,
-      brand_name:         dev.brand_name || null,
-      product_code:       dev.device_report_product_code || 'OZO',
-      event_type:         r.event_type || null,
-      date_received:      r.date_received ? r.date_received.slice(0,10) : null,
-      device_problem:     Array.isArray(r.device_problem_codes) ? r.device_problem_codes[0] : null,
-      adverse_event_flag: r.adverse_event_flag || null,
-      report_source:      r.report_source_code || null,
-    };
-  }).filter(r => r.report_number);
-  const n = await upsertBatched('samd_events', records, 'report_number');
-  console.log(`[SAMD] Upserted ${n} rows`);
-}
