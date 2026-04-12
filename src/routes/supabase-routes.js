@@ -1,149 +1,101 @@
-'use strict';
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-const fetch = require('node-fetch');
-
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://lhgqexopbqfivoubzzeg.supabase.co';
-const SUPABASE_KEY = process.env.SUPABASE_KEY || '';
-
-function headers() {
-  return { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+function handleError(res, err) {
+  console.error('[Supabase]', err.message);
+  res.status(500).json({ error: err.message });
 }
 
-async function query(table, params) {
-  const url = SUPABASE_URL + '/rest/v1/' + table + '?' + params;
-  const r = await fetch(url, { headers: headers() });
-  if (!r.ok) throw new Error(await r.text());
-  return r.json();
-}
+module.exports = function registerRoutes(app) {
 
-module.exports = function(app) {
-
-  app.get('/api/db/health', async (req, res) => {
+  app.get('/api/pma-approvals', async (req, res) => {
     try {
-      const tables = ['pma_approvals','maude_events','recalls'];
+      const { limit = 200, offset = 0, product_code, year, applicant } = req.query;
+      let q = supabase.from('pma_approvals').select('*')
+        .order('decision_date', { ascending: false })
+        .range(Number(offset), Number(offset) + Number(limit) - 1);
+      if (product_code) q = q.eq('product_code', product_code.toUpperCase());
+      if (year) q = q.gte('decision_date', `${year}-01-01`).lte('decision_date', `${year}-12-31`);
+      if (applicant) q = q.ilike('applicant', `%${applicant}%`);
+      const { data, error } = await q;
+      if (error) return handleError(res, error);
+      res.json({ results: data, count: data.length });
+    } catch (err) { handleError(res, err); }
+  });
+
+  app.get('/api/maude-events', async (req, res) => {
+    try {
+      const { limit = 200, offset = 0, product_code, manufacturer, event_type, year } = req.query;
+      let q = supabase.from('maude_events').select('*')
+        .order('date_received', { ascending: false })
+        .range(Number(offset), Number(offset) + Number(limit) - 1);
+      if (product_code) q = q.eq('product_code', product_code.toUpperCase());
+      if (manufacturer) q = q.ilike('manufacturer', `%${manufacturer}%`);
+      if (event_type) q = q.eq('event_type', event_type.toUpperCase());
+      if (year) q = q.gte('date_received', `${year}-01-01`).lte('date_received', `${year}-12-31`);
+      const { data, error } = await q;
+      if (error) return handleError(res, error);
+      res.json({ results: data, count: data.length });
+    } catch (err) { handleError(res, err); }
+  });
+
+  app.get('/api/maude-events/by-manufacturer', async (req, res) => {
+    try {
+      const { data, error } = await supabase.from('maude_events').select('manufacturer').not('manufacturer', 'is', null);
+      if (error) return handleError(res, error);
       const counts = {};
-      for (const t of tables) {
-        const r = await fetch(SUPABASE_URL + '/rest/v1/' + t + '?select=id&limit=1', {
-          headers: { ...headers(), 'Prefer': 'count=exact' }
-        });
-        counts[t] = r.headers.get('content-range') || '?';
-      }
-      res.json({ ok: true, counts });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
-  app.get('/api/pma', async (req, res) => {
-    try {
-      const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
-      const data = await query('pma_approvals', 'select=id,applicant,device_name,product_code,decision_code,decision_date,advisory_committee,supplement_number&order=decision_date.desc&limit=' + limit);
-      res.json({ total: data.length, results: data });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
-  app.get('/api/maude', async (req, res) => {
-    try {
-      const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
-      const data = await query('maude_events', 'select=id,manufacturer,brand_name,product_code,event_type,date_received,device_problem,report_number&order=date_received.desc&limit=' + limit);
-      res.json({ total: data.length, results: data });
-    } catch(e) { res.status(500).json({ error: e.message }); }
+      data.forEach(r => {
+        const key = r.manufacturer.toUpperCase().slice(0, 30);
+        counts[key] = (counts[key] || 0) + 1;
+      });
+      const sorted = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1]).slice(0, 10)
+        .map(([name, count]) => ({ manufacturer: name, count }));
+      res.json({ results: sorted });
+    } catch (err) { handleError(res, err); }
   });
 
   app.get('/api/recalls', async (req, res) => {
     try {
-      const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
-      const data = await query('recalls', 'select=product_res_number,recalling_firm,product_description,product_code,recall_status,event_date_initiated,reason_for_recall,status&order=event_date_initiated.desc&limit=' + limit);
-      res.json({ total: data.length, results: data });
-    } catch(e) { res.status(500).json({ error: e.message }); }
+      const { limit = 200, offset = 0, classification, product_code, year } = req.query;
+      let q = supabase.from('recalls').select('*')
+        .order('date_initiated', { ascending: false })
+        .range(Number(offset), Number(offset) + Number(limit) - 1);
+      if (classification) q = q.ilike('classification', `%${classification}%`);
+      if (product_code) q = q.eq('product_code', product_code.toUpperCase());
+      if (year) q = q.gte('date_initiated', `${year}-01-01`).lte('date_initiated', `${year}-12-31`);
+      const { data, error } = await q;
+      if (error) return handleError(res, error);
+      res.json({ results: data, count: data.length });
+    } catch (err) { handleError(res, err); }
   });
+
   app.get('/api/samd-events', async (req, res) => {
     try {
-      const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
-      const data = await query('samd_events', 'select=id,manufacturer,brand_name,product_code,event_type,date_received,device_problem,report_number&order=date_received.desc&limit=' + limit);
-      res.json({ total: data.length, results: data });
-    } catch(e) { res.status(500).json({ error: e.message }); }
+      const { limit = 200, offset = 0, manufacturer, year, event_type } = req.query;
+      let q = supabase.from('samd_events').select('*')
+        .order('date_received', { ascending: false })
+        .range(Number(offset), Number(offset) + Number(limit) - 1);
+      if (manufacturer) q = q.ilike('manufacturer', `%${manufacturer}%`);
+      if (event_type) q = q.eq('event_type', event_type.toUpperCase());
+      if (year) q = q.gte('date_received', `${year}-01-01`).lte('date_received', `${year}-12-31`);
+      const { data, error } = await q;
+      if (error) return handleError(res, error);
+      res.json({ results: data, count: data.length });
+    } catch (err) { handleError(res, err); }
   });
 
-  const SOFTWARE_CLASSES = {
-    '1': ['software','firmware','algorithm','crash','reboot','reset','freeze','hang','corrupt','exception','fault'],
-    '2': ['telemetry','wireless','bluetooth','communication','signal','transmission','remote','connection','sync','carelink','latitude','merlin','smartsync'],
-    '3': ['sensing','detection','inappropriate','inhibit','oversensing','undersensing','mode switch','safety mode','shock','pacing','rate response','threshold']
-  };
-  const CRM_CODES = ['DSQ','LWS','DXX','MKJ','DTB','NKE','MYN','KZE'];
-
-  function psi(event_type, adverse_flag, cls) {
-    let score = 0;
-    if (event_type === 'Death') score += cls === '3' ? 8 : cls === '2' ? 7 : 6;
-    else if (event_type === 'Injury') score += cls === '3' ? 5 : 4;
-    else score += 2;
-    if (adverse_flag === 'Y') score += cls === '3' ? 2 : 1;
-    if (cls === '3') score += 2;
-    return Math.min(score, 10);
-  }
-
-  app.get('/api/samd', async (req, res) => {
+  app.get('/api/stats', async (req, res) => {
     try {
-      const { limit = 500, cls = 'all', manufacturer, year } = req.query;
-      const lim = Math.min(parseInt(limit) || 500, 2000);
-      const data = await query('maude_events',
-        'select=id,manufacturer,brand_name,product_code,event_type,date_received,adverse_event_flag,report_number&order=date_received.desc&limit=' + lim
-        + '&product_code=in.(' + CRM_CODES.join(',') + ')'
-        + (manufacturer ? '&manufacturer=ilike.*' + encodeURIComponent(manufacturer) + '*' : '')
-        + (year ? '&date_received=gte.' + year + '-01-01&date_received=lte.' + year + '-12-31' : '')
-      );
-      const results = data.map(r => ({ ...r, psi: psi(r.event_type, r.adverse_event_flag, cls === 'all' ? '1' : cls) }));
-      const byMfr = {}, byYear = {}, byEventType = {};
-      results.forEach(r => {
-        const m = (r.manufacturer||'Unknown').slice(0,30);
-        const yr = (r.date_received||'').slice(0,4);
-        byMfr[m] = (byMfr[m]||0)+1;
-        if(yr) byYear[yr] = (byYear[yr]||0)+1;
-        byEventType[r.event_type] = (byEventType[r.event_type]||0)+1;
-      });
-      res.json({ total: results.length, search_class: cls, summary: { byMfr, byYear, byEventType }, results: results.slice(0,200) });
-    } catch(e) { res.status(500).json({ error: e.message }); }
+      const tables = ['pma_approvals', 'maude_events', 'recalls', 'samd_events'];
+      const counts = await Promise.all(tables.map(t =>
+        supabase.from(t).select('*', { count: 'exact', head: true })
+      ));
+      const stats = {};
+      tables.forEach((t, i) => { stats[t] = counts[i].count ?? 0; });
+      res.json(stats);
+    } catch (err) { handleError(res, err); }
   });
 
-  app.get('/api/samd/summary', async (req, res) => {
-    try {
-      const data = await query('maude_events',
-        'select=manufacturer,event_type,date_received,adverse_event_flag,product_code&product_code=in.(' + CRM_CODES.join(',') + ')&limit=2000&order=date_received.desc'
-      );
-      const byMfr = {}, byYear = {}, byType = {}, byCode = {};
-      data.forEach(r => {
-        const m = (r.manufacturer||'Unknown').slice(0,30);
-        const yr = (r.date_received||'').slice(0,4);
-        byMfr[m]=(byMfr[m]||0)+1;
-        if(yr) byYear[yr]=(byYear[yr]||0)+1;
-        byType[r.event_type]=(byType[r.event_type]||0)+1;
-        byCode[r.product_code]=(byCode[r.product_code]||0)+1;
-      });
-      res.json({ total: data.length, byMfr, byYear, byType, byCode });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
-
-
+  console.log('[P4] Supabase routes registered');
 };
-
-  // Session Log — pulls latest Notion page
-  app.get('/api/session/latest', async (req, res) => {
-    try {
-      const r = await fetch('https://api.notion.com/v1/databases/' + process.env.NOTION_DATABASE_ID + '/query', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + process.env.NOTION_TOKEN,
-          'Notion-Version': '2022-06-28',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ sorts: [{ timestamp: 'created_time', direction: 'descending' }], page_size: 1 })
-      });
-      const d = await r.json();
-      const page = d.results?.[0];
-      if (!page) return res.json({ error: 'No sessions found' });
-      const pageId = page.id;
-      const title = page.properties?.title?.title?.[0]?.text?.content || 'Session';
-      const blocks = await fetch('https://api.notion.com/v1/blocks/' + pageId + '/children', {
-        headers: { 'Authorization': 'Bearer ' + process.env.NOTION_TOKEN, 'Notion-Version': '2022-06-28' }
-      }).then(x => x.json());
-      res.json({ title, blocks: blocks.results || [] });
-    } catch(e) { res.status(500).json({ error: e.message }); }
-  });
