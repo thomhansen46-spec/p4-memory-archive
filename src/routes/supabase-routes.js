@@ -55,7 +55,7 @@ module.exports = function(app) {
       res.json({ total: data.length, results: data });
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
-app.get('/api/samd-events', async (req, res) => {
+  app.get('/api/samd-events', async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
       const data = await query('samd_events', 'select=id,manufacturer,brand_name,product_code,event_type,date_received,device_problem,report_number&order=date_received.desc&limit=' + limit);
@@ -63,7 +63,7 @@ app.get('/api/samd-events', async (req, res) => {
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-const SOFTWARE_CLASSES = {
+  const SOFTWARE_CLASSES = {
     '1': ['software','firmware','algorithm','crash','reboot','reset','freeze','hang','corrupt','exception','fault'],
     '2': ['telemetry','wireless','bluetooth','communication','signal','transmission','remote','connection','sync','carelink','latitude','merlin','smartsync'],
     '3': ['sensing','detection','inappropriate','inhibit','oversensing','undersensing','mode switch','safety mode','shock','pacing','rate response','threshold']
