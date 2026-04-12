@@ -57,3 +57,10 @@ module.exports = function(app) {
   });
 
 };
+app.get('/api/samd-events', async (req, res) => {
+    try {
+      const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
+      const data = await query('samd_events', 'select=id,manufacturer,brand_name,product_code,event_type,date_received,device_problem,report_number&order=date_received.desc&limit=' + limit);
+      res.json({ total: data.length, results: data });
+    } catch(e) { res.status(500).json({ error: e.message }); }
+  });
