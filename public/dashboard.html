@@ -580,7 +580,11 @@ toggle
     if (name === 'pma' && !pmaLoaded) loadPma();
     if (name === 'maude' && !maudeLoaded) loadMaude();
     if (name === 'recalls' && !recallsLoaded) loadRecalls();
-    if (name === 'samd' && !samdLoaded) loadSamd();
+    if (name === 'samd' && !samdLoaded) {
+      loadSamd();
+    } else if (name === 'samd') {
+      setTimeout(function(){if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},50);
+    }
     if (name === 'sessions' && !sessionsLoaded) loadSessions();
   }
 
