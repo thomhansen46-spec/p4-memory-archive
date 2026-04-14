@@ -100,7 +100,6 @@
 
   /* ── Nav tabs ── */
   nav {
-    overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch;
     position: relative; z-index: 10;
     display: flex; gap: 2px;
     padding: 0 32px;
@@ -132,7 +131,6 @@
 
   .panel { display: none; animation: fadeIn 0.3s ease; }
   .panel.active { display: block; }
-
   @keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform:none; } }
 
   /* ── Section header ── */
@@ -376,85 +374,9 @@
   }
   .page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent2); }
   .page-btn:disabled { opacity: 0.3; cursor: default; }
-
-    .chart-wrap { background:rgba(255,255,255,0.03); border:1px solid rgba(139,92,246,0.15); border-radius:10px; padding:20px 20px 12px; margin-bottom:18px; }
-
-  
-  @media (max-width: 600px) {
-    nav { flex-wrap: wrap; padding: 0; gap: 0; }
-    .tab { flex: 1 1 33%; text-align: center; font-size: 9px; padding: 10px 4px; letter-spacing: .04em; }
-    header { padding: 10px 14px; flex-wrap: wrap; gap: 6px; }
-    .header-meta { gap: 8px; }
-    .timestamp { font-size: 9px; }
-    main { padding: 14px 10px; }
-  }
-
-
-  @media (max-width: 600px) {
-    header button { font-size: 9px !important; padding: 3px 8px !important; margin-left: 8px; }
-    .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
-    .stat-card { padding: 12px !important; }
-    .stat-value { font-size: 24px !important; }
-    .chart-wrap { padding: 12px 8px 8px !important; }
-    main { padding: 12px 10px !important; }
-    .section-header { margin-bottom: 12px !important; }
-  }
-
-
-  @media (max-width: 600px) {
-    header button { font-size: 9px !important; padding: 3px 8px !important; margin-left: 8px; }
-    .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
-    .stat-card { padding: 12px !important; }
-    .stat-value { font-size: 24px !important; }
-    .chart-wrap { padding: 12px 8px 8px !important; }
-    main { padding: 12px 10px !important; }
-    .section-header { margin-bottom: 12px !important; }
-  }
-
-
-  @media (max-width: 600px) {
-    header button { font-size: 9px !important; padding: 3px 8px !important; margin-left: 8px; }
-    .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 8px !important; }
-    .stat-card { padding: 12px !important; }
-    .stat-value { font-size: 24px !important; }
-    .chart-wrap { padding: 12px 8px 8px !important; }
-    main { padding: 12px 10px !important; }
-    .section-header { margin-bottom: 12px !important; }
-  }
-
-
-  @media (max-width: 600px) {
-    .stats-grid { grid-template-columns: 1fr 1fr 1fr !important; gap: 6px !important; margin-bottom: 10px !important; }
-    .stat-card { padding: 8px 10px !important; min-height: unset !important; }
-    .stat-label { font-size: 8px !important; margin-bottom: 2px !important; }
-    .stat-value { font-size: 18px !important; line-height: 1.2 !important; }
-    .section-header h1, .section-header h2 { font-size: 20px !important; }
-    .section-header .eyebrow { font-size: 9px !important; }
-    main { padding: 10px !important; }
-  }
-
 </style>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-<script>
-  (function(){
-    const sb = supabase.createClient(
-      'https://lhgqexopbqfivoubzzeg.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZ3FleG9wYnFmaXZvdWJ6emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY5ODcsImV4cCI6MjA5MDQwMjk4N30.NBh-bjOfqHbYG06r6D8GwHL3NXte2hKAoMEHpN-ueug'
-    );
-    sb.auth.getSession().then(({data:{session}})=>{
-      if(!session) window.location.href='/login.html';
-    });
-    window._sbClient = sb;
-  })();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 </head>
 <body>
-
-
-
 
 <header>
   <div class="logo">
@@ -468,16 +390,14 @@
     <div class="status-dot" id="statusDot"></div>
     <div class="status-label" id="statusLabel">CONNECTING</div>
     <div class="timestamp" id="clockEl"></div>
-    <button onclick="doLogout()" style="margin-left:16px;padding:5px 12px;background:transparent;border:1px solid rgba(139,92,246,0.4);border-radius:4px;color:#9ca3af;font-family:inherit;font-size:10px;letter-spacing:.08em;cursor:pointer;">SIGN OUT</button>
   </div>
 </header>
 
 <nav>
-  <div class="tab" data-tab="overview">Overview</div>
+  <div class="tab active" data-tab="overview">Overview</div>
   <div class="tab" data-tab="pma">PMA Approvals</div>
   <div class="tab" data-tab="maude">MAUDE Events</div>
   <div class="tab" data-tab="recalls">Recalls</div>
-  <div class="tab" data-tab="samd">SaMD Analysis</div>
   <div class="tab" data-tab="sessions">Session Log</div>
 </nav>
 
@@ -492,9 +412,8 @@
       </div>
       <button class="refresh-btn" onclick="loadAllOverview()">↺ Refresh All</button>
     </div>
-    <div class="chart-wrap" style="margin:0 0 18px"><div id="overviewChart" style="height:220px;width:100%"></div></div>
     <div class="overview-grid" id="overviewGrid">
-      <div class="overview-card" @click="switchTo('pma')">
+      <div class="overview-card" onclick="switchTab('pma')">
         <div class="ov-icon">📋</div>
         <div class="ov-title">PMA Approvals</div>
         <div class="ov-desc">Pre-Market Approval decisions for Class III CRM devices including ICDs, CRTs, and pacemakers.</div>
@@ -502,7 +421,7 @@
         <div class="ov-count-label">records loaded</div>
         <div class="pipeline-tag">SpectrumPMA™</div>
       </div>
-      <div class="overview-card" @click="switchTo('maude')">
+      <div class="overview-card" onclick="switchTab('maude')">
         <div class="ov-icon">⚠️</div>
         <div class="ov-title">MAUDE Events</div>
         <div class="ov-desc">Adverse event reports from manufacturers, distributors, and device user facilities.</div>
@@ -510,7 +429,7 @@
         <div class="ov-count-label">records loaded</div>
         <div class="pipeline-tag">PulseMAUDE™</div>
       </div>
-      <div class="overview-card" @click="switchTo('recalls')">
+      <div class="overview-card" onclick="switchTab('recalls')">
         <div class="ov-icon">🔴</div>
         <div class="ov-title">Recalls</div>
         <div class="ov-desc">Class I / II / III device recall actions tracked across CRM product lines.</div>
@@ -518,7 +437,7 @@
         <div class="ov-count-label">records loaded</div>
         <div class="pipeline-tag">CAPA Radar™</div>
       </div>
-      <div class="overview-card" @click="switchTo('sessions')">
+      <div class="overview-card" onclick="switchTab('sessions')">
         <div class="ov-icon">🗂️</div>
         <div class="ov-title">Session Log</div>
         <div class="ov-desc">Build sessions and milestone records for the P4 Memory Archive project.</div>
@@ -531,11 +450,24 @@
 
   <!-- PMA APPROVALS -->
   <div class="panel" id="panel-pma">
-    <div class="section-header"><div><div class="section-title">SpectrumPMA™</div><div class="section-name">PMA <span>Approvals</span></div></div><button class="refresh-btn" onclick="loadPma()">↺ Refresh</button></div>
-    <div class="chart-wrap"><div id="pmaChart" style="height:260px;width:100%"></div></div>
+    <div class="section-header">
+      <div>
+        <div class="section-title">SpectrumPMA™ · openFDA Pipeline</div>
+        <div class="section-name">PMA <span>Approvals</span></div>
+      </div>
+      <button class="refresh-btn" onclick="loadPma()">↺ Refresh</button>
+    </div>
     <div class="stats-row" id="pmaStats"></div>
-    <div class="table-wrap"><div class="table-toolbar"><span class="table-label">CRM Device PMA Records</span><input class="search-input" placeholder="Filter…" oninput="filterTable(this,'pmaTable')" /></div><div id="pmaContent"><div class="state-box"><div class="spinner"></div>Loading…</div></div></div>
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <span class="table-label">CRM Device PMA Records</span>
+        <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'pmaTable')" />
+      </div>
+      <div id="pmaContent"><div class="state-box"><div class="spinner"></div>Loading PMA data…</div></div>
+    </div>
   </div>
+
+  <!-- MAUDE -->
   <div class="panel" id="panel-maude">
     <div class="section-header">
       <div>
@@ -544,12 +476,12 @@
       </div>
       <button class="refresh-btn" onclick="loadMaude()">↺ Refresh</button>
     </div>
+    <div class="stats-row" id="maudeStats"></div>
     <div class="table-wrap">
       <div class="table-toolbar">
         <span class="table-label">CRM Device Event Reports</span>
         <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'maudeTable')" />
       </div>
-      <div class="chart-wrap"><div id="maudeTrendChart" style="height:280px;width:100%"></div></div>
       <div id="maudeContent"><div class="state-box"><div class="spinner"></div>Loading MAUDE data…</div></div>
     </div>
   </div>
@@ -563,6 +495,7 @@
       </div>
       <button class="refresh-btn" onclick="loadRecalls()">↺ Refresh</button>
     </div>
+    <div class="stats-row" id="recallStats"></div>
     <div class="table-wrap">
       <div class="table-toolbar">
         <span class="table-label">CRM Recall Actions</span>
@@ -573,23 +506,6 @@
   </div>
 
   <!-- SESSION LOG -->
-<div class="panel" id="panel-samd">
-<div class="section-title">SentinelRWE™ — SaMD Intelligence</div>
-<div class="section-name">SaMD <span>Failure Analysis</span></div>
-<div id="samdStats" class="stats-row"></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
-  <div class="chart-wrap" style="height:320px;">
-    <div style="color:var(--accent);font-size:11px;font-weight:600;letter-spacing:.08em;margin-bottom:8px;">FAILURES BY MANUFACTURER</div>
-    <div id="ec_samdMfr" style="height:280px;width:100%;"></div>
-  </div>
-  <div class="chart-wrap" style="height:320px;">
-    <div style="color:var(--accent);font-size:11px;font-weight:600;letter-spacing:.08em;margin-bottom:8px;">FAILURES &amp; SEVERITY INDEX</div>
-    <div id="ec_samdDual" style="height:280px;width:100%;"></div>
-  </div>
-</div>
-<div class="filter-row"><input class="filter-input" type="text" placeholder="Filter records..." oninput="filterTable(this, 'samdTable')"></div>
-<div id="samdContent"><div class="state-box"><div class="spinner"></div>Loading SaMD data...</div></div>
-</div>
   <div class="panel" id="panel-sessions">
     <div class="section-header">
       <div>
@@ -607,17 +523,7 @@
   const BASE = '';          // relative — served from same origin on Render
   const TOKEN = 'p4-archive-2026';
 
-  const headers = {};
-
-  async function getAuthHeaders() {
-    const sb = window._sbClient;
-    if (!sb) return {};
-    try {
-      const { data } = await sb.auth.getSession();
-      if (data && data.session) return { 'Authorization': 'Bearer ' + data.session.access_token };
-    } catch(e) {}
-    return {};
-  }
+  const headers = { 'Authorization': `Bearer ${TOKEN}` };
 
   // ── Clock ──
   function updateClock() {
@@ -627,33 +533,25 @@
   updateClock(); setInterval(updateClock, 1000);
 
   // ── Tabs ──
-
-
-
-
-
-
-  // ── Tabs ──
   document.querySelectorAll('.tab').forEach(t => {
     t.addEventListener('click', () => switchTab(t.dataset.tab));
   });
+
   function switchTab(name) {
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-'+name));
-    if (name === 'pma')      { pmaLoaded=false;      setTimeout(loadPma, 400); }
-    if (name === 'maude')    { maudeLoaded=false;    setTimeout(loadMaude, 400); }
-    if (name === 'recalls')  { recallsLoaded=false;  setTimeout(loadRecalls, 400); }
-    if (name === 'samd'      && !samdLoaded)    loadSamd();
-    if (name === 'sessions'  && !sessionsLoaded)loadSessions();
-    setTimeout(function(){Object.values(window._ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();});if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},50);
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${name}`));
+    if (name === 'pma' && !pmaLoaded) loadPma();
+    if (name === 'maude' && !maudeLoaded) loadMaude();
+    if (name === 'recalls' && !recallsLoaded) loadRecalls();
+    if (name === 'sessions' && !sessionsLoaded) loadSessions();
   }
+
   // ── Load flags ──
-  let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false, samdLoaded = false;
+  let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false;
 
   // ── API fetch helper ──
   async function apiFetch(path) {
-    const authH = await getAuthHeaders();
-    const r = await fetch(BASE + path, { headers: Object.assign({}, headers, authH) });
+    const r = await fetch(BASE + path, { headers });
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     return r.json();
   }
@@ -661,7 +559,7 @@
   // ── Status check ──
   async function checkStatus() {
     try {
-      await apiFetch('/api/pma');
+      await apiFetch('/api/session-log');
       document.getElementById('statusDot').style.background = 'var(--success)';
       document.getElementById('statusDot').style.boxShadow = '0 0 8px var(--success)';
       document.getElementById('statusLabel').textContent = 'LIVE';
@@ -696,144 +594,12 @@
   }
 
   // ── PMA ──
-
-
-  var _pmaRecords = [], _maudeRecords = [], _recallRecords = [];
-
-  function groupByHalf(records, dateField) {
-    var map = {};
-    records.forEach(function(r) {
-      var raw = r[dateField]; if (!raw) return;
-      var s = raw.toString(); var yr = s.slice(0,4);
-      var mo = parseInt(s[4]==='-' ? s.slice(5,7) : s.slice(4,6));
-      if (!mo) return;
-      map[yr+(mo<=6?'-H1':'-H2')] = (map[yr+(mo<=6?'-H1':'-H2')]||0)+1;
-    });
-    var keys=Object.keys(map).sort();
-    return {labels:keys,data:keys.map(function(k){return map[k];})};
-  }
-  function groupByMonth(records, dateField) {
-    var map = {};
-    records.forEach(function(r) {
-      var raw = r[dateField];
-      if (!raw) return;
-      var s = raw.toString();
-      var month = s.length >= 7 && s[4] === '-' ? s.slice(0,7) : s.slice(0,4) + '-' + s.slice(4,6);
-      map[month] = (map[month] || 0) + 1;
-    });
-    var keys = Object.keys(map).sort();
-    return { labels: keys, data: keys.map(function(k){ return map[k]; }) };
-  }
-
-  function renderLineChart(divId, labels, datasets) {
-    var el = document.getElementById(divId);
-    if (!el) return;
-    if (_ecCharts[divId]) { _ecCharts[divId].dispose(); }
-    _ecCharts[divId] = echarts.init(el, null, {renderer:'canvas', width: el.closest('main').offsetWidth - 80});
-    var ds = datasets[0] || {};
-    _ecCharts[divId].setOption({
-      backgroundColor:'transparent',
-      tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
-      grid:{left:'4%',right:'4%',top:'8%',bottom:'8%',containLabel:true},
-      xAxis:{type:'category',data:labels,axisLabel:{color:'#94a3b8',fontSize:10,rotate:20}},
-      yAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
-      series:[{type:'line',data:ds.data||[],smooth:true,symbol:'circle',symbolSize:5,
-        lineStyle:{color:ds.borderColor||'#8b5cf6',width:2},
-        itemStyle:{color:ds.borderColor||'#8b5cf6'},
-        areaStyle:{color:'rgba(139,92,246,0.08)'}}]
-    });
-  }
-
-  function renderOverviewChart() {
-    var el = document.getElementById('overviewChart');
-    if (!el) return;
-    if (_ecCharts['overviewChart']) { _ecCharts['overviewChart'].dispose(); }
-    _ecCharts['overviewChart'] = echarts.init(el, null, {renderer:'canvas'});
-    _ecCharts['overviewChart'].setOption({
-      backgroundColor:'transparent',
-      tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
-      grid:{left:'2%',right:'4%',top:'8%',bottom:'4%',containLabel:true},
-      xAxis:{type:'category',data:['PMA Approvals','MAUDE Events','Recalls'],axisLabel:{color:'#c0c0c0',fontSize:12}},
-      yAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
-      series:[{type:'bar',barMaxWidth:80,
-        data:[
-          {value:_pmaRecords.length,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#8b5cf6'},{offset:1,color:'#3b1f8c'}])}},
-          {value:_maudeRecords.length,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#06b6d4'},{offset:1,color:'#0e4d5e'}])}},
-          {value:_recallRecords.length,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#f59e0b'},{offset:1,color:'#6b4000'}])}}
-        ],
-        label:{show:true,position:'top',color:'#94a3b8',fontSize:11,formatter:function(p){return p.value||'';}}
-      }]
-    });
-  }
-
-  // Chart helpers — ECharts
-  const _ecCharts = {};
-  function ecDispose(id) { if (_ecCharts[id]) { _ecCharts[id].dispose(); delete _ecCharts[id]; } }
-  function renderBarChart(divId, entries, label, color) {
-    var el = document.getElementById(divId);
-    if (!el) return;
-    ecDispose(divId);
-    _ecCharts[divId] = echarts.init(el, null, {renderer:'canvas', width: el.closest('main').offsetWidth - 80});
-    _ecCharts[divId].setOption({
-      backgroundColor:'transparent',
-      tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
-      grid:{left:'4%',right:'4%',top:'8%',bottom:'18%',containLabel:true},
-      xAxis:{type:'category',data:entries.map(function(e){return e[0].length>16?e[0].slice(0,14)+'…':e[0];}),axisLabel:{color:'#c0c0c0',fontSize:10,rotate:30,interval:0}},
-      yAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
-      series:[{type:'bar',data:entries.map(function(e){return e[1];}),barWidth:'40%',
-        itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:color},{offset:1,color:color+'55'}])},
-        label:{show:true,position:'top',color:'#94a3b8',fontSize:10,formatter:function(p){return p.value;}}}]
-    });
-  }
-  function renderPmaTrendChart(stacked) {
-    if (!_pmaRecords.length) return;
-    var per={},cos=['Medtronic','Boston Scientific','Abbott','Biotronik'],coC={'Medtronic':'#8b5cf6','Boston Scientific':'#06b6d4','Abbott':'#f59e0b','Biotronik':'#10b981'};
-    _pmaRecords.forEach(function(r){var s=(r.decision_date||'').toString(),yr=s.slice(0,4),co=normalizeName(r.applicant||'');if(!yr)return;if(!per[yr])per[yr]={};per[yr][co]=(per[yr][co]||0)+1;});
-    var yl=Object.keys(per).sort();
-    var el=document.getElementById('pmaTrendChart');
-    if(!el)return;
-    ecDispose('pmaTrendChart');
-    _ecCharts['pmaTrendChart']=echarts.init(el,null,{renderer:'canvas'});
-    _ecCharts['pmaTrendChart'].setOption({
-      backgroundColor:'transparent',
-      tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
-      legend:{data:cos,textStyle:{color:'#94a3b8',fontSize:10},top:0},
-      grid:{left:'4%',right:'4%',top:'30px',bottom:'4%',containLabel:true},
-      xAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}},boundaryGap:[0,0.1]},
-      yAxis:{type:'category',data:yl,axisLabel:{color:'#c0c0c0',fontSize:11}},
-      series:cos.map(function(co){return{name:co,type:'bar',stack:stacked?'total':undefined,data:yl.map(function(y){return(per[y]&&per[y][co])||0;}),itemStyle:{color:coC[co]||'#888'},barMaxWidth:24};})
-    });
-  }
-  function normalizeName(v) {
-    v = v.toString().trim();
-    if (/medtronic/i.test(v)) return 'Medtronic';
-    if (/boston scientific/i.test(v)) return 'Boston Scientific';
-    if (/abbott/i.test(v)) return 'Abbott';
-    if (/biotronik/i.test(v)) return 'Biotronik';
-    if (/microport/i.test(v)) return 'MicroPort';
-    if (/edwards/i.test(v)) return 'Edwards';
-    return v.slice(0, 30);
-  }
-  function countBy(records, field, limit, normalize) {
-    limit = limit || 10;
-    var map = {};
-    records.forEach(function(r) {
-      var v = (r[field]||'Unknown').toString();
-      if (normalize) v = normalizeName(v);
-      v = v.slice(0,40);
-      map[v]=(map[v]||0)+1;
-    });
-    return Object.entries(map).sort(function(a,b){return b[1]-a[1];}).slice(0,limit);
-  }
-
-
   async function loadPma() {
     pmaLoaded = true;
-    ecDispose('pmaChart'); ecDispose('pmaTrendChart');
     document.getElementById('pmaContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching PMA records…</div>`;
     try {
-      const data = await apiFetch('/api/pma');
-      const records = data.logs || data.results || data.data || [];
+      const data = await apiFetch('/api/fda-pipeline/crm-pma');
+      const records = data.results || data.data || data || [];
       document.getElementById('ovPmaCount').textContent = records.length;
       renderStats('pmaStats', [
         { label: 'Total Records', value: records.length },
@@ -843,15 +609,6 @@
       if (!records.length) { document.getElementById('pmaContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['applicant','device_name','decision_date','decision_code','supplement_number','advisory_committee']);
       document.getElementById('pmaContent').innerHTML = buildTable('pmaTable', cols, records);
-      _pmaRecords = records;
-      renderBarChart('pmaChart', countBy(records,'applicant',5,true), 'PMA by Applicant', '#8b5cf6');
-      renderPmaTrendChart(true);
-      window._pmaStacked = true;
-      window.togglePmaChart = function() {
-        _pmaStacked = !_pmaStacked;
-        document.getElementById('pmaToggleBtn').textContent = _pmaStacked ? 'Switch to Grouped' : 'Switch to Stacked';
-        renderPmaTrendChart(_pmaStacked);
-      };
     } catch(e) {
       document.getElementById('pmaContent').innerHTML = errBox(e.message);
     }
@@ -860,10 +617,9 @@
   // ── MAUDE ──
   async function loadMaude() {
     maudeLoaded = true;
-    ecDispose('maudeChart'); ecDispose('maudeTrendChart');
     document.getElementById('maudeContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching MAUDE records…</div>`;
     try {
-      const data = await apiFetch('/api/maude');
+      const data = await apiFetch('/api/fda-pipeline/maude');
       const records = data.results || data.data || data || [];
       document.getElementById('ovMaudeCount').textContent = records.length;
       const serious = records.filter(r => (r.event_type||'').toLowerCase().includes('death') || (r.event_type||'').toLowerCase().includes('injury')).length;
@@ -873,11 +629,7 @@
         { label: 'Data Source',     value: 'MAUDE' },
       ]);
       if (!records.length) { document.getElementById('maudeContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
-      const cols = detectCols(records[0], ['brand_name','manufacturer','event_type','date_received','device_problem','report_number']);
-      _maudeRecords = records;
-      renderBarChart('maudeChart', countBy(records,'event_type',5,false), 'Events by Type', '#06b6d4');
-      var mt = groupByHalf(records, 'date_received');
-      renderLineChart('maudeTrendChart', mt.labels, [{ label: 'Events/Month', data: mt.data, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.3, fill: true, pointRadius: 4, pointBackgroundColor: '#06b6d4' }]);
+      const cols = detectCols(records[0], ['brand_name','manufacturer_d_name','event_type','date_received','device_sequence_no','mdr_report_key']);
       document.getElementById('maudeContent').innerHTML = buildTable('maudeTable', cols, records, (row, key) => {
         if (key === 'event_type') {
           const v = (row[key]||'').toLowerCase();
@@ -894,26 +646,21 @@
   // ── Recalls ──
   async function loadRecalls() {
     recallsLoaded = true;
-    ecDispose('recallChart');
     document.getElementById('recallContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching recall data…</div>`;
     try {
-      const data = await apiFetch('/api/recalls');
+      const data = await apiFetch('/api/fda-pipeline/recalls');
       const records = data.results || data.data || data || [];
       document.getElementById('ovRecallCount').textContent = records.length;
-      const cls1 = records.filter(r => (r.recalling_firm||r.recall_status||'').includes('Class I') || (r.recall_status||'') === 'Class I').length;
+      const cls1 = records.filter(r => (r.recalling_firm||r.classification||'').includes('Class I') || (r.classification||'') === 'Class I').length;
       renderStats('recallStats', [
         { label: 'Total Recalls', value: records.length },
         { label: 'Class I',       value: cls1, accent: true },
         { label: 'Data Source',   value: 'openFDA' },
       ]);
       if (!records.length) { document.getElementById('recallContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
-      const cols = detectCols(records[0], ['recalling_firm','product_description','recall_status','event_date_initiated','status','reason_for_recall']);
-      _recallRecords = records;
-      renderBarChart('recallChart', countBy(records,'recalling_firm',5,true), 'Recalls by Firm', '#f59e0b');
-    setTimeout(function(){if(_ecCharts['recallChart'])_ecCharts['recallChart'].resize();},300);
-    setTimeout(function(){if(_ecCharts['recallChart'])_ecCharts['recallChart'].resize();},300);
+      const cols = detectCols(records[0], ['recalling_firm','product_description','classification','recall_initiation_date','status','reason_for_recall']);
       document.getElementById('recallContent').innerHTML = buildTable('recallTable', cols, records, (row, key) => {
-        if (key === 'recall_status') {
+        if (key === 'classification') {
           const v = row[key]||'';
           const cls = v.includes('Class I') ? 'badge-red' : v.includes('Class II') ? 'badge-yellow' : 'badge-green';
           return `<td><span class="badge ${cls}">${v||'—'}</span></td>`;
@@ -931,99 +678,18 @@
   }
 
   // ── Sessions ──
-
-  async function loadSamd() {
-    samdLoaded = true;
-    document.getElementById('samdContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Fetching SaMD data...</div>';
-    try {
-      var data    = await apiFetch('/api/samd-events');
-      var records = data.results || [];
-      var total   = data.total   || records.length;
-      var byMfr={}, byYear={}, byType={};
-      records.forEach(function(r) {
-        var m=(r.manufacturer||'Unknown').slice(0,30);
-        var yr=(r.date_received||'').slice(0,4);
-        byMfr[m]=(byMfr[m]||0)+1;
-        if(yr) byYear[yr]=(byYear[yr]||0)+1;
-        byType[r.event_type]=(byType[r.event_type]||0)+1;
-      });
-      renderStats('samdStats',[
-        {label:'Total Failures',value:total,accent:true},
-        {label:'Records Loaded',value:records.length},
-        {label:'Deaths',value:byType['Death']||0},
-        {label:'Injuries',value:byType['Injury']||0},
-        {label:'Manufacturers',value:Object.keys(byMfr).length}
-      ]);
-      var mfrE=Object.entries(byMfr).sort(function(a,b){return b[1]-a[1];}).slice(0,8);
-      var el1=document.getElementById('ec_samdMfr');
-      if(el1){
-        if(window._ec1) window._ec1.dispose();
-        window._ec1=echarts.init(el1,null,{renderer:'canvas'});
-        window._ec1.setOption({
-          backgroundColor:'transparent',
-          tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
-          grid:{left:'2%',right:'10%',top:'4%',bottom:'4%',containLabel:true},
-          xAxis:{type:'category',data:mfrE.map(function(e){return e[0].length>12?e[0].slice(0,10)+'…':e[0];}),axisLabel:{color:'#c0c0c0',fontSize:9,rotate:15}},
-          yAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
-          series:[{type:'bar',data:mfrE.map(function(e){return e[1];}),barMaxWidth:40,
-            itemStyle:{color:new echarts.graphic.LinearGradient(0,0,1,0,[{offset:0,color:'#3b1f8c'},{offset:1,color:'#8b5cf6'}])},
-            label:{show:true,position:'right',color:'#94a3b8',fontSize:10,formatter:function(p){return p.value;}}}]
-        });
-      }
-      var years=Object.keys(byYear).sort();
-      var el2=document.getElementById('ec_samdDual');
-      if(el2){
-        if(window._ec2) window._ec2.dispose();
-        window._ec2=echarts.init(el2,null,{renderer:'canvas'});
-        window._ec2.setOption({
-          backgroundColor:'transparent',
-          tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
-          legend:{data:['Failures','Severity'],textStyle:{color:'#94a3b8',fontSize:10},top:0},
-          grid:{left:'4%',right:'6%',top:'28px',bottom:'4%',containLabel:true},
-          xAxis:{type:'category',data:years,axisLabel:{color:'#94a3b8',fontSize:10}},
-          yAxis:[
-            {type:'value',name:'Failures',nameTextStyle:{color:'#8b5cf6',fontSize:9},axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
-            {type:'value',name:'Severity',nameTextStyle:{color:'#06b6d4',fontSize:9},axisLabel:{color:'#06b6d4',fontSize:10},splitLine:{show:false}}
-          ],
-          series:[
-            {name:'Failures',type:'bar',yAxisIndex:0,data:years.map(function(y){return byYear[y]||0;}),barMaxWidth:30,
-              itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#8b5cf6'},{offset:1,color:'#3b1f8c'}])}},
-            {name:'Severity',type:'line',yAxisIndex:1,data:years.map(function(y){
-              var yr=records.filter(function(r){return (r.date_received||'').slice(0,4)===y;});
-              var d=yr.filter(function(r){return r.event_type==='Death';}).length;
-              var inj=yr.filter(function(r){return r.event_type==='Injury';}).length;
-              return yr.length?Math.round((d*2+inj)/yr.length*100)/10:0;
-            }),smooth:true,symbol:'circle',symbolSize:6,
-              lineStyle:{color:'#06b6d4',width:2},itemStyle:{color:'#06b6d4'},areaStyle:{color:'rgba(6,182,212,0.07)'}}
-          ]
-        });
-      }
-      setTimeout(function(){if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},100);
-      if(!records.length){document.getElementById('samdContent').innerHTML='<div class="state-box">No records found.</div>';return;}
-      var cols=['manufacturer','brand_name','product_code','event_type','date_received','report_number'];
-      document.getElementById('samdContent').innerHTML=buildTable('samdTable',cols,records.slice(0,200),function(row,key){
-        if(key==='event_type'){var v=row[key]||'';var cl=v==='Death'?'badge-red':v==='Injury'?'badge-yellow':'badge-green';return '<td><span class="badge '+cl+'">'+v+'</span></td>';}
-        return null;
-      });
-    } catch(e) {
-      document.getElementById('samdContent').innerHTML='<div class="state-box"><div class="error-icon">&#9888;</div><div class="error-msg">'+e.message+'</div></div>';
-    }
-  }
-
   async function loadSessions() {
     sessionsLoaded = true;
-    document.getElementById('sessionContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Loading session log…</div>';
+    document.getElementById('sessionContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Loading session log…</div>`;
     try {
-     const authH = await getAuthHeaders();
-      const r = await fetch('/api/session-log', { headers: authH });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      const data = await r.json();
-      const records = data.logs || data || [];
+      const data = await apiFetch('/api/session-log');
+      const records = Array.isArray(data) ? data : data.logs || data.results || data.data || [];
       document.getElementById('ovSessionCount').textContent = records.length;
-      if (!records.length) { document.getElementById('sessionContent').innerHTML = '<div class="state-box">No sessions logged yet.</div>'; return; }
-      document.getElementById('sessionContent').innerHTML = '<div class="log-list">' + records.map(s => renderSession(s)).join('') + '</div>';
+      if (!records.length) { document.getElementById('sessionContent').innerHTML = `<div class="state-box">No sessions logged yet.</div>`; return; }
+      const sorted = [...records].sort((a,b) => new Date(b.date||b.created_at||0) - new Date(a.date||a.created_at||0));
+      document.getElementById('sessionContent').innerHTML = `<div class="log-list">${sorted.map(s => renderSession(s)).join('')}</div>`;
     } catch(e) {
-      document.getElementById('sessionContent').innerHTML = '<div class="state-box"><div class="error-icon">⚠</div><div class="error-msg">' + e.message + '</div></div>';
+      document.getElementById('sessionContent').innerHTML = errBox(e.message);
     }
   }
 
@@ -1085,31 +751,15 @@
   // ── Overview loader ──
   async function loadAllOverview() {
     checkStatus();
-    await Promise.all([
-      loadPma().catch(()=>{}),
-      loadMaude().catch(()=>{}),
-      loadRecalls().catch(()=>{})
-    ]);
-    setTimeout(renderOverviewChart, 3000);
-    loadSamd().catch(()=>{});
+    // fire all, don't block overview render
+    loadPma().catch(()=>{});
+    loadMaude().catch(()=>{});
+    loadRecalls().catch(()=>{});
     loadSessions().catch(()=>{});
   }
 
   // ── Init ──
-
-  async function doLogout() {
-    if (window._sbClient) await window._sbClient.auth.signOut();
-    window.location.href = '/login.html';
-  }
-  // Wait for Supabase client to initialize before loading data
-  function waitForSb(cb, tries) {
-    if (window._sbClient) { cb(); return; }
-    if ((tries||0) > 20) { cb(); return; }
-    setTimeout(function(){ waitForSb(cb, (tries||0)+1); }, 100);
-  }
-  waitForSb(function(){ loadAllOverview(); });
-  window.addEventListener('resize', function(){ Object.values(_ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();}); });
-  window.addEventListener('resize', function(){ Object.values(_ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();}); });
+  checkStatus();
 </script>
 </body>
 </html>
