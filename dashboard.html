@@ -611,7 +611,7 @@
     if (name === 'recalls')  { recallsLoaded=false;  loadRecalls(); }
     if (name === 'samd'      && !samdLoaded)    loadSamd();
     if (name === 'sessions'  && !sessionsLoaded)loadSessions();
-    setTimeout(function(){Object.values(window._ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();});if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},100);setTimeout(function(){Object.values(window._ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();});if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},600);
+    setTimeout(function(){Object.values(window._ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();});if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},50);
   }
   // ── Load flags ──
   let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false, samdLoaded = false;
@@ -810,8 +810,6 @@
       document.getElementById('pmaContent').innerHTML = buildTable('pmaTable', cols, records);
       _pmaRecords = records;
       renderBarChart('pmaChart', countBy(records,'applicant',5,true), 'PMA by Applicant', '#8b5cf6');
-    setTimeout(function(){if(_ecCharts['pmaChart'])_ecCharts['pmaChart'].resize();},600);
-    setTimeout(function(){if(_ecCharts['pmaChart'])_ecCharts['pmaChart'].resize();},600);
       renderPmaTrendChart(true);
       window._pmaStacked = true;
       window.togglePmaChart = function() {
@@ -842,8 +840,6 @@
       const cols = detectCols(records[0], ['brand_name','manufacturer','event_type','date_received','device_problem','report_number']);
       _maudeRecords = records;
       renderBarChart('maudeChart', countBy(records,'event_type',5,false), 'Events by Type', '#06b6d4');
-    setTimeout(function(){if(_ecCharts['maudeChart'])_ecCharts['maudeChart'].resize();},600);
-    setTimeout(function(){if(_ecCharts['maudeChart'])_ecCharts['maudeChart'].resize();},600);
       var mt = groupByHalf(records, 'date_received');
       renderLineChart('maudeTrendChart', mt.labels, [{ label: 'Events/Month', data: mt.data, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.3, fill: true, pointRadius: 4, pointBackgroundColor: '#06b6d4' }]);
       document.getElementById('maudeContent').innerHTML = buildTable('maudeTable', cols, records, (row, key) => {
