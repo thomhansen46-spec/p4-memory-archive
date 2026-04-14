@@ -600,7 +600,7 @@
     if (name === 'recalls'  && !recallsLoaded) loadRecalls();
     if (name === 'samd'     && !samdLoaded)    loadSamd();
     if (name === 'sessions' && !sessionsLoaded)loadSessions();
-    setTimeout(function(){Object.values(window._ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();});if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},60);
+    setTimeout(function(){Object.values(window._ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();});if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},200);
   }
   // ── Load flags ──
   let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false, samdLoaded = false;
