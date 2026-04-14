@@ -381,10 +381,9 @@
   </style>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 </head>
-<body x-data="p4App()">
+<body>
 
 
 
@@ -405,18 +404,18 @@
 </header>
 
 <nav>
-  <div class="tab" :class="{active:activeTab==='overview'}" @click="switchTo('overview')">Overview</div>
-  <div class="tab" :class="{active:activeTab==='pma'}" @click="switchTo('pma')">PMA Approvals</div>
-  <div class="tab" :class="{active:activeTab==='maude'}" @click="switchTo('maude')">MAUDE Events</div>
-  <div class="tab" :class="{active:activeTab==='recalls'}" @click="switchTo('recalls')">Recalls</div>
-  <div class="tab" :class="{active:activeTab==='samd'}" @click="switchTo('samd')">SaMD Analysis</div>
-  <div class="tab" :class="{active:activeTab==='sessions'}" @click="switchTo('sessions')">Session Log</div>
+  <div class="tab" data-tab="overview">Overview</div>
+  <div class="tab" data-tab="pma">PMA Approvals</div>
+  <div class="tab" data-tab="maude">MAUDE Events</div>
+  <div class="tab" data-tab="recalls">Recalls</div>
+  <div class="tab" data-tab="samd">SaMD Analysis</div>
+  <div class="tab" data-tab="sessions">Session Log</div>
 </nav>
 
 <main>
 
   <!-- OVERVIEW -->
-  <div class="panel" id="panel-overview" :class="{active: activeTab==='overview'}">
+  <div class="panel" id="panel-overview" >
     <div class="section-header">
       <div>
         <div class="section-title">Phase-Four · P4 Memory Archive</div>
@@ -462,7 +461,7 @@
   </div>
 
   <!-- PMA APPROVALS -->
-  <div class="panel" id="panel-pma" :class="{active: activeTab==='pma'}">
+  <div class="panel" id="panel-pma">
     <div class="section-header">
       <div>
         <div class="section-title">SpectrumPMA™ · openFDA Pipeline</div>
@@ -485,7 +484,7 @@
   </div>
 
   <!-- MAUDE -->
-  <div class="panel" id="panel-maude" :class="{active: activeTab==='maude'}">
+  <div class="panel" id="panel-maude">
     <div class="section-header">
       <div>
         <div class="section-title">PulseMAUDE™ · openFDA Pipeline</div>
@@ -506,7 +505,7 @@
   </div>
 
   <!-- RECALLS -->
-  <div class="panel" id="panel-recalls" :class="{active: activeTab==='recalls'}">
+  <div class="panel" id="panel-recalls">
     <div class="section-header">
       <div>
         <div class="section-title">CAPA Radar™ · openFDA Pipeline</div>
@@ -526,7 +525,7 @@
   </div>
 
   <!-- SESSION LOG -->
-<div class="panel" id="panel-samd" :class="{active: activeTab==='samd'}">
+<div class="panel" id="panel-samd">
 <div class="section-title">SentinelRWE™ — SaMD Intelligence</div>
 <div class="section-name">SaMD <span>Failure Analysis</span></div>
 <div id="samdStats" class="stats-row"></div>
@@ -543,7 +542,7 @@
 <div class="filter-row"><input class="filter-input" type="text" placeholder="Filter records..." oninput="filterTable(this, 'samdTable')"></div>
 <div id="samdContent"><div class="state-box"><div class="spinner"></div>Loading SaMD data...</div></div>
 </div>
-  <div class="panel" id="panel-sessions" :class="{active: activeTab==='sessions'}">
+  <div class="panel" id="panel-sessions">
     <div class="section-header">
       <div>
         <div class="section-title">P4 Archive · Build History</div>
@@ -574,27 +573,22 @@
 
 
 
-  // ── Alpine app ──
-  function p4App() {
-    return {
-      activeTab: 'overview',
-      init() { this.$nextTick(() => { if(!pmaLoaded&&!maudeLoaded) loadAllOverview(); }); },
-      switchTo(tab) {
-        this.activeTab = tab;
-        this.$nextTick(() => {
-          Object.values(window._ecCharts || {}).forEach(c => { if (c && c.resize) c.resize(); });
-          if (window._ec1) window._ec1.resize();
-          if (window._ec2) window._ec2.resize();
-        });
-        if (tab === 'pma'      && !pmaLoaded)     loadPma();
-        if (tab === 'maude'    && !maudeLoaded)   loadMaude();
-        if (tab === 'recalls'  && !recallsLoaded) loadRecalls();
-        if (tab === 'samd'     && !samdLoaded)    loadSamd();
-        if (tab === 'sessions' && !sessionsLoaded) loadSessions();
-      }
-    };
-  }
 
+
+  // ── Tabs ──
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => switchTab(t.dataset.tab));
+  });
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-'+name));
+    if (name === 'pma'      && !pmaLoaded)     loadPma();
+    if (name === 'maude'    && !maudeLoaded)   loadMaude();
+    if (name === 'recalls'  && !recallsLoaded) loadRecalls();
+    if (name === 'samd'     && !samdLoaded)    loadSamd();
+    if (name === 'sessions' && !sessionsLoaded)loadSessions();
+    setTimeout(function(){Object.values(window._ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();});if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},60);
+  }
   // ── Load flags ──
   let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false, samdLoaded = false;
 
