@@ -531,35 +531,11 @@
 
   <!-- PMA APPROVALS -->
   <div class="panel" id="panel-pma">
-    <div class="section-header">
-      <div>
-        <div class="section-title">SpectrumPMA™ · openFDA Pipeline</div>
-        <div class="section-name">PMA <span>Approvals</span></div>
-      </div>
-      <button class="refresh-btn" onclick="loadPma()">↺ Refresh</button>
-    </div>
-
+    <div class="section-header"><div><div class="section-title">SpectrumPMA™</div><div class="section-name">PMA <span>Approvals</span></div></div><button class="refresh-btn" onclick="loadPma()">↺ Refresh</button></div>
     <div class="chart-wrap"><div id="pmaChart" style="height:260px;width:100%"></div></div>
     <div class="stats-row" id="pmaStats"></div>
-
-    <div class="chart-wrap"><div id="maudeChart" style="height:260px;width:100%"></div></div>
-    <div class="stats-row" id="maudeStats"></div>
-
-    <div class="chart-wrap"><div id="recallChart" style="height:260px;width:100%"></div></div>
-    <div class="stats-row" id="recallStats"></div>
-    <div class="table-wrap">
-      <div class="table-toolbar">
-        <span class="table-label">CRM Device PMA Records</span>
-        <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'pmaTable')" />
-      </div>
-      <button onclick="togglePmaChart()" id="pmaToggleBtn" style="background:#1b1530;color:#a78bfa;border:1px solid #2a2240;padding:4px 12px;border-radius:4px;font-size:11px;cursor:pointer;margin-bottom:8px">Switch to Grouped</button>
-
-    <div class="chart-wrap"><div id="pmaTrendChart" style="height:280px;width:100%"></div></div>
-      <div id="pmaContent"><div class="state-box"><div class="spinner"></div>Loading PMA data…</div></div>
-    </div>
+    <div class="table-wrap"><div class="table-toolbar"><span class="table-label">CRM Device PMA Records</span><input class="search-input" placeholder="Filter…" oninput="filterTable(this,'pmaTable')" /></div><div id="pmaContent"><div class="state-box"><div class="spinner"></div>Loading…</div></div></div>
   </div>
-
-  <!-- MAUDE -->
   <div class="panel" id="panel-maude">
     <div class="section-header">
       <div>
