@@ -16,9 +16,10 @@ async function query(table, params) {
   return r.json();
 }
 
-module.exports = function(app) {
+module.exports = function(app, requireAuth) {
+  if (!requireAuth) requireAuth = (req,res,next) => next();
 
-  app.get('/api/db/health', async (req, res) => {
+  app.get('/api/db/health', requireAuth, async (req, res) => {
     try {
       const tables = ['pma_approvals','maude_events','recalls'];
       const counts = {};
@@ -32,7 +33,7 @@ module.exports = function(app) {
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-  app.get('/api/pma', async (req, res) => {
+  app.get('/api/pma', requireAuth, async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
       const data = await query('pma_approvals', 'select=id,applicant,device_name,product_code,decision_code,decision_date,advisory_committee,supplement_number&order=decision_date.desc&limit=' + limit);
@@ -40,7 +41,7 @@ module.exports = function(app) {
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-  app.get('/api/maude', async (req, res) => {
+  app.get('/api/maude', requireAuth, async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
       const data = await query('maude_events', 'select=id,manufacturer,brand_name,product_code,event_type,date_received,device_problem,report_number&order=date_received.desc&limit=' + limit);
@@ -48,14 +49,14 @@ module.exports = function(app) {
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
 
-  app.get('/api/recalls', async (req, res) => {
+  app.get('/api/recalls', requireAuth, async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
       const data = await query('recalls', 'select=product_res_number,recalling_firm,product_description,product_code,recall_status,event_date_initiated,reason_for_recall,status&order=event_date_initiated.desc&limit=' + limit);
       res.json({ total: data.length, results: data });
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
-app.get('/api/samd-events', async (req, res) => {
+app.get('/api/samd-events', requireAuth, async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit) || 500, 2000);
       const data = await query('samd_events', 'select=id,manufacturer,brand_name,product_code,event_type,date_received,device_problem,report_number&order=date_received.desc&limit=' + limit);
