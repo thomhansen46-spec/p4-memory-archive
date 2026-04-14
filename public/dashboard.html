@@ -962,7 +962,7 @@
       var total   = data.total   || records.length;
       var byMfr={}, byYear={}, byType={};
       records.forEach(function(r) {
-        var m=(r.manufacturer||'Unknown').slice(0,30);
+        var raw=(r.manufacturer||'Unknown'); var m=(/medtronic/i.test(raw)?'Medtronic MiniMed':raw).slice(0,30);
         var yr=(r.date_received||'').slice(0,4);
         byMfr[m]=(byMfr[m]||0)+1;
         if(yr) byYear[yr]=(byYear[yr]||0)+1;
