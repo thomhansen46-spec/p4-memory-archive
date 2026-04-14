@@ -572,6 +572,27 @@
 
 
 
+
+  // ── Alpine app ──
+  function p4App() {
+    return {
+      activeTab: 'overview',
+      switchTo(tab) {
+        this.activeTab = tab;
+        this.$nextTick(() => {
+          Object.values(window._ecCharts || {}).forEach(c => { if (c && c.resize) c.resize(); });
+          if (window._ec1) window._ec1.resize();
+          if (window._ec2) window._ec2.resize();
+        });
+        if (tab === 'pma'      && !pmaLoaded)     loadPma();
+        if (tab === 'maude'    && !maudeLoaded)   loadMaude();
+        if (tab === 'recalls'  && !recallsLoaded) loadRecalls();
+        if (tab === 'samd'     && !samdLoaded)    loadSamd();
+        if (tab === 'sessions' && !sessionsLoaded) loadSessions();
+      }
+    };
+  }
+
   // ── Load flags ──
   let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false, samdLoaded = false;
 
