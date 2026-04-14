@@ -425,7 +425,7 @@
     </div>
     <div class="chart-wrap" style="margin:0 0 18px"><div id="overviewChart" style="height:220px;width:100%"></div></div>
     <div class="overview-grid" id="overviewGrid">
-      <div class="overview-card" onclick="switchTab('pma')">
+      <div class="overview-card" @click="switchTo('pma')">
         <div class="ov-icon">📋</div>
         <div class="ov-title">PMA Approvals</div>
         <div class="ov-desc">Pre-Market Approval decisions for Class III CRM devices including ICDs, CRTs, and pacemakers.</div>
@@ -433,7 +433,7 @@
         <div class="ov-count-label">records loaded</div>
         <div class="pipeline-tag">SpectrumPMA™</div>
       </div>
-      <div class="overview-card" onclick="switchTab('maude')">
+      <div class="overview-card" @click="switchTo('maude')">
         <div class="ov-icon">⚠️</div>
         <div class="ov-title">MAUDE Events</div>
         <div class="ov-desc">Adverse event reports from manufacturers, distributors, and device user facilities.</div>
@@ -441,7 +441,7 @@
         <div class="ov-count-label">records loaded</div>
         <div class="pipeline-tag">PulseMAUDE™</div>
       </div>
-      <div class="overview-card" onclick="switchTab('recalls')">
+      <div class="overview-card" @click="switchTo('recalls')">
         <div class="ov-icon">🔴</div>
         <div class="ov-title">Recalls</div>
         <div class="ov-desc">Class I / II / III device recall actions tracked across CRM product lines.</div>
@@ -449,7 +449,7 @@
         <div class="ov-count-label">records loaded</div>
         <div class="pipeline-tag">CAPA Radar™</div>
       </div>
-      <div class="overview-card" onclick="switchTab('sessions')">
+      <div class="overview-card" @click="switchTo('sessions')">
         <div class="ov-icon">🗂️</div>
         <div class="ov-title">Session Log</div>
         <div class="ov-desc">Build sessions and milestone records for the P4 Memory Archive project.</div>
