@@ -377,14 +377,15 @@ toggle
   .page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent2); }
   .page-btn:disabled { opacity: 0.3; cursor: default; }
 
-    .chart-wrap { background:rgba(255,255,255,0.03); border:1px solid rgba(139,92,246,0.15); border-radius:10px; padding:20px 20px 12px; margin-bottom:18px; max-height:260px; display:flex; align-items:center; justify-content:center; }
-    .chart-wrap canvas { max-height:170px; }
+    .chart-wrap { background:rgba(255,255,255,0.03); border:1px solid rgba(139,92,246,0.15); border-radius:10px; padding:20px 20px 12px; margin-bottom:18px; }
 
   </style>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 </head>
-<body>
+<body x-data="p4App()">
 <button onclick="sendTest()">Send Test</button>
 <button onclick="loadLogs()">Load Logs</button>
 
@@ -405,18 +406,18 @@ toggle
 </header>
 
 <nav>
-  <div class="tab active" data-tab="overview">Overview</div>
-  <div class="tab" data-tab="pma">PMA Approvals</div>
-  <div class="tab" data-tab="maude">MAUDE Events</div>
-  <div class="tab" data-tab="recalls">Recalls</div>
-  <div class="tab" data-tab="samd">SaMD Analysis</div>
-  <div class="tab" data-tab="sessions">Session Log</div>
+  <div class="tab" :class="{active:activeTab==='overview'}" @click="switchTo('overview')">Overview</div>
+  <div class="tab" :class="{active:activeTab==='pma'}" @click="switchTo('pma')">PMA Approvals</div>
+  <div class="tab" :class="{active:activeTab==='maude'}" @click="switchTo('maude')">MAUDE Events</div>
+  <div class="tab" :class="{active:activeTab==='recalls'}" @click="switchTo('recalls')">Recalls</div>
+  <div class="tab" :class="{active:activeTab==='samd'}" @click="switchTo('samd')">SaMD Analysis</div>
+  <div class="tab" :class="{active:activeTab==='sessions'}" @click="switchTo('sessions')">Session Log</div>
 </nav>
 
 <main>
 
   <!-- OVERVIEW -->
-  <div class="panel active" id="panel-overview">
+  <div class="panel" id="panel-overview" x-show="activeTab==='overview'" x-transition.opacity>
     <div class="section-header">
       <div>
         <div class="section-title">Phase-Four · P4 Memory Archive</div>
@@ -462,7 +463,7 @@ toggle
   </div>
 
   <!-- PMA APPROVALS -->
-  <div class="panel" id="panel-pma">
+  <div class="panel" id="panel-pma" x-show="activeTab==='pma'" x-transition.opacity>
     <div class="section-header">
       <div>
         <div class="section-title">SpectrumPMA™ · openFDA Pipeline</div>
@@ -485,7 +486,7 @@ toggle
   </div>
 
   <!-- MAUDE -->
-  <div class="panel" id="panel-maude">
+  <div class="panel" id="panel-maude" x-show="activeTab==='maude'" x-transition.opacity>
     <div class="section-header">
       <div>
         <div class="section-title">PulseMAUDE™ · openFDA Pipeline</div>
@@ -506,7 +507,7 @@ toggle
   </div>
 
   <!-- RECALLS -->
-  <div class="panel" id="panel-recalls">
+  <div class="panel" id="panel-recalls" x-show="activeTab==='recalls'" x-transition.opacity>
     <div class="section-header">
       <div>
         <div class="section-title">CAPA Radar™ · openFDA Pipeline</div>
@@ -526,7 +527,7 @@ toggle
   </div>
 
   <!-- SESSION LOG -->
-<div class="panel" id="panel-samd">
+<div class="panel" id="panel-samd" x-show="activeTab==='samd'" x-transition.opacity>
 <div class="section-title">SentinelRWE™ — SaMD Intelligence</div>
 <div class="section-name">SaMD <span>Failure Analysis</span></div>
 <div id="samdStats" class="stats-row"></div>
@@ -543,7 +544,7 @@ toggle
 <div class="filter-row"><input class="filter-input" type="text" placeholder="Filter records..." oninput="filterTable(this, 'samdTable')"></div>
 <div id="samdContent"><div class="state-box"><div class="spinner"></div>Loading SaMD data...</div></div>
 </div>
-  <div class="panel" id="panel-sessions">
+  <div class="panel" id="panel-sessions" x-show="activeTab==='sessions'" x-transition.opacity>
     <div class="section-header">
       <div>
         <div class="section-title">P4 Archive · Build History</div>
