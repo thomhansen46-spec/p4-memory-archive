@@ -413,6 +413,7 @@
     <div class="status-dot" id="statusDot"></div>
     <div class="status-label" id="statusLabel">CONNECTING</div>
     <div class="timestamp" id="clockEl"></div>
+    <button onclick="doLogout()" style="margin-left:16px;padding:5px 12px;background:transparent;border:1px solid rgba(139,92,246,0.4);border-radius:4px;color:#9ca3af;font-family:inherit;font-size:10px;letter-spacing:.08em;cursor:pointer;">SIGN OUT</button>
   </div>
 </header>
 
@@ -1043,6 +1044,11 @@
   }
 
   // ── Init ──
+
+  async function doLogout() {
+    if (window._sbClient) await window._sbClient.auth.signOut();
+    window.location.href = '/login.html';
+  }
   loadAllOverview();
 </script>
 </body>
