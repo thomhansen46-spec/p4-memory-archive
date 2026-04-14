@@ -731,10 +731,10 @@
     _ecCharts[divId].setOption({
       backgroundColor:'transparent',
       tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
-      grid:{left:'2%',right:'10%',top:'4%',bottom:'4%',containLabel:true},
-      xAxis:{type:'category',data:entries.map(function(e){return e[0].length>14?e[0].slice(0,12)+'…':e[0];}),axisLabel:{color:'#c0c0c0',fontSize:10,rotate:15}},
+      grid:{left:'4%',right:'4%',top:'8%',bottom:'18%',containLabel:true},
+      xAxis:{type:'category',data:entries.map(function(e){return e[0].length>16?e[0].slice(0,14)+'…':e[0];}),axisLabel:{color:'#c0c0c0',fontSize:10,rotate:30,interval:0}},
       yAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
-      series:[{type:'bar',data:entries.map(function(e){return e[1];}),barMaxWidth:48,
+      series:[{type:'bar',data:entries.map(function(e){return e[1];}),barWidth:'40%',
         itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:color},{offset:1,color:color+'55'}])},
         label:{show:true,position:'top',color:'#94a3b8',fontSize:10,formatter:function(p){return p.value;}}}]
     });
