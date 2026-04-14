@@ -538,13 +538,20 @@
       </div>
       <button class="refresh-btn" onclick="loadPma()">↺ Refresh</button>
     </div>
+
+    <div class="chart-wrap"><div id="pmaChart" style="height:260px;width:100%"></div></div>
     <div class="stats-row" id="pmaStats"></div>
+
+    <div class="chart-wrap"><div id="maudeChart" style="height:260px;width:100%"></div></div>
+    <div class="stats-row" id="maudeStats"></div>
+
+    <div class="chart-wrap"><div id="recallChart" style="height:260px;width:100%"></div></div>
+    <div class="stats-row" id="recallStats"></div>
     <div class="table-wrap">
       <div class="table-toolbar">
         <span class="table-label">CRM Device PMA Records</span>
         <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'pmaTable')" />
       </div>
-      <div class="chart-wrap"><div id="pmaChart" style="height:280px;width:100%"></div></div>
       <button onclick="togglePmaChart()" id="pmaToggleBtn" style="background:#1b1530;color:#a78bfa;border:1px solid #2a2240;padding:4px 12px;border-radius:4px;font-size:11px;cursor:pointer;margin-bottom:8px">Switch to Grouped</button>
 
     <div class="chart-wrap"><div id="pmaTrendChart" style="height:280px;width:100%"></div></div>
@@ -561,13 +568,11 @@
       </div>
       <button class="refresh-btn" onclick="loadMaude()">↺ Refresh</button>
     </div>
-    <div class="stats-row" id="maudeStats"></div>
     <div class="table-wrap">
       <div class="table-toolbar">
         <span class="table-label">CRM Device Event Reports</span>
         <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'maudeTable')" />
       </div>
-      <div class="chart-wrap"><div id="maudeChart" style="height:280px;width:100%"></div></div>
       <div class="chart-wrap"><div id="maudeTrendChart" style="height:280px;width:100%"></div></div>
       <div id="maudeContent"><div class="state-box"><div class="spinner"></div>Loading MAUDE data…</div></div>
     </div>
@@ -582,13 +587,11 @@
       </div>
       <button class="refresh-btn" onclick="loadRecalls()">↺ Refresh</button>
     </div>
-    <div class="stats-row" id="recallStats"></div>
     <div class="table-wrap">
       <div class="table-toolbar">
         <span class="table-label">CRM Recall Actions</span>
         <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'recallTable')" />
       </div>
-      <div class="chart-wrap"><div id="recallChart" style="height:280px;width:100%"></div></div>
       <div id="recallContent"><div class="state-box"><div class="spinner"></div>Loading recall data…</div></div>
     </div>
   </div>
