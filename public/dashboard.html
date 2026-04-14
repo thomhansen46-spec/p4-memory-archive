@@ -1036,7 +1036,7 @@
     document.getElementById('sessionContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Loading session log…</div>';
     try {
      const authH = await getAuthHeaders();
-      const r = await fetch('/api/session-log', { headers: authH });
+      const r = await fetch('/sessions', { headers: authH });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const data = await r.json();
       const records = data.logs || data || [];
@@ -1049,21 +1049,21 @@
   }
 
   function renderSession(s) {
-    const id = s.session_id || s.id || '—';
-    const date = s.date || s.created_at || '';
-    const summary = s.summary || s.notes || s.description || 'No summary recorded.';
-    const focus = s.focus || s.focus_area || '';
-    const status = s.status || '';
+    const id = s.id ? s.id.slice(0,8) + '…' : '—';
+    const date = s.created || '';
+    const module = s.module || '—';
+    const prompt = s.prompt || '';
+    const response = s.response || 'No response recorded.';
     return `
     <div class="log-card">
       <div class="log-card-header">
-        <span class="log-session-id">${id}</span>
+        <span class="log-session-id">${module}</span>
         <span class="log-date">${date ? new Date(date).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : ''}</span>
       </div>
-      <div class="log-summary">${summary}</div>
+      ${prompt ? `<div class="log-summary" style="color:var(--accent);font-size:11px;margin-bottom:6px;">▸ ${prompt}</div>` : ''}
+      <div class="log-summary">${response}</div>
       <div class="log-meta">
-        ${focus ? `<div class="log-meta-item">Focus: <span>${focus}</span></div>` : ''}
-        ${status ? `<div class="log-meta-item">Status: <span>${status}</span></div>` : ''}
+        <div class="log-meta-item">ID: <span>${id}</span></div>
       </div>
     </div>`;
   }
