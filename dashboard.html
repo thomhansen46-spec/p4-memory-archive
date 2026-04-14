@@ -1,6 +1,4 @@
 <!DOCTYPE html>
-754
-toggle 
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -131,8 +129,8 @@ toggle
     margin: 0 auto;
   }
 
-  .panel { display: none; animation: fadeIn 0.3s ease; }
-  .panel.active { display: block; }
+  .panel { animation: fadeIn 0.3s ease; }
+
   @keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform:none; } }
 
   /* ── Section header ── */
@@ -575,20 +573,6 @@ toggle
     t.addEventListener('click', () => switchTab(t.dataset.tab));
   });
 
-  function switchTab(name) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
-    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${name}`));
-    if (name === 'pma' && !pmaLoaded) loadPma();
-    if (name === 'maude' && !maudeLoaded) loadMaude();
-    if (name === 'recalls' && !recallsLoaded) loadRecalls();
-    if (name === 'samd' && !samdLoaded) {
-      loadSamd();
-    } else if (name === 'samd') {
-      setTimeout(function(){if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},50);
-    }
-    if (name === 'sessions' && !sessionsLoaded) loadSessions();
-    setTimeout(function() { Object.values(_ecCharts).forEach(function(c){if(c&&c.resize)c.resize();}); }, 60);
-  }
 
   // ── Load flags ──
   let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false, samdLoaded = false;
