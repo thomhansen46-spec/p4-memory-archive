@@ -617,7 +617,10 @@
         <div class="section-title">P4 Archive · Build History</div>
         <div class="section-name">Session <span>Log</span></div>
       </div>
-      <button class="refresh-btn" onclick="loadSessions()">↺ Refresh</button>
+      <div style="display:flex;gap:8px;">
+        <button class="refresh-btn" onclick="loadSessions()">↺ Refresh</button>
+        <button class="refresh-btn" style="background:rgba(139,92,246,0.2);border-color:rgba(139,92,246,0.5);" onclick="document.getElementById('sessionModal').style.display='flex'">+ Log Session</button>
+      </div>
     </div>
     <div id="sessionContent"><div class="state-box"><div class="spinner"></div>Loading sessions…</div></div>
   </div>
