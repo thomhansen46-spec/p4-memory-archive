@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>P4 Intelligence — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0b0812;font-family:'IBM Plex Mono',monospace;display:flex;align-items:center;justify-content:center;min-height:100vh;color:#e2e8f0}
+  .card{background:#120e1e;border:1px solid #2a2240;border-radius:12px;padding:48px;width:100%;max-width:420px}
+  .logo{display:flex;align-items:center;gap:12px;margin-bottom:40px}
+  .logo-hex{width:40px;height:40px;background:linear-gradient(135deg,#8b5cf6,#b490ff);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff}
+  .logo-text{font-size:14px;font-weight:600;letter-spacing:.1em;color:#e2e8f0}
+  .logo-sub{font-size:10px;color:#6b7280;letter-spacing:.15em;margin-top:2px}
+  h2{font-size:20px;font-weight:600;margin-bottom:8px;color:#f8f8f8}
+  .subtitle{font-size:12px;color:#6b7280;margin-bottom:32px;letter-spacing:.05em}
+  label{display:block;font-size:11px;color:#9ca3af;letter-spacing:.1em;margin-bottom:6px;margin-top:20px}
+  input{width:100%;background:#1b1530;border:1px solid #2a2240;border-radius:6px;padding:12px 14px;color:#e2e8f0;font-family:inherit;font-size:13px;outline:none;transition:border .2s}
+  input:focus{border-color:#8b5cf6}
+  .btn{width:100%;margin-top:28px;padding:13px;background:linear-gradient(135deg,#7c3aed,#8b5cf6);border:none;border-radius:6px;color:#fff;font-family:inherit;font-size:13px;font-weight:600;letter-spacing:.08em;cursor:pointer;transition:opacity .2s}
+  .btn:hover{opacity:.85}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .error{margin-top:16px;padding:10px 14px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:6px;font-size:12px;color:#f87171;display:none}
+  .footer{margin-top:32px;font-size:10px;color:#374151;text-align:center;letter-spacing:.08em}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <div class="logo-hex">P4</div>
+    <div>
+      <div class="logo-text">PHASE-FOUR</div>
+      <div class="logo-sub">INTELLIGENCE PLATFORM</div>
+    </div>
+  </div>
+  <h2>Sign in</h2>
+  <p class="subtitle">CRM REGULATORY INTELLIGENCE</p>
+  <label>EMAIL</label>
+  <input type="email" id="email" placeholder="you@example.com" autocomplete="email"/>
+  <label>PASSWORD</label>
+  <input type="password" id="password" placeholder="••••••••••••" autocomplete="current-password"/>
+  <button class="btn" id="loginBtn" onclick="doLogin()">SIGN IN</button>
+  <div class="error" id="errBox"></div>
+  <div class="footer">PHASE-FOUR · MERGENT X · CONFIDENTIAL</div>
+</div>
+<script>
+  const sb = supabase.createClient(
+    'https://lhgqexopbqfivoubzzeg.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZ3FleG9wYnFmaXZvdWJ6emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY5ODcsImV4cCI6MjA5MDQwMjk4N30.NBh-bjOfqHbYG06r6D8GwHL3NXte2hKAoMEHpN-ueug'
+  );
+  sb.auth.getSession().then(({data:{session}})=>{
+    if(session) window.location.href='/dashboard.html';
+  });
+  async function doLogin() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const btn = document.getElementById('loginBtn');
+    const err = document.getElementById('errBox');
+    err.style.display='none';
+    btn.disabled=true; btn.textContent='SIGNING IN…';
+    const {error} = await sb.auth.signInWithPassword({email,password});
+    if(error){
+      err.textContent=error.message;
+      err.style.display='block';
+      btn.disabled=false; btn.textContent='SIGN IN';
+    } else {
+      window.location.href='/dashboard.html';
+    }
+  }
+  document.addEventListener('DOMContentLoaded',()=>{
+    document.getElementById('password').addEventListener('keydown',e=>{
+      if(e.key==='Enter') doLogin();
+    });
+  });
+</script>
+</body>
+</html>
