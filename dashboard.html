@@ -1041,6 +1041,12 @@
     await Promise.allSettled([loadPma(), loadMaude(), loadRecalls(), loadSessions()]);
     renderOverviewChart();
   }
+
+  async function loadAllOverview() {
+    checkStatus();
+    await Promise.allSettled([loadPma(), loadMaude(), loadRecalls(), loadSessions()]);
+    renderOverviewChart();
+  }
   // ── Init ──
   checkStatus();
   loadAllOverview();
