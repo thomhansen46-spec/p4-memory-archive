@@ -379,7 +379,17 @@
 
     .chart-wrap { background:rgba(255,255,255,0.03); border:1px solid rgba(139,92,246,0.15); border-radius:10px; padding:20px 20px 12px; margin-bottom:18px; }
 
-  </style>
+  
+  @media (max-width: 600px) {
+    nav { flex-wrap: wrap; padding: 0; gap: 0; }
+    .tab { flex: 1 1 33%; text-align: center; font-size: 9px; padding: 10px 4px; letter-spacing: .04em; }
+    header { padding: 10px 14px; flex-wrap: wrap; gap: 6px; }
+    .header-meta { gap: 8px; }
+    .timestamp { font-size: 9px; }
+    main { padding: 14px 10px; }
+  }
+
+</style>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
