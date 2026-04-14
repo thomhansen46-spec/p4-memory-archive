@@ -979,7 +979,7 @@
       var el1=document.getElementById('ec_samdMfr');
       if(el1){
         if(window._ec1) window._ec1.dispose();
-        window._ec1=echarts.init(el1,null,{renderer:'canvas'});
+        window._ec1=echarts.init(el1,null,{renderer:'canvas',width:el1.offsetWidth||el1.parentElement.offsetWidth});
         window._ec1.setOption({
           backgroundColor:'transparent',
           tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
@@ -995,7 +995,7 @@
       var el2=document.getElementById('ec_samdDual');
       if(el2){
         if(window._ec2) window._ec2.dispose();
-        window._ec2=echarts.init(el2,null,{renderer:'canvas'});
+        window._ec2=echarts.init(el2,null,{renderer:'canvas',width:el2.offsetWidth||el2.parentElement.offsetWidth});
         window._ec2.setOption({
           backgroundColor:'transparent',
           tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
