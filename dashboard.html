@@ -975,9 +975,11 @@
     sessionsLoaded = true;
     document.getElementById('sessionContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Loading session log…</div>';
     try {
-     const r = await fetch('/api/session-log');
+     const authH = await getAuthHeaders();
+      const r = await fetch('/api/session-log', { headers: authH });
       if (!r.ok) throw new Error('HTTP ' + r.status);
-      const records = await r.json();
+      const data = await r.json();
+      const records = data.logs || data || [];
       document.getElementById('ovSessionCount').textContent = records.length;
       if (!records.length) { document.getElementById('sessionContent').innerHTML = '<div class="state-box">No sessions logged yet.</div>'; return; }
       document.getElementById('sessionContent').innerHTML = '<div class="log-list">' + records.map(s => renderSession(s)).join('') + '</div>';
