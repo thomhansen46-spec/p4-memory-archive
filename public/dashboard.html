@@ -1049,7 +1049,13 @@
     if (window._sbClient) await window._sbClient.auth.signOut();
     window.location.href = '/login.html';
   }
-  loadAllOverview();
+  // Wait for Supabase client to initialize before loading data
+  function waitForSb(cb, tries) {
+    if (window._sbClient) { cb(); return; }
+    if ((tries||0) > 20) { cb(); return; }
+    setTimeout(function(){ waitForSb(cb, (tries||0)+1); }, 100);
+  }
+  waitForSb(function(){ loadAllOverview(); });
 </script>
 </body>
 </html>
