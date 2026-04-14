@@ -606,9 +606,9 @@
   function switchTab(name) {
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
     document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-'+name));
-    if (name === 'pma')      { pmaLoaded=false;      setTimeout(loadPma, 150); }
-    if (name === 'maude')    { maudeLoaded=false;    setTimeout(loadMaude, 150); }
-    if (name === 'recalls')  { recallsLoaded=false;  setTimeout(loadRecalls, 150); }
+    if (name === 'pma')      { pmaLoaded=false;      setTimeout(loadPma, 400); }
+    if (name === 'maude')    { maudeLoaded=false;    setTimeout(loadMaude, 400); }
+    if (name === 'recalls')  { recallsLoaded=false;  setTimeout(loadRecalls, 400); }
     if (name === 'samd'      && !samdLoaded)    loadSamd();
     if (name === 'sessions'  && !sessionsLoaded)loadSessions();
     setTimeout(function(){Object.values(window._ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();});if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},50);
@@ -795,6 +795,7 @@
 
   async function loadPma() {
     pmaLoaded = true;
+    ecDispose('pmaChart'); ecDispose('pmaTrendChart');
     document.getElementById('pmaContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching PMA records…</div>`;
     try {
       const data = await apiFetch('/api/pma');
@@ -825,6 +826,7 @@
   // ── MAUDE ──
   async function loadMaude() {
     maudeLoaded = true;
+    ecDispose('maudeChart'); ecDispose('maudeTrendChart');
     document.getElementById('maudeContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching MAUDE records…</div>`;
     try {
       const data = await apiFetch('/api/maude');
@@ -858,6 +860,7 @@
   // ── Recalls ──
   async function loadRecalls() {
     recallsLoaded = true;
+    ecDispose('recallChart');
     document.getElementById('recallContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching recall data…</div>`;
     try {
       const data = await apiFetch('/api/recalls');
