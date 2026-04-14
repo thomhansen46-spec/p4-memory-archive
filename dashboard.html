@@ -606,9 +606,9 @@
   function switchTab(name) {
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
     document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-'+name));
-    if (name === 'pma')      { pmaLoaded=false;      loadPma(); }
-    if (name === 'maude')    { maudeLoaded=false;    loadMaude(); }
-    if (name === 'recalls')  { recallsLoaded=false;  loadRecalls(); }
+    if (name === 'pma')      { pmaLoaded=false;      requestAnimationFrame(function(){ setTimeout(loadPma,50); }); }
+    if (name === 'maude')    { maudeLoaded=false;    requestAnimationFrame(function(){ setTimeout(loadMaude,50); }); }
+    if (name === 'recalls')  { recallsLoaded=false;  requestAnimationFrame(function(){ setTimeout(loadRecalls,50); }); }
     if (name === 'samd'      && !samdLoaded)    loadSamd();
     if (name === 'sessions'  && !sessionsLoaded)loadSessions();
     setTimeout(function(){Object.values(window._ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();});if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},50);
