@@ -384,10 +384,10 @@
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 </head>
 <body x-data="p4App()">
-<button onclick="sendTest()">Send Test</button>
-<button onclick="loadLogs()">Load Logs</button>
 
-<pre id="output"></pre>
+
+
+
 <header>
   <div class="logo">
     <div class="logo-mark">P4</div>
@@ -587,7 +587,7 @@
   // ── Status check ──
   async function checkStatus() {
     try {
-      await apiFetch('/api/health');
+      await apiFetch('/api/pma');
       document.getElementById('statusDot').style.background = 'var(--success)';
       document.getElementById('statusDot').style.boxShadow = '0 0 8px var(--success)';
       document.getElementById('statusLabel').textContent = 'LIVE';
