@@ -569,9 +569,7 @@
   updateClock(); setInterval(updateClock, 1000);
 
   // ── Tabs ──
-  document.querySelectorAll('.tab').forEach(t => {
-    t.addEventListener('click', () => switchTab(t.dataset.tab));
-  });
+
 
 
   // ── Load flags ──
@@ -1016,32 +1014,6 @@
 
   // ── Init ──
   checkStatus();
-async function sendTest() {
-  const res = await fetch('/session-log', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      prompt: 'UI test',
-      response: 'connected',
-      tags: ['ui']
-    })
-  });
-
-  const data = await res.json();
-  console.log(data);
-}
-
-async function loadLogs() {
-  const res = await fetch('/session-log');
-  const data = await res.json();
-
-  document.getElementById('output').innerText =
-
-    JSON.stringify(data, null, 2);
-}
-
-</script>
+  loadAllOverview();
 </body>
 </html>
