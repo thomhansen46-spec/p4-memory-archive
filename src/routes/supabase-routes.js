@@ -36,9 +36,16 @@ module.exports = function(app, requireAuth) {
   app.get('/api/pma', requireAuth, async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit) || 2000, 10000);
-      const productCodes = ['LWS','LWP','DTB','NIK','DXX','MKJ','MRM','DSQ'];
+      const productCodes = ['LWS','LWP','DTB','NIK','DXY','NIQ','MRM','DSQ','PNJ'];
       const codeFilter = 'product_code=in.(' + productCodes.join(',') + ')';
-      const data = await query('pma_approvals', 'select=id,applicant,device_name,product_code,decision_code,decision_date,advisory_committee,supplement_number,sr_code,intel_code,samd_flag&order=decision_date.desc&limit=' + limit + '&' + codeFilter);
+      const company = req.query.company;
+      const productCode = req.query.product_code;
+      const srCode = req.query.sr_code;
+      let filterStr = codeFilter;
+      if (company) filterStr += '&canonical_company=eq.' + encodeURIComponent(company);
+      if (productCode) filterStr += '&product_code=eq.' + encodeURIComponent(productCode);
+      if (srCode) filterStr += '&sr_code=eq.' + encodeURIComponent(srCode);
+      const data = await query('pma_approvals', 'select=pma_number,supplement_number,applicant,canonical_company,trade_name,device_name,product_code,decision_code,decision_date,date_received,sr_code,intel_code,samd_flag,p4_control_id&order=decision_date.desc&limit=' + limit + '&' + filterStr);
       res.json({ total: data.length, results: data });
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
