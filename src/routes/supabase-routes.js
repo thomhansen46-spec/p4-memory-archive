@@ -36,7 +36,9 @@ module.exports = function(app, requireAuth) {
   app.get('/api/pma', requireAuth, async (req, res) => {
     try {
       const limit = Math.min(parseInt(req.query.limit) || 2000, 10000);
-      const data = await query('pma_approvals', 'select=id,applicant,device_name,product_code,decision_code,decision_date,advisory_committee,supplement_number&order=decision_date.desc&limit=' + limit);
+      const productCodes = ['LWS','LWP','DTB','NIK','DXX','MKJ','MRM','DSQ'];
+      const codeFilter = 'product_code=in.(' + productCodes.join(',') + ')';
+      const data = await query('pma_approvals', 'select=id,applicant,device_name,product_code,decision_code,decision_date,advisory_committee,supplement_number,sr_code,intel_code,samd_flag&order=decision_date.desc&limit=' + limit + '&' + codeFilter);
       res.json({ total: data.length, results: data });
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
