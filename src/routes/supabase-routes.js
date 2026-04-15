@@ -45,7 +45,7 @@ module.exports = function(app, requireAuth) {
       if (company) filterStr += '&canonical_company=eq.' + encodeURIComponent(company);
       if (productCode) filterStr += '&product_code=eq.' + encodeURIComponent(productCode);
       if (srCode) filterStr += '&sr_code=eq.' + encodeURIComponent(srCode);
-      const data = await query('pma_approvals', 'select=pma_number,supplement_number,applicant,canonical_company,trade_name,device_name,product_code,decision_code,decision_date,date_received,sr_code,intel_code,samd_flag,p4_control_id&order=decision_date.desc&limit=' + limit + '&' + filterStr);
+      const data = await query('pma_approvals', 'select=pma_number,supplement_number,applicant,canonical_company,trade_name,device_name,generic_name,product_code,decision_code,decision_date,date_received,sr_code,intel_code,samd_flag,p4_control_id,advisory_committee,supplement_type,supplement_reason,review_granted,fed_reg_notice_date&order=decision_date.desc&limit=' + limit + '&' + filterStr);
       res.json({ total: data.length, results: data });
     } catch(e) { res.status(500).json({ error: e.message }); }
   });
