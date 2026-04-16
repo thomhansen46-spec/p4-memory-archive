@@ -6,7 +6,7 @@
   <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
 </head>
 
-<body style="background:black; color:white; font-family:Arial;">
+<body style="background:black;color:white;font-family:Arial;">
 
 <h2>P4 Abbott EU Risk Dashboard</h2>
 
@@ -14,7 +14,7 @@
 
 <script>
 window.onload = function() {
-  console.log("NEW DASHBOARD LOADED");
+  console.log("DASHBOARD LOADED");
 
   fetch('/api/rpn')
     .then(res => res.json())
@@ -27,13 +27,9 @@ window.onload = function() {
         title: { text: 'RPN Risk', textStyle:{color:'white'} },
         xAxis: {
           type: 'category',
-          data: data.map(d => d.device_name),
-          axisLabel:{color:'white'}
+          data: data.map(d => d.device_name)
         },
-        yAxis: {
-          type: 'value',
-          axisLabel:{color:'white'}
-        },
+        yAxis: { type: 'value' },
         series: [{
           data: data.map(d => d.rpn),
           type: 'bar'
