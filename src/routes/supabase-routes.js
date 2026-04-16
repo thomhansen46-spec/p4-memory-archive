@@ -1,6 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
 
-// Create Supabase client
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
@@ -8,16 +7,12 @@ const supabase = createClient(
 
 module.exports = function(app, requireAuth) {
 
-  // =========================
-  // HEALTH CHECK (safe route)
-  // =========================
+  // Health check
   app.get('/api/health', (req, res) => {
-    res.json({ ok: true, message: 'API is running' });
+    res.json({ ok: true });
   });
 
-  // =========================
-  // RPN DATA (YOUR MAIN ROUTE)
-  // =========================
+  // RPN data
   app.get('/api/rpn', async (req, res) => {
     try {
       const { data, error } = await supabase
@@ -26,14 +21,15 @@ module.exports = function(app, requireAuth) {
         .order('rpn', { ascending: false });
 
       if (error) {
-        console.error('Supabase error:', error);
+        console.error('SUPABASE ERROR:', error);
         return res.status(500).json({ error: error.message });
       }
 
       res.json(data);
+
     } catch (err) {
-      console.error('Server error:', err);
-      res.status(500).json({ error: 'server error' });
+      console.error('SERVER ERROR:', err);
+      res.status(500).json({ error: err.message });
     }
   });
 
