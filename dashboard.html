@@ -14,7 +14,7 @@
 
 <script>
 window.onload = function() {
-  console.log("Running clean dashboard...");
+  console.log("NEW DASHBOARD LOADED");
 
   fetch('/api/rpn')
     .then(res => res.json())
@@ -40,10 +40,7 @@ window.onload = function() {
         }]
       });
     })
-    .catch(err => {
-      console.error("ERROR:", err);
-      document.body.innerHTML += "<p style='color:red'>Error loading chart</p>";
-    });
+    .catch(err => console.error(err));
 };
 </script>
 
