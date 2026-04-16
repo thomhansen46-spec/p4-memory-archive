@@ -16,7 +16,7 @@ module.exports = function(app, requireAuth) {
   app.get('/api/rpn', async (req, res) => {
     try {
       const { data, error } = await supabase
-        .from('public.abbott_eu_fmea')
+        ..from('abbott_eu_fmea')
         .select('*')
         .order('rpn', { ascending: false });
 
