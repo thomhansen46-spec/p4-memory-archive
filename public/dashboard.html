@@ -1222,7 +1222,19 @@ async function loadExecutive() {
     };
     let html = '';
     for (let s = 5; s >= 1; s--) {
-      html += `<div style="display:flex;align-items:center;justi
+     html += `<div style="display:flex;align-items:center;justify-content:center;font-size:9px;color:#8888aa;font-family:var(--mono)">${s}</div>`;
+      for (let f = 1; f <= 5; f++) {
+        const count = counts[`${s}-${f}`] || 0;
+        const bg = cellColor(s, f);
+        html += `<div style="background:${bg};border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:var(--mono);color:#fff;min-height:36px" title="S${s}xF${f}: ${count}">${count || ''}</div>`;
+      }
+    }
+    html += '<div></div>';
+    for (let f = 1; f <= 5; f++) {
+      html += `<div style="display:flex;align-items:center;justify-content:center;font-size:9px;color:#8888aa;font-family:var(--mono)">${f}</div>`;
+    }
+    el.innerHTML = html;
+  }
   // ── Init ──
 
   async function doLogout() {
