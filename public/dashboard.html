@@ -608,6 +608,25 @@
 
     <div class="chart-wrap"><div id="pmaTrendChart" style="height:280px;width:100%"></div></div>
       <div id="pmaContent"><div class="state-box"><div class="spinner"></div>Loading PMA data…</div></div>
+    <!-- PMA Company History Charts -->
+    <div id="pmaHistorySection" style="margin-top:32px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #2a2240">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#6a5f8a">PMA Approval History — Top 3 Companies</div>
+        <div style="display:flex;gap:8px">
+          <button id="pmaHistBtn5" onclick="setPmaHistWindow(5)" style="background:#3d2a8a;color:#b490ff;border:1px solid #7c5cfc;padding:4px 14px;border-radius:4px;font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer">5 YR</button>
+          <button id="pmaHistBtn10" onclick="setPmaHistWindow(10)" style="background:#1b1530;color:#6a5f8a;border:1px solid #2a2240;padding:4px 14px;border-radius:4px;font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer">10 YR</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+        <div class="chart-wrap"><div id="pmaHistLabel0" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6a5f8a;letter-spacing:0.1em;text-transform:uppercase;padding:10px 14px 0">Company 1</div><div id="pmaHistChart0" style="height:220px;width:100%"></div></div>
+        <div class="chart-wrap"><div id="pmaHistLabel1" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6a5f8a;letter-spacing:0.1em;text-transform:uppercase;padding:10px 14px 0">Company 2</div><div id="pmaHistChart1" style="height:220px;width:100%"></div></div>
+        <div class="chart-wrap"><div id="pmaHistLabel2" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6a5f8a;letter-spacing:0.1em;text-transform:uppercase;padding:10px 14px 0">Company 3</div><div id="pmaHistChart2" style="height:220px;width:100%"></div></div>
+      </div>
+      <div class="chart-wrap" style="margin-bottom:8px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#6a5f8a;letter-spacing:0.1em;text-transform:uppercase;padding:10px 14px 0">All CRM PMA Approvals — Total</div>
+        <div id="pmaTotalsChart" style="height:240px;width:100%"></div>
+      </div>
+    </div>
     </div>
   </div>
 
@@ -986,6 +1005,8 @@
       if (!records.length) { document.getElementById('pmaContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['applicant','device_name','decision_date','decision_code','supplement_number','advisory_committee']);
       document.getElementById('pmaContent').innerHTML = buildTable('pmaTable', cols, records);
+      document.getElementById('pmaHistorySection').style.display = 'block';
+      setTimeout(function(){ renderPmaHistoryCharts(_pmaRecords, 5); }, 400);
       _pmaRecords = records;
       renderBarChart('pmaChart', countBy(records,'applicant',5,true), 'PMA by Applicant', '#8b5cf6');
       renderPmaTrendChart(true);
@@ -997,6 +1018,76 @@
       };
     } catch(e) {
       document.getElementById('pmaContent').innerHTML = errBox(e.message);
+    }
+  }
+
+  // -- PMA History Charts --
+  var _pmaHistWindow = 5;
+  function setPmaHistWindow(yr) {
+    _pmaHistWindow = yr;
+    var b5 = document.getElementById('pmaHistBtn5');
+    var b10 = document.getElementById('pmaHistBtn10');
+    if (b5)  { b5.style.background = yr===5 ? '#3d2a8a' : '#1b1530'; b5.style.color = yr===5 ? '#b490ff' : '#6a5f8a'; b5.style.borderColor = yr===5 ? '#7c5cfc' : '#2a2240'; }
+    if (b10) { b10.style.background = yr===10 ? '#3d2a8a' : '#1b1530'; b10.style.color = yr===10 ? '#b490ff' : '#6a5f8a'; b10.style.borderColor = yr===10 ? '#7c5cfc' : '#2a2240'; }
+    renderPmaHistoryCharts(_pmaRecords, yr);
+  }
+  function renderPmaHistoryCharts(records, years) {
+    if (!records || !records.length) return;
+    var cutoffYr = new Date().getFullYear() - years;
+    var filtered = records.filter(function(r) {
+      var yr = parseInt((r.decision_date || r.date_received || '0').slice(0,4));
+      return yr >= cutoffYr;
+    });
+    var mfrAll = {};
+    records.forEach(function(r) { var m = r.applicant || r.manufacturer || 'Unknown'; mfrAll[m] = (mfrAll[m]||0)+1; });
+    var top3 = Object.entries(mfrAll).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(e){return e[0];});
+    var colors = ['#8b5cf6','#06b6d4','#f59e0b'];
+    top3.forEach(function(company, i) {
+      var byYear = {};
+      filtered.filter(function(r){return (r.applicant||r.manufacturer||'Unknown')===company;})
+        .forEach(function(r){
+          var yr = (r.decision_date||r.date_received||'').slice(0,4);
+          if (yr) byYear[yr] = (byYear[yr]||0)+1;
+        });
+      var yrs = Object.keys(byYear).sort();
+      var lbl = document.getElementById('pmaHistLabel'+i);
+      if (lbl) lbl.textContent = company.length > 20 ? company.slice(0,18)+'…' : company;
+      var el = document.getElementById('pmaHistChart'+i);
+      if (!el) return;
+      if (window['_ecPmaHist'+i]) window['_ecPmaHist'+i].dispose();
+      window['_ecPmaHist'+i] = echarts.init(el, null, {renderer:'canvas'});
+      window['_ecPmaHist'+i].setOption({
+        backgroundColor:'transparent',
+        tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:colors[i],textStyle:{color:'#e2e8f0',fontSize:11}},
+        grid:{left:'2%',right:'4%',top:'12px',bottom:'4%',containLabel:true},
+        xAxis:{type:'category',data:yrs,axisLabel:{color:'#a78bfa',fontSize:9},axisLine:{lineStyle:{color:'#2a2240'}}},
+        yAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:9},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
+        series:[{type:'line',data:yrs.map(function(y){return byYear[y]||0;}),smooth:true,
+          lineStyle:{color:colors[i],width:2},itemStyle:{color:colors[i]},
+          areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:colors[i]+'55'},{offset:1,color:colors[i]+'05'}])},
+          symbol:'circle',symbolSize:5}]
+      });
+    });
+    var totByYear = {};
+    filtered.forEach(function(r){
+      var yr = (r.decision_date||r.date_received||'').slice(0,4);
+      if (yr) totByYear[yr] = (totByYear[yr]||0)+1;
+    });
+    var tyrs = Object.keys(totByYear).sort();
+    var elT = document.getElementById('pmaTotalsChart');
+    if (elT) {
+      if (window._ecPmaTotal) window._ecPmaTotal.dispose();
+      window._ecPmaTotal = echarts.init(elT, null, {renderer:'canvas'});
+      window._ecPmaTotal.setOption({
+        backgroundColor:'transparent',
+        tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
+        grid:{left:'2%',right:'4%',top:'12px',bottom:'4%',containLabel:true},
+        xAxis:{type:'category',data:tyrs,axisLabel:{color:'#a78bfa',fontSize:10},axisLine:{lineStyle:{color:'#2a2240'}}},
+        yAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
+        series:[{type:'bar',data:tyrs.map(function(y){return totByYear[y]||0;}),barMaxWidth:32,
+          itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#8b5cf6'},{offset:1,color:'#3d2a8a'}])},
+          label:{show:true,position:'top',color:'#94a3b8',fontSize:9}}]
+      });
     }
   }
 
