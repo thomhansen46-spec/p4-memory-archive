@@ -800,30 +800,7 @@
     });
   }
 
-  function renderOverviewChart() {
-    var el = document.getElementById('overviewChart');
-    if (!el) return;
-    if (_ecCharts['overviewChart']) { _ecCharts['overviewChart'].dispose(); }
-    _ecCharts['overviewChart'] = echarts.init(el, null, {renderer:'canvas'});
-    _ecCharts['overviewChart'].setOption({
-      backgroundColor:'transparent',
-      tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
-      grid:{left:'2%',right:'4%',top:'8%',bottom:'4%',containLabel:true},
-      xAxis:{type:'category',data:['PMA Approvals','MAUDE Events','Recalls'],axisLabel:{color:'#c0c0c0',fontSize:12}},
-      yAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:10},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
-      series:[{type:'bar',barMaxWidth:80,
-        data:[
-          {value:_pmaRecords.length,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#8b5cf6'},{offset:1,color:'#3b1f8c'}])}},
-          {value:_maudeRecords.length,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#06b6d4'},{offset:1,color:'#0e4d5e'}])}},
-          {value:_recallRecords.length,itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#f59e0b'},{offset:1,color:'#6b4000'}])}}
-        ],
-        label:{show:true,position:'top',color:'#94a3b8',fontSize:11,formatter:function(p){return p.value||'';}}
-      }]
-    });
-  }
 
-  // Chart helpers — ECharts
-  const _ecCharts = {};
   function ecDispose(id) { if (_ecCharts[id]) { _ecCharts[id].dispose(); delete _ecCharts[id]; } }
   function renderBarChart(divId, entries, label, color) {
     var el = document.getElementById(divId);
@@ -890,7 +867,6 @@
     try {
       const data = await apiFetch('/api/pma');
       const records = data.logs || data.results || data.data || [];
-      if(document.getElementById('ovPmaCount')) document.getElementById('ovPmaCount').textContent = records.length;
       renderStats('pmaStats', [
         { label: 'Total Records', value: records.length },
         { label: 'Data Source',   value: 'openFDA', accent: true },
@@ -921,7 +897,6 @@
     try {
       const data = await apiFetch('/api/maude');
       const records = data.results || data.data || data || [];
-      if(document.getElementById('ovMaudeCount')) document.getElementById('ovMaudeCount').textContent = records.length;
       const serious = records.filter(r => (r.event_type||'').toLowerCase().includes('death') || (r.event_type||'').toLowerCase().includes('injury')).length;
       renderStats('maudeStats', [
         { label: 'Total Events',    value: records.length },
@@ -955,7 +930,6 @@
     try {
       const data = await apiFetch('/api/recalls');
       const records = data.results || data.data || data || [];
-      if(document.getElementById('ovRecallCount')) document.getElementById('ovRecallCount').textContent = records.length;
       const cls1 = records.filter(r => (r.recalling_firm||r.recall_status||'').includes('Class I') || (r.recall_status||'') === 'Class I').length;
       renderStats('recallStats', [
         { label: 'Total Recalls', value: records.length },
@@ -1080,7 +1054,6 @@
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const data = await r.json();
       const records = data.logs || data || [];
-      if(document.getElementById('ovSessionCount')) document.getElementById('ovSessionCount').textContent = records.length;
       if (!records.length) { document.getElementById('sessionContent').innerHTML = '<div class="state-box">No sessions logged yet.</div>'; return; }
       document.getElementById('sessionContent').innerHTML = '<div class="log-list">' + records.map(s => renderSession(s)).join('') + '</div>';
     } catch(e) {
@@ -1151,7 +1124,6 @@
       loadMaude().catch(()=>{}),
       loadRecalls().catch(()=>{})
     ]);
-    setTimeout(renderOverviewChart, 3000);
     loadSamd().catch(()=>{});
     loadSessions().catch(()=>{});
   }
