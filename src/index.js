@@ -1,4 +1,14 @@
 'use strict';
+const cron=require('node-cron');
+const {execFile}=require('child_process');
+cron.schedule('0 2 3 * *',()=>{
+  console.log('[CRON] Monthly ingest starting...');
+  execFile('node',[require('path').join(__dirname,'ingest.js')],(err,out,err2)=>{
+    if(err){console.error('[CRON] error:',err.message);return;}
+    console.log('[CRON] done:',out.slice(-300));
+  });
+},{timezone:'UTC'});
+console.log('[CRON] Scheduled: 2am UTC, 3rd of each month');
 
 const express = require('express');
 const cors    = require('cors');
