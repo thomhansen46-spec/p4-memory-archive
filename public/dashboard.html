@@ -704,6 +704,7 @@
     setTimeout(function(){Object.values(window._ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();});if(window._ec1)window._ec1.resize();if(window._ec2)window._ec2.resize();},50);
   }
   // ── Load flags ──
+  var _ecCharts = {};
   let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false, samdLoaded = false;
 
   // ── API fetch helper ──
