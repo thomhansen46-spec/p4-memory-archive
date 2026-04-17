@@ -890,7 +890,7 @@
     try {
       const data = await apiFetch('/api/pma');
       const records = data.logs || data.results || data.data || [];
-      document.getElementById('ovPmaCount').textContent = records.length;
+      if(document.getElementById('ovPmaCount')) document.getElementById('ovPmaCount').textContent = records.length;
       renderStats('pmaStats', [
         { label: 'Total Records', value: records.length },
         { label: 'Data Source',   value: 'openFDA', accent: true },
@@ -921,7 +921,7 @@
     try {
       const data = await apiFetch('/api/maude');
       const records = data.results || data.data || data || [];
-      document.getElementById('ovMaudeCount').textContent = records.length;
+      if(document.getElementById('ovMaudeCount')) document.getElementById('ovMaudeCount').textContent = records.length;
       const serious = records.filter(r => (r.event_type||'').toLowerCase().includes('death') || (r.event_type||'').toLowerCase().includes('injury')).length;
       renderStats('maudeStats', [
         { label: 'Total Events',    value: records.length },
@@ -955,7 +955,7 @@
     try {
       const data = await apiFetch('/api/recalls');
       const records = data.results || data.data || data || [];
-      document.getElementById('ovRecallCount').textContent = records.length;
+      if(document.getElementById('ovRecallCount')) document.getElementById('ovRecallCount').textContent = records.length;
       const cls1 = records.filter(r => (r.recalling_firm||r.recall_status||'').includes('Class I') || (r.recall_status||'') === 'Class I').length;
       renderStats('recallStats', [
         { label: 'Total Recalls', value: records.length },
@@ -1080,7 +1080,7 @@
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const data = await r.json();
       const records = data.logs || data || [];
-      document.getElementById('ovSessionCount').textContent = records.length;
+      if(document.getElementById('ovSessionCount')) document.getElementById('ovSessionCount').textContent = records.length;
       if (!records.length) { document.getElementById('sessionContent').innerHTML = '<div class="state-box">No sessions logged yet.</div>'; return; }
       document.getElementById('sessionContent').innerHTML = '<div class="log-list">' + records.map(s => renderSession(s)).join('') + '</div>';
     } catch(e) {
