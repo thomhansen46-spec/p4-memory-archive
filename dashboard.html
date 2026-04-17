@@ -982,6 +982,7 @@
         { label: 'Data Source',   value: 'openFDA', accent: true },
         { label: 'Device Class',  value: 'III' },
       ]);
+      var _pf={};records.forEach(function(r){var m=r.applicant||r.manufacturer||'Unknown';_pf[m]=(_pf[m]||0)+1;});var _pt=Object.entries(_pf).sort(function(a,b){return b[1]-a[1];})[0];var _pd=records.map(function(r){return r.decision_date||r.date_received||'';}).filter(Boolean).sort();var _pr=_pd.length?_pd[0].slice(0,4)+'-'+_pd[_pd.length-1].slice(0,4):'—';document.querySelectorAll('#pmaCardMfr').forEach(function(el){el.textContent=_pt?_pt[0].slice(0,14):'—';});document.querySelectorAll('#pmaCardRange').forEach(function(el){el.textContent=_pr;});document.querySelectorAll('#pmaCardCount').forEach(function(el){el.textContent=records.length.toLocaleString();});
       if (!records.length) { document.getElementById('pmaContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['applicant','device_name','decision_date','decision_code','supplement_number','advisory_committee']);
       document.getElementById('pmaContent').innerHTML = buildTable('pmaTable', cols, records);
@@ -1013,6 +1014,7 @@
         { label: 'Injury/Death',    value: serious, accent: true },
         { label: 'Data Source',     value: 'MAUDE' },
       ]);
+      var _mf={};records.forEach(function(r){var m=r.manufacturer||r.brand_name||'Unknown';_mf[m]=(_mf[m]||0)+1;});var _mt=Object.entries(_mf).sort(function(a,b){return b[1]-a[1];})[0];var _md=records.map(function(r){return r.date_received||'';}).filter(Boolean).sort();var _mr=_md.length?_md[0].slice(0,4)+'-'+_md[_md.length-1].slice(0,4):'—';document.querySelectorAll('#maudeCardMfr').forEach(function(el){el.textContent=_mt?_mt[0].slice(0,14):'—';});document.querySelectorAll('#maudeCardRange').forEach(function(el){el.textContent=_mr;});document.querySelectorAll('#maudeCardCount').forEach(function(el){el.textContent=records.length.toLocaleString();});
       if (!records.length) { document.getElementById('maudeContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['brand_name','manufacturer','event_type','date_received','device_problem','report_number']);
       _maudeRecords = records;
@@ -1046,6 +1048,7 @@
         { label: 'Class I',       value: cls1, accent: true },
         { label: 'Data Source',   value: 'openFDA' },
       ]);
+      document.querySelectorAll('#recallCardCount').forEach(function(el){el.textContent=records.length.toLocaleString();});
       if (!records.length) { document.getElementById('recallContent').innerHTML = `<div class="state-box">No records returned.</div>`; return; }
       const cols = detectCols(records[0], ['recalling_firm','product_description','recall_status','event_date_initiated','status','reason_for_recall']);
       _recallRecords = records;
