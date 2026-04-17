@@ -778,7 +778,7 @@
     var el = document.getElementById(divId);
     if (!el) return;
     if (_ecCharts[divId]) { _ecCharts[divId].dispose(); }
-    _ecCharts[divId] = echarts.init(el, null, {renderer:'canvas', width: el.closest('main').offsetWidth - 80});
+    _ecCharts[divId] = echarts.init(el, null, {renderer:'canvas'}); setTimeout(function(){ if(_ecCharts[divId]) _ecCharts[divId].resize(); }, 100);
     var ds = datasets[0] || {};
     _ecCharts[divId].setOption({
       backgroundColor:'transparent',
@@ -822,7 +822,7 @@
     var el = document.getElementById(divId);
     if (!el) return;
     ecDispose(divId);
-    _ecCharts[divId] = echarts.init(el, null, {renderer:'canvas', width: el.closest('main').offsetWidth - 80});
+    _ecCharts[divId] = echarts.init(el, null, {renderer:'canvas'}); setTimeout(function(){ if(_ecCharts[divId]) _ecCharts[divId].resize(); }, 100);
     _ecCharts[divId].setOption({
       backgroundColor:'transparent',
       tooltip:{trigger:'axis',axisPointer:{type:'shadow'},backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
