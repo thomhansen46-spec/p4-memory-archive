@@ -158,23 +158,67 @@ async function ingestRecalls() {
   console.log(`[RECALLS] Upserted ${n} rows`);
 }
 
+async function ingestSaMD() {
+  console.log('\n[SAMD] Fetching 10yr SaMD events (date-chunked)...');
+  const rows = await paginateChunked(
+    (limit, skip, from, to) =>
+      `${BASE}/event.json?search=device.generic_name:(software+OR+algorithm+OR+AI+OR+diagnostic)+AND+date_received:[${from}+TO+${to}]&limit=${limit}&skip=${skip}&sort=date_received:desc`
+  );
+  const records = rows.map(r => {
+    const dev = (Array.isArray(r.device) && r.device[0]) || {};
+    return {
+      id:             r.report_number || `samd-${dev.manufacturer_d_name}-${r.date_received}-${Math.random().toString(36).slice(2,7)}`,
+      manufacturer:   dev.manufacturer_d_name || null,
+      brand_name:     dev.brand_name          || null,
+      product_code:   dev.device_report_product_code || null,
+      event_type:     r.event_type            || null,
+      date_received:  r.date_received         ? r.date_received.slice(0,10) : null,
+      device_problem: Array.isArray(r.device_problem_codes) ? r.device_problem_codes.join(',') : null,
+      report_number:  r.report_number         || null,
+    };
+  });
+  const n = await upsertBatched('samd_events', records);
+  console.log(`[SAMD] Upserted ${n} rows`);
+}
+
 async function verify() {
   console.log('\n[VERIFY] Row counts:');
-  for (const t of ['pma_approvals','maude_events','recalls']) {
+  for (const t of ['pma_approvals','maude_events','recalls','samd_events']) {
     const { count, error } = await supabase.from(t).select('*', { count: 'exact', head: true });
     console.log(`  ${t}: ${error ? 'ERROR: ' + error.message : count + ' rows'}`);
   }
 }
 
 (async () => {
+  const startTime = new Date();
+  let status = 'success';
+  let notes = '';
   try {
     await ingestPMA();
     await ingestMAUDE();
     await ingestRecalls();
+    await ingestSaMD();
     await verify();
+    notes = 'Monthly ingest completed: PMA + MAUDE + Recalls + SaMD';
     console.log('\nIngest complete.');
   } catch(e) {
+    status = 'error';
+    notes = 'FATAL: ' + e.message;
     console.error('FATAL:', e.message);
-    process.exit(1);
   }
+  // Log cron run to session_log
+  try {
+    const { createClient } = require('@supabase/supabase-js');
+    const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+    await sb.from('session_log').insert({
+      session_date: startTime.toISOString().slice(0,10),
+      status,
+      notes,
+      created_at: new Date().toISOString(),
+    });
+    console.log('[CRON] Run logged to session_log');
+  } catch(logErr) {
+    console.error('[CRON] Failed to log run:', logErr.message);
+  }
+  if (status === 'error') process.exit(1);
 })();
