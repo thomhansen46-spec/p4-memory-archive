@@ -32,7 +32,7 @@ function safeStr(v) { return typeof v === 'string' ? v.trim() : null; }
 
 module.exports = (app) => {
 
-app.get('/api/fda/overview', async (req, res) => {
+app.get('/api/overview', async (req, res) => {
 try {
 const range = `${daysAgo(365)}+TO+${daysAgo(0)}`;
 const [pma, maude, recall, mfr, evtType, cls] = await Promise.all([
@@ -49,7 +49,7 @@ top_manufacturers: safeArr(mfr.results), maude_event_types: safeArr(evtType.resu
 } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
 });
 
-app.get('/api/fda/pma', async (req, res) => {
+app.get('/api/pma', async (req, res) => {
 const limit = Math.min(Number(req.query.limit) || 500, 500);
 const skip = Math.max(Number(req.query.skip) || 0, 0);
 try {
@@ -61,7 +61,7 @@ results: safeArr(d.results).map(r => ({ pma_number: safeStr(r.pma_number), trade
 } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
 });
 
-app.get('/api/fda/maude', async (req, res) => {
+app.get('/api/maude', async (req, res) => {
 const limit = Math.min(Number(req.query.limit) || 500, 500);
 const skip = Math.max(Number(req.query.skip) || 0, 0);
 const days = Math.min(Number(req.query.days) || 1825, 3650);
@@ -73,7 +73,7 @@ results: safeArr(d.results).map(r => ({ mdr_report_key: safeStr(r.mdr_report_key
 } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
 });
 
-app.get('/api/fda/recalls', async (req, res) => {
+app.get('/api/recalls', async (req, res) => {
 const limit = Math.min(Number(req.query.limit) || 500, 500);
 const skip = Math.max(Number(req.query.skip) || 0, 0);
 try {
@@ -84,7 +84,7 @@ results: safeArr(d.results).map(r => ({ recall_number: safeStr(r.recall_number),
 });
 
 
-app.get('/api/fda/samd', async (req, res) => {
+app.get('/api/samd-events', async (req, res) => {
     const limit = Math.min(Number(req.query.limit) || 500, 500);
     const from = daysAgo(1825); const to = daysAgo(0);
     const Q = 'device.generic_name:(pacemaker+OR+defibrillator+OR+cardioverter)';
@@ -102,7 +102,7 @@ app.get('/api/fda/samd', async (req, res) => {
         });
     } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
 });
-app.get('/api/fda/health', async (req, res) => {
+app.get('/api/health', async (req, res) => {
 try {
 const d = await fdaFetch(`${BASE}/pma.json?search=${CRM_QUERY}&limit=1`);
 res.json({ ok: true, openFDA_reachable: true, sample_total: d?.meta?.results?.total });
