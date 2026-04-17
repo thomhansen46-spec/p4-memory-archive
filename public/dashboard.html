@@ -485,56 +485,56 @@
 
   <!-- OVERVIEW -->
   <div class="panel active" id="panel-overview">
-    <div class="section-header">
-      <div>
-        <div class="section-title">Phase-Four · P4 Memory Archive</div>
-        <div class="section-name">CRM <span>Regulatory Intelligence</span></div>
+<div class="section-header">
+        <div>
+          <div class="section-title">Phase-Four · P4 Intelligence Platform</div>
+          <div class="section-name">CRM <span>Executive Overview</span></div>
+        </div>
+        <button class="refresh-btn" onclick="loadExecutive()">↺ Refresh</button>
       </div>
-      <button class="refresh-btn" onclick="loadAllOverview()">↺ Refresh All</button>
-    </div>
-    <div class="chart-wrap" style="margin:0 0 18px"><div id="overviewChart" style="height:220px;width:100%"></div></div>
-    <div class="overview-grid" id="overviewGrid">
-      <div class="overview-card" @click="switchTo('pma')">
-        <div class="ov-icon">📋</div>
-        <div class="ov-title">PMA Approvals</div>
-        <div class="ov-desc">Pre-Market Approval decisions for Class III CRM devices including ICDs, CRTs, and pacemakers.</div>
-        <div class="ov-count" id="ovPmaCount">—</div>
-        <div class="ov-count-label">records loaded</div>
-        <div class="pipeline-tag">SpectrumPMA™</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px">
+        <div class="stat-card"><div class="stat-label">TOP RPN SCORE</div><div class="stat-value" id="kpiTopRpn">—</div><div id="kpiTopDevice" style="color:#a07ee0;font-size:11px;margin-top:4px;font-family:var(--mono)">loading...</div></div>
+        <div class="stat-card"><div class="stat-label">FAILURE MODES</div><div class="stat-value" id="kpiFailureCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">total in FMEA</div></div>
+        <div class="stat-card"><div class="stat-label">DEVICES TRACKED</div><div class="stat-value" id="kpiDeviceCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">unique CRM devices</div></div>
       </div>
-      <div class="overview-card" @click="switchTo('maude')">
-        <div class="ov-icon">⚠️</div>
-        <div class="ov-title">MAUDE Events</div>
-        <div class="ov-desc">Adverse event reports from manufacturers, distributors, and device user facilities.</div>
-        <div class="ov-count" id="ovMaudeCount">—</div>
-        <div class="ov-count-label">records loaded</div>
-        <div class="pipeline-tag">PulseMAUDE™</div>
+      <div style="display:grid;grid-template-columns:320px 1fr;gap:16px;margin-bottom:24px">
+        <div class="stat-card" style="padding:16px">
+          <div class="stat-label" style="margin-bottom:12px">RISK HEATMAP · SEV × FREQ</div>
+          <div id="riskHeatmap" style="display:grid;grid-template-columns:18px repeat(5,1fr);gap:3px"></div>
+          <div style="display:flex;gap:10px;margin-top:10px;font-size:10px;font-family:var(--mono)">
+            <span><span style="display:inline-block;width:10px;height:10px;background:#1a3a1a;border-radius:2px;margin-right:3px"></span>LOW</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#3a3a0a;border-radius:2px;margin-right:3px"></span>MED</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#5a2a0a;border-radius:2px;margin-right:3px"></span>HIGH</span>
+            <span><span style="display:inline-block;width:10px;height:10px;background:#7a0a0a;border-radius:2px;margin-right:3px"></span>CRIT</span>
+          </div>
+        </div>
+        <div class="stat-card" style="padding:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div class="stat-label">FMEA RISK TABLE</div>
+            <div style="font-size:10px;font-family:var(--mono);color:#8888aa">SORT:
+              <span onclick="sortFmea('rpn')" id="sortRpn" style="color:#a07ee0;cursor:pointer;margin-left:6px;text-decoration:underline">RPN</span>
+              <span onclick="sortFmea('severity')" id="sortSev" style="cursor:pointer;margin-left:6px">SEV</span>
+              <span onclick="sortFmea('frequency')" id="sortFreq" style="cursor:pointer;margin-left:6px">FREQ</span>
+            </div>
+          </div>
+          <div style="overflow-y:auto;max-height:240px">
+            <table style="width:100%;border-collapse:collapse;font-size:11px;font-family:var(--mono)">
+              <thead style="position:sticky;top:0;background:#18181f">
+                <tr style="color:#8888aa;border-bottom:1px solid #2a2a38">
+                  <th style="text-align:left;padding:5px 8px">DEVICE</th>
+                  <th style="text-align:left;padding:5px 8px">FAILURE MODE</th>
+                  <th style="text-align:center;padding:5px 8px">SEV</th>
+                  <th style="text-align:center;padding:5px 8px">FREQ</th>
+                  <th style="text-align:center;padding:5px 8px">RPN</th>
+                </tr>
+              </thead>
+              <tbody id="fmeaTableBody">
+                <tr><td colspan="5" style="text-align:center;padding:20px;color:#4a4a66">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      <div class="overview-card" @click="switchTo('recalls')">
-        <div class="ov-icon">🔴</div>
-        <div class="ov-title">Recalls</div>
-        <div class="ov-desc">Class I / II / III device recall actions tracked across CRM product lines.</div>
-        <div class="ov-count" id="ovRecallCount">—</div>
-        <div class="ov-count-label">records loaded</div>
-        <div class="pipeline-tag">CAPA Radar™</div>
-      </div>
-      <div class="overview-card" @click="switchTo('sessions')">
-        <div class="ov-icon">🗂️</div>
-        <div class="ov-title">Session Log</div>
-        <div class="ov-desc">Build sessions and milestone records for the P4 Memory Archive project.</div>
-        <div class="ov-count" id="ovSessionCount">—</div>
-        <div class="ov-count-label">sessions logged</div>
-        <div class="pipeline-tag">P4 Archive</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PMA APPROVALS -->
-  <div class="panel" id="panel-pma">
-    <div class="section-header">
-      <div>
-        <div class="section-title">SpectrumPMA™ · openFDA Pipeline</div>
-        <div class="section-name">PMA <span>Approvals</span></div>
       </div>
       <button class="refresh-btn" onclick="loadPma()">↺ Refresh</button>
     </div>
@@ -1148,7 +1148,81 @@
     loadSamd().catch(()=>{});
     loadSessions().catch(()=>{});
   }
+async function loadExecutive() {
+    try {
+      const data = await apiFetch('/api/rpn');
+      if (!data || !data.length) {
+        document.getElementById('kpiTopRpn').textContent = 'No data';
+        return;
+      }
+      // KPI Cards
+      const sorted = data.sort((a,b) => b.rpn - a.rpn);
+      document.getElementById('kpiTopRpn').textContent = sorted[0].rpn;
+      document.getElementById('kpiTopDevice').textContent = sorted[0].device_name || sorted[0].device_category;
+      document.getElementById('kpiFailureCount').textContent = data.length;
+      const devices = new Set(data.map(d => d.device_name || d.device_category));
+      document.getElementById('kpiDeviceCount').textContent = devices.size;
 
+      // FMEA Table
+      renderFmeaTable(sorted);
+
+      // Risk Heatmap
+      renderHeatmap(data);
+    } catch(e) {
+      console.error('loadExecutive error:', e);
+    }
+  }
+
+  let _fmeaData = [];
+  let _fmeaSortKey = 'rpn';
+
+  function sortFmea(key) {
+    _fmeaSortKey = key;
+    ['rpn','severity','frequency'].forEach(k => {
+      const el = document.getElementById('sort'+k.charAt(0).toUpperCase()+k.slice(1));
+      if(el) el.style.color = k === key ? '#a07ee0' : '#8888aa';
+    });
+    renderFmeaTable(_fmeaData.sort((a,b) => b[key] - a[key]));
+  }
+
+  function renderFmeaTable(data) {
+    _fmeaData = data;
+    const tbody = document.getElementById('fmeaTableBody');
+    if (!tbody) return;
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#4a4a66">No data</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(r => {
+      const rpnColor = r.rpn >= 15 ? '#e05555' : r.rpn >= 10 ? '#e0a030' : '#45c97a';
+      return `<tr style="border-bottom:1px solid #1a1a28">
+        <td style="padding:5px 8px;color:#e4e4f0">${r.device_name || r.device_category || '—'}</td>
+        <td style="padding:5px 8px;color:#8888aa">${r.failure_mode || '—'}</td>
+        <td style="padding:5px 8px;text-align:center;color:#e4e4f0">${r.severity}</td>
+        <td style="padding:5px 8px;text-align:center;color:#e4e4f0">${r.frequency}</td>
+        <td style="padding:5px 8px;text-align:center;font-weight:600;color:${rpnColor}">${r.rpn}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderHeatmap(data) {
+    const el = document.getElementById('riskHeatmap');
+    if (!el) return;
+    const counts = {};
+    data.forEach(r => {
+      const k = `${r.severity}-${r.frequency}`;
+      counts[k] = (counts[k] || 0) + 1;
+    });
+    const cellColor = (s, f) => {
+      const rpn = s * f;
+      if (rpn >= 20) return '#7a0a0a';
+      if (rpn >= 12) return '#5a2a0a';
+      if (rpn >= 6)  return '#3a3a0a';
+      return '#1a3a1a';
+    };
+    let html = '';
+    for (let s = 5; s >= 1; s--) {
+      html += `<div style="display:flex;align-items:center;justi
   // ── Init ──
 
   async function doLogout() {
@@ -1161,7 +1235,7 @@
     if ((tries||0) > 20) { cb(); return; }
     setTimeout(function(){ waitForSb(cb, (tries||0)+1); }, 100);
   }
-  waitForSb(function(){ loadAllOverview(); });
+  waitForSb(function(){ loadAllOverview(); loadExecutive(); });
   window.addEventListener('resize', function(){ Object.values(_ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();}); });
   window.addEventListener('resize', function(){ Object.values(_ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();}); });
 </script>
