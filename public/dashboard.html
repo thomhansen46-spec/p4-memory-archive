@@ -1021,7 +1021,46 @@
     }
   }
 
-  // -- PMA History Charts --
+  // -- PMA History Charts v3 --
+  var _pmaHistWindows=[5,5,5];
+  function setPmaHistWindowCo(i,yr){
+    _pmaHistWindows[i]=yr;
+    var b5=document.getElementById('pmaCoBtn5_'+i);
+    var b10=document.getElementById('pmaCoBtn10_'+i);
+    if(b5){b5.style.background=yr===5?'#3d2a8a':'#1b1530';b5.style.color=yr===5?'#b490ff':'#6a5f8a';b5.style.borderColor=yr===5?'#7c5cfc':'#2a2240';}
+    if(b10){b10.style.background=yr===10?'#3d2a8a':'#1b1530';b10.style.color=yr===10?'#b490ff':'#6a5f8a';b10.style.borderColor=yr===10?'#7c5cfc':'#2a2240';}
+    renderPmaCoChart(i,_pmaRecords,yr);
+  }
+  function renderPmaCoChart(i,records,years){
+    if(!records||!records.length)return;
+    var mfrAll={};
+    records.forEach(function(r){var m=r.applicant||r.manufacturer||'Unknown';mfrAll[m]=(mfrAll[m]||0)+1;});
+    var top3=Object.entries(mfrAll).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(e){return e[0];});
+    var colors=['#8b5cf6','#06b6d4','#f59e0b'];
+    var company=top3[i]; if(!company)return;
+    var cutoff=new Date().getFullYear()-years; var total=0;
+    records.forEach(function(r){
+      if((r.applicant||r.manufacturer||'Unknown')!==company)return;
+      var yr=parseInt((r.decision_date||r.date_received||'0').slice(0,4));
+      if(yr>=cutoff)total++;
+    });
+    var lbl=document.getElementById('pmaHistLabel'+i);
+    if(lbl)lbl.textContent=company.length>22?company.slice(0,20)+String.fromCharCode(8230):company;
+    var el=document.getElementById('pmaHistChart'+i); if(!el)return;
+    if(window['_ecPmaHist'+i])window['_ecPmaHist'+i].dispose();
+    window['_ecPmaHist'+i]=echarts.init(el,null,{renderer:'canvas'});
+    window['_ecPmaHist'+i].setOption({
+      backgroundColor:'transparent',
+      tooltip:{trigger:'item',backgroundColor:'#1a1035',borderColor:colors[i],textStyle:{color:'#e2e8f0',fontSize:11}},
+      grid:{left:'4%',right:'4%',top:'16px',bottom:'4%',containLabel:true},
+      xAxis:{type:'category',data:[years+' Year'],axisLabel:{color:'#a78bfa',fontSize:12},axisLine:{lineStyle:{color:'#2a2240'}}},
+      yAxis:{type:'value',axisLabel:{color:'#a78bfa',fontSize:9},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
+      series:[{type:'bar',data:[total],barMaxWidth:80,
+        itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:colors[i]},{offset:1,color:colors[i]+'33'}])},
+        label:{show:true,position:'top',color:'#e2e8f0',fontSize:22,fontWeight:'600',
+          formatter:function(p){return p.value.toLocaleString();}}}]
+    });
+  }
   var _pmaHistWindow = 5;
   function setPmaHistWindow(yr) {
     _pmaHistWindow = yr;
