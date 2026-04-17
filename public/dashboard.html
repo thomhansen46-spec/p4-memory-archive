@@ -1101,10 +1101,9 @@
         grid:{left:'2%',right:'4%',top:'12px',bottom:'4%',containLabel:true},
         xAxis:{type:'category',data:yrs,axisLabel:{color:'#a78bfa',fontSize:9},axisLine:{lineStyle:{color:'#2a2240'}}},
         yAxis:{type:'value',name:'PMA Count',nameTextStyle:{color:'#6a5f8a',fontSize:9},axisLabel:{color:'#a78bfa',fontSize:9},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
-        series:[{type:'line',data:yrs.map(function(y){return byYear[y]||0;}),smooth:true,
-          lineStyle:{color:colors[i],width:2},itemStyle:{color:colors[i]},
-          areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:colors[i]+'55'},{offset:1,color:colors[i]+'05'}])},
-          symbol:'circle',symbolSize:5}]
+        series:[{type:'bar',data:yrs.map(function(y){return byYear[y]||0;}),barMaxWidth:32,
+          itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:colors[i]},{offset:1,color:colors[i]+'33'}])},
+          label:{show:true,position:'top',color:'#e2e8f0',fontSize:9,formatter:function(p){return p.value>0?p.value:'';}}}]
       });
     });
     var totByYear = {};
