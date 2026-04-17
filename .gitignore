@@ -4,3 +4,5 @@ node_modules/
 .env
 src/data/raw/
 src/data/sql/
+recalls_bulk.zip
+device-recall-0001-of-0001.json
