@@ -47,6 +47,7 @@ require('./routes/session-log')(app);
 require('./routes/sessions')(app);
 require('./routes/fda-pipeline')(app);
 require('./routes/supabase-routes')(app, requireAuth);
+require('./routes/tplc')(app);
 
 // Start
 const PORT = process.env.PORT || 10000;

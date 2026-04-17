@@ -130,6 +130,34 @@
     margin: 0 auto;
   }
 
+  .sidebar {
+    position: fixed; left: 0; top: 60px; bottom: 0; z-index: 100;
+    width: 200px; background: rgba(11,8,18,0.97);
+    border-right: 1px solid rgba(139,92,246,0.15);
+    display: flex; flex-direction: column;
+    transition: width 0.25s ease; overflow: hidden;
+  }
+  .sidebar.collapsed { width: 48px; }
+  #sidebarToggle {
+    background: transparent; border: none;
+    border-bottom: 1px solid rgba(139,92,246,0.15);
+    color: #a78bfa; font-size: 18px; padding: 12px 14px;
+    cursor: pointer; text-align: left; width: 100%; flex-shrink: 0;
+  }
+  #sidebarToggle:hover { background: rgba(139,92,246,0.1); }
+  .sidebar-nav { display: flex; flex-direction: column; padding-top: 8px; }
+  .sidebar-nav .tab {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; white-space: nowrap;
+    border-bottom: none; border-left: 2px solid transparent;
+  }
+  .sidebar-nav .tab:hover { border-left-color: rgba(139,92,246,0.4); background: rgba(139,92,246,0.07); }
+  .sidebar-nav .tab.active { border-left-color: var(--accent); color: var(--accent2); background: rgba(139,92,246,0.12); }
+  .nav-icon { font-size: 16px; flex-shrink: 0; width: 20px; text-align: center; }
+  .nav-label { font-size: 11px; letter-spacing: .08em; }
+  .sidebar.collapsed .nav-label { display: none; }
+  body.has-sidebar main { margin-left: 200px; transition: margin-left 0.25s ease; }
+  body.has-sidebar.sidebar-collapsed main { margin-left: 48px; }
   .panel { display: none; animation: fadeIn 0.3s ease; }
   .panel.active { display: block; }
 
@@ -451,7 +479,7 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 </head>
-<body>
+<body class="has-sidebar">
 
 
 
@@ -472,7 +500,7 @@
   </div>
 </header>
 
-<nav>
+<nav id="topnav">
   <div class="tab" data-tab="overview">Overview</div>
   <div class="tab" data-tab="pma">PMA Approvals</div>
   <div class="tab" data-tab="maude">MAUDE Events</div>
@@ -480,6 +508,17 @@
   <div class="tab" data-tab="samd">SaMD Analysis</div>
   <div class="tab" data-tab="sessions">Session Log</div>
 </nav>
+<div id="sidebar" class="sidebar">
+  <button id="sidebarToggle" onclick="toggleSidebar()" title="Collapse sidebar">&#9776;</button>
+  <div class="sidebar-nav">
+    <div class="tab" data-tab="overview"><span class="nav-icon">⬡</span><span class="nav-label">Overview</span></div>
+    <div class="tab" data-tab="pma"><span class="nav-icon">✦</span><span class="nav-label">PMA Approvals</span></div>
+    <div class="tab" data-tab="maude"><span class="nav-icon">⚡</span><span class="nav-label">MAUDE Events</span></div>
+    <div class="tab" data-tab="recalls"><span class="nav-icon">⚑</span><span class="nav-label">Recalls</span></div>
+    <div class="tab" data-tab="samd"><span class="nav-icon">◈</span><span class="nav-label">SaMD Analysis</span></div>
+    <div class="tab" data-tab="sessions"><span class="nav-icon">▣</span><span class="nav-label">Session Log</span></div>
+  </div>
+</div>
 
 <main>
 
@@ -497,10 +536,9 @@
         <div class="stat-card"><div class="stat-label">FAILURE MODES</div><div class="stat-value" id="kpiFailureCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">total in FMEA</div></div>
         <div class="stat-card"><div class="stat-label">DEVICES TRACKED</div><div class="stat-value" id="kpiDeviceCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">unique CRM devices</div></div>
       </div>
-      <div style="display:grid;grid-template-columns:320px 1fr;gap:16px;margin-bottom:24px">
-        <div class="stat-card" style="padding:16px">
+      <div class="stat-card" style="padding:16px;margin-bottom:16px">
           <div class="stat-label" style="margin-bottom:12px">RISK HEATMAP · SEV × FREQ</div>
-          <div id="riskHeatmap" style="display:grid;grid-template-columns:18px repeat(5,1fr);gap:3px"></div>
+          <div id="riskHeatmap" style="display:grid;grid-template-columns:18px repeat(5,1fr);gap:3px;max-width:500px"></div>
           <div style="display:flex;gap:10px;margin-top:10px;font-size:10px;font-family:var(--mono)">
             <span><span style="display:inline-block;width:10px;height:10px;background:#1a3a1a;border-radius:2px;margin-right:3px"></span>LOW</span>
             <span><span style="display:inline-block;width:10px;height:10px;background:#3a3a0a;border-radius:2px;margin-right:3px"></span>MED</span>
@@ -508,7 +546,7 @@
             <span><span style="display:inline-block;width:10px;height:10px;background:#7a0a0a;border-radius:2px;margin-right:3px"></span>CRIT</span>
           </div>
         </div>
-        <div class="stat-card" style="padding:16px">
+      <div class="stat-card" style="padding:16px;margin-bottom:24px">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
             <div class="stat-label">FMEA RISK TABLE</div>
             <div style="font-size:10px;font-family:var(--mono);color:#8888aa">SORT:
@@ -517,7 +555,7 @@
               <span onclick="sortFmea('frequency')" id="sortFreq" style="cursor:pointer;margin-left:6px">FREQ</span>
             </div>
           </div>
-          <div style="overflow-y:auto;max-height:240px">
+          <div style="overflow-y:auto;max-height:320px">
             <table style="width:100%;border-collapse:collapse;font-size:11px;font-family:var(--mono)">
               <thead style="position:sticky;top:0;background:#18181f">
                 <tr style="color:#8888aa;border-bottom:1px solid #2a2a38">
@@ -535,7 +573,6 @@
           </div>
         </div>
       </div>
-      </div>
   <!-- PMA -->
   <div class="panel" id="panel-pma">
     <div class="section-header">
@@ -546,6 +583,21 @@
       <button class="refresh-btn" onclick="loadPma()">↺ Refresh</button>
     </div>
     <div class="stats-row" id="pmaStats"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="pmaCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by approval count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="pmaCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">approvals span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="pmaCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">CRM PMA records</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="pmaCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by approval count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="pmaCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">approvals span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="pmaCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">CRM PMA records</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px" id="pmaCards">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="pmaCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by approval count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="pmaCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">approvals span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="pmaCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">CRM PMA records</div></div>
+    </div>
     <div class="table-wrap">
       <div class="table-toolbar">
         <span class="table-label">CRM Device PMA Records</span>
@@ -569,6 +621,21 @@
       <button class="refresh-btn" onclick="loadMaude()">↺ Refresh</button>
     </div>
     <div class="stats-row" id="maudeStats"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="maudeCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by event count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="maudeCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">events span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="maudeCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">MAUDE events</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="maudeCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by event count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="maudeCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">events span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="maudeCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">MAUDE events</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px" id="maudeCards">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="maudeCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by event count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="maudeCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">events span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="maudeCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">MAUDE events</div></div>
+    </div>
     <div class="table-wrap">
       <div class="table-toolbar">
         <span class="table-label">CRM Device Event Reports</span>
@@ -590,6 +657,21 @@
       <button class="refresh-btn" onclick="loadRecalls()">↺ Refresh</button>
     </div>
     <div class="stats-row" id="recallStats"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="recallCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by recall count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="recallCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recalls span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="recallCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recall actions</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="recallCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by recall count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="recallCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recalls span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="recallCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recall actions</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px" id="recallCards">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="recallCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by recall count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="recallCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recalls span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="recallCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recall actions</div></div>
+    </div>
     <div class="table-wrap">
       <div class="table-toolbar">
         <span class="table-label">CRM Recall Actions</span>
@@ -600,24 +682,26 @@
     </div>
   </div>
 
-  <!-- SESSION LOG -->
-<div class="panel" id="panel-samd">
-<div class="section-title">SentinelRWE™ — SaMD Intelligence</div>
-<div class="section-name">SaMD <span>Failure Analysis</span></div>
-<div id="samdStats" class="stats-row"></div>
-<div style="display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:16px;">
-  <div class="chart-wrap" style="height:320px;width:100%;max-width:860px;">
-    <div style="color:var(--accent);font-size:11px;font-weight:600;letter-spacing:.08em;margin-bottom:8px;">FAILURES BY MANUFACTURER</div>
-    <div id="ec_samdMfr" style="height:280px;width:100%;"></div>
+  <!-- SAMD -->
+  <div class="panel" id="panel-samd">
+    <div class="section-header">
+      <div>
+        <div class="section-title">SentinelRWE™ · openFDA Pipeline</div>
+        <div class="section-name">SaMD <span>Failure Analysis</span></div>
+      </div>
+      <button class="refresh-btn" onclick="loadSamd()">↺ Refresh</button>
+    </div>
+    <div class="stats-row" id="samdStats"></div>
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <span class="table-label">CRM SaMD Adverse Events</span>
+        <input class="search-input" placeholder="Filter records…" oninput="filterTable(this,'samdTable')" />
+      </div>
+      <div class="chart-wrap"><div id="ec_samdMfr" style="height:280px;width:100%"></div></div>
+      <div class="chart-wrap"><div id="ec_samdDual" style="height:280px;width:100%"></div></div>
+      <div id="samdContent"><div class="state-box"><div class="spinner"></div>Loading SaMD data…</div></div>
+    </div>
   </div>
-  <div class="chart-wrap" style="height:320px;width:100%;max-width:860px;">
-    <div style="color:var(--accent);font-size:11px;font-weight:600;letter-spacing:.08em;margin-bottom:8px;">FAILURES &amp; SEVERITY INDEX</div>
-    <div id="ec_samdDual" style="height:280px;width:100%;"></div>
-  </div>
-</div>
-<div class="filter-row"><input class="filter-input" type="text" placeholder="Filter records..." oninput="filterTable(this, 'samdTable')"></div>
-<div id="samdContent"><div class="state-box"><div class="spinner"></div>Loading SaMD data...</div></div>
-</div>
   <div class="panel" id="panel-sessions">
     <div class="section-header">
       <div>
@@ -705,6 +789,31 @@
   }
   // ── Load flags ──
   var _ecCharts = {};
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    document.body.classList.toggle('sidebar-collapsed');
+    setTimeout(function() {
+      Object.values(window._ecCharts||{}).forEach(function(c){if(c)c.resize();});
+      ['pmaTrendChart','pmaChart','maudeChart','maudeTrendChart','recallChart'].forEach(function(id){
+        var c=echarts.getInstanceByDom(document.getElementById(id)); if(c)c.resize();
+      });
+      if(window._ec1)window._ec1.resize();
+      if(window._ec2)window._ec2.resize();
+    }, 260);
+  }
+  function syncNav(name) {
+    document.querySelectorAll('.tab').forEach(function(t){
+      t.classList.toggle('active', t.dataset.tab===name);
+    });
+  }
+  window.addEventListener('resize', function() {
+    Object.values(window._ecCharts||{}).forEach(function(c){if(c)c.resize();});
+    ['pmaTrendChart','pmaChart','maudeChart','maudeTrendChart','recallChart'].forEach(function(id){
+      var c=echarts.getInstanceByDom(document.getElementById(id)); if(c)c.resize();
+    });
+    if(window._ec1)window._ec1.resize();
+    if(window._ec2)window._ec2.resize();
+  });
   let pmaLoaded = false, maudeLoaded = false, recallsLoaded = false, sessionsLoaded = false, samdLoaded = false;
 
   // ── API fetch helper ──
