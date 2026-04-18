@@ -1346,18 +1346,20 @@
 
   function renderSession(s) {
     const id = s.id ? s.id.slice(0,8) + '…' : '—';
-    const date = s.created || '';
-    const module = s.module || '—';
-    const prompt = s.prompt || '';
-    const response = s.response || 'No response recorded.';
+    const date = s.created_at || s.created || '';
+    const module = s.module || s.source || '—';
+    const title = s.title || '—';
+    const summary = s.summary || s.response || 'No summary recorded.';
+    const focus = s.focus || '';
     return `
     <div class="log-card">
       <div class="log-card-header">
         <span class="log-session-id">${module}</span>
         <span class="log-date">${date ? new Date(date).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : ''}</span>
       </div>
-      ${prompt ? `<div class="log-summary" style="color:var(--accent);font-size:11px;margin-bottom:6px;">▸ ${prompt}</div>` : ''}
-      <div class="log-summary">${response}</div>
+      <div style="color:#e2e8f0;font-size:13px;font-weight:600;margin-bottom:6px;">${title}</div>
+      ${focus ? `<div class="log-summary" style="color:var(--accent);font-size:11px;margin-bottom:6px;">▸ ${focus}</div>` : ''}
+      <div class="log-summary">${summary}</div>
       <div class="log-meta">
         <div class="log-meta-item">ID: <span>${id}</span></div>
       </div>
