@@ -64,6 +64,18 @@ module.exports = function(app) {
     }
   });
 
+  // POST — ChatGPT webhook auto-log
+  app.post('/api/chatgpt-log', async (req, res) => {
+    const { title, summary, focus, source, gpt_model, conversation_id } = req.body;
+    const entry = { title: title||'ChatGPT Session', summary: summary||'', focus: focus||'', status: 'Complete', created_at: new Date().toISOString() };
+    const lines = [title?'SESSION: '+title:'', summary?'SUMMARY: '+summary:'', focus?'NEXT FOCUS: '+focus:'', source?'SOURCE: '+source:'SOURCE: ChatGPT', gpt_model?'MODEL: '+gpt_model:'', conversation_id?'CONV ID: '+conversation_id:'', 'LOGGED: '+new Date().toISOString()];
+    const bodyText = lines.filter(Boolean).join(String.fromCharCode(10));
+    let supabaseOk=false, notionOk=false, notionId=null;
+    try { await supabaseInsert(entry); supabaseOk=true; } catch(e) { console.error('[CHATGPT-LOG] Supabase:',e.message); }
+    try { const n=await notionCreate(entry.title,bodyText); notionOk=true; notionId=n.id||null; } catch(e) { console.error('[CHATGPT-LOG] Notion:',e.message); }
+    res.json({ status: supabaseOk?'ok':'partial', supabase:supabaseOk, notion:notionOk, notionId, entry });
+  });
+
   // POST — save to Supabase + sync to Notion
   app.post('/api/session-log', async (req, res) => {
     const { title, summary, focus, source } = req.body;
