@@ -74,12 +74,16 @@ results: safeArr(d.results).map(r => ({ mdr_report_key: safeStr(r.mdr_report_key
 });
 
 app.get('/api/recalls', async (req, res) => {
-const limit = Math.min(Number(req.query.limit) || 500, 500);
+const limit = Math.min(Number(req.query.limit) || 1000, 1000);
 const skip = Math.max(Number(req.query.skip) || 0, 0);
 try {
-const d = await fdaFetch(`${BASE}/recall.json?search=${CRM_QUERY}&limit=${limit}&skip=${skip}&sort=event_date_initiated:desc`);
-res.json({ ok: true, total: d.meta?.results?.total ?? 0, count: safeArr(d.results).length,
-results: safeArr(d.results).map(r => ({ recall_number: safeStr(r.recall_number), recalling_firm: safeStr(r.recalling_firm), product_description: safeStr(r.product_description), classification: safeStr(r.classification), date_initiated: safeStr(r.event_date_initiated), reason: safeStr(r.reason_for_recall) })) });
+const SURL = process.env.SUPABASE_URL;
+const SKEY = process.env.SUPABASE_ANON_KEY;
+const url = SURL+'/rest/v1/recalls?product_code=in.(DSQ,DTB,DXX,LWS,MKJ)&order=event_date_initiated.desc&limit='+limit+'&offset='+skip;
+const r = await fetch(url, { headers: { apikey: SKEY, Authorization: 'Bearer '+SKEY } });
+const data = await r.json();
+res.json({ ok: true, total: data.length, count: data.length,
+results: data.map(r => ({ recall_number: r.product_res_number, recalling_firm: r.recalling_firm, product_description: r.product_description, product_code: r.product_code, classification: r.recall_status, date_initiated: r.event_date_initiated, reason: r.reason_for_recall })) });
 } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
 });
 
