@@ -956,7 +956,7 @@
     var el=document.getElementById('pmaTrendChart');
     if(!el)return;
     ecDispose('pmaTrendChart');
-    _ecCharts['pmaTrendChart']=echarts.init(el,null,{renderer:'canvas'});
+    _ecCharts['pmaTrendChart']=echarts.init(el,null,{renderer:'canvas'}); setTimeout(function(){if(_ecCharts['pmaTrendChart'])_ecCharts['pmaTrendChart'].resize();},200);
     _ecCharts['pmaTrendChart'].setOption({
       backgroundColor:'transparent',
       tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
@@ -1049,7 +1049,7 @@
     if(lbl)lbl.textContent=company.length>22?company.slice(0,20)+String.fromCharCode(8230):company;
     var el=document.getElementById('pmaHistChart'+i); if(!el)return;
     if(window['_ecPmaHist'+i])window['_ecPmaHist'+i].dispose();
-    window['_ecPmaHist'+i]=echarts.init(el,null,{renderer:'canvas'});
+    window['_ecPmaHist'+i]=echarts.init(el,null,{renderer:'canvas'}); setTimeout(function(){if(window['_ecPmaHist'+i])window['_ecPmaHist'+i].resize();},200);
     window['_ecPmaHist'+i].setOption({
       backgroundColor:'transparent',
       tooltip:{trigger:'item',backgroundColor:'#1a1035',borderColor:colors[i],textStyle:{color:'#e2e8f0',fontSize:11}},
@@ -1116,7 +1116,7 @@
     var elT = document.getElementById('pmaTotalsChart');
     if (elT) {
       if (window._ecPmaTotal) window._ecPmaTotal.dispose();
-      window._ecPmaTotal = echarts.init(elT, null, {renderer:'canvas'});
+      window._ecPmaTotal = echarts.init(elT, null, {renderer:'canvas'}); setTimeout(function(){if(window._ecPmaTotal)window._ecPmaTotal.resize();},200);
       window._ecPmaTotal.setOption({
         backgroundColor:'transparent',
         tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
