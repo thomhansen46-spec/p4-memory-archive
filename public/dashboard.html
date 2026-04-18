@@ -729,7 +729,7 @@
       </div>
       <div style="display:flex;gap:8px;">
         <button class="refresh-btn" onclick="loadSessions()">↺ Refresh</button>
-        <button class="refresh-btn" style="background:rgba(139,92,246,0.2);border-color:rgba(139,92,246,0.5);" onclick="document.getElementById('sessionModal').style.display='flex'">+ Log Session</button>
+        <button class="refresh-btn" style="background:rgba(139,92,246,0.2);border-color:rgba(139,92,246,0.5);" onclick="openSessionModal()">+ Log Session</button>
       </div>
     </div>
     <div id="sessionContent"><div class="state-box"><div class="spinner"></div>Loading sessions…</div></div>
@@ -744,8 +744,9 @@
       <button onclick="document.getElementById('sessionModal').style.display='none'" style="background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer;">x</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;">
-      <input id="s_title" placeholder="Title" style="background:rgba(255,255,255,0.05);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:10px 12px;color:#e2e8f0;font-size:13px;width:100%;box-sizing:border-box;">
-      <select id="s_module" style="background:#0f0a1e;border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:10px 12px;color:#e2e8f0;font-size:13px;width:100%;">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;gap:8px;"><input id="s_date" type="date" style="background:rgba(255,255,255,0.05);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:10px 12px;color:#e2e8f0;font-size:13px;flex:0 0 150px;box-sizing:border-box;"><input id="s_title" placeholder="Title" style="background:rgba(255,255,255,0.05);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:10px 12px;color:#e2e8f0;font-size:13px;flex:1;box-sizing:border-box;"></div>
+      <div style="display:flex;flex-direction:column;gap:6px;"><textarea id="s_paste" placeholder="Paste raw session notes here → click Parse to auto-fill fields" rows="3" style="background:rgba(139,92,246,0.07);border:1px dashed rgba(139,92,246,0.4);border-radius:6px;padding:10px 12px;color:#cbd5e1;font-size:12px;width:100%;box-sizing:border-box;resize:vertical;"></textarea><button onclick="parseSessionNotes()" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.4);border-radius:6px;padding:7px;color:#a78bfa;font-size:12px;font-weight:600;cursor:pointer;">✦ AI Parse Notes</button><div id="parseMsg" style="color:#06b6d4;font-size:11px;min-height:14px;text-align:center;"></div></div>
         <option value="">Module</option>
         <option>SpectrumPMA</option><option>PulseMAUDE</option><option>CAPA Radar</option>
         <option>SentinelRWE</option><option>Platform</option><option>Infrastructure</option><option>Data Pipeline</option>
@@ -1275,15 +1276,55 @@
     }
   }
 
+  function todayISO() {
+    const d = new Date(); return d.toISOString().split('T')[0];
+  }
+  function defaultTitle() {
+    const d = new Date();
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' — Build Session';
+  }
+  function openSessionModal() {
+    const modal = document.getElementById('sessionModal');
+    modal.style.display = 'flex';
+    const dateEl = document.getElementById('s_date');
+    const titleEl = document.getElementById('s_title');
+    if (!dateEl.value) dateEl.value = todayISO();
+    if (!titleEl.value) titleEl.value = defaultTitle();
+  }
+  async function parseSessionNotes() {
+    const paste = document.getElementById('s_paste').value.trim();
+    const msg = document.getElementById('parseMsg');
+    if (!paste) { msg.style.color='#ef4444'; msg.textContent='Paste some notes first.'; return; }
+    msg.style.color='#06b6d4'; msg.textContent='Parsing…';
+    try {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514', max_tokens: 400,
+          system: 'You parse raw build session notes for a MedTech SaaS dashboard (P4 Intelligence Platform). Return ONLY valid JSON with keys: title (string), summary (string, 2-3 sentences), focus (string, <6 words), module (one of: SpectrumPMA, PulseMAUDE, CAPA Radar, SentinelRWE, Platform, Infrastructure, Data Pipeline). No markdown.',
+          messages: [{role:'user', content: paste}]
+        })
+      });
+      const data = await resp.json();
+      const text = data.content[0].text.replace(/```json|```/g,'').trim();
+      const parsed = JSON.parse(text);
+      if (parsed.title) document.getElementById('s_title').value = parsed.title;
+      if (parsed.summary) document.getElementById('s_summary').value = parsed.summary;
+      if (parsed.focus) document.getElementById('s_focus').value = parsed.focus;
+      if (parsed.module) { const sel=document.getElementById('s_module'); for(let o of sel.options){if(o.value===parsed.module||o.text===parsed.module){sel.value=o.value;break;}} }
+      msg.style.color='#22c55e'; msg.textContent='✓ Fields filled — review and save.';
+    } catch(e) { msg.style.color='#ef4444'; msg.textContent='Parse failed: '+e.message; }
+  }
   async function submitSession() {
-    const body={title:document.getElementById("s_title").value,module:document.getElementById("s_module").value,summary:document.getElementById("s_summary").value,focus:document.getElementById("s_focus").value,status:document.getElementById("s_status").value};
+    const body={date:document.getElementById("s_date").value,title:document.getElementById("s_title").value,module:document.getElementById("s_module").value,summary:document.getElementById("s_summary").value,focus:document.getElementById("s_focus").value,status:document.getElementById("s_status").value};
     const msg=document.getElementById("sessionSaveMsg");
     try {
       const authH=await getAuthHeaders();
       const r=await fetch("/sessions",{method:"POST",headers:{...authH,"Content-Type":"application/json"},body:JSON.stringify(body)});
       if(!r.ok) throw new Error("HTTP "+r.status);
       msg.textContent="Session saved!";
-      setTimeout(()=>{document.getElementById("sessionModal").style.display="none";msg.textContent="";document.getElementById("s_title").value="";document.getElementById("s_summary").value="";document.getElementById("s_focus").value="";sessionsLoaded=false;loadSessions();},1200);
+      setTimeout(()=>{document.getElementById("sessionModal").style.display="none";msg.textContent="";document.getElementById("s_date").value=todayISO();document.getElementById("s_title").value=defaultTitle();document.getElementById("s_summary").value="";document.getElementById("s_focus").value="";document.getElementById("s_paste").value="";sessionsLoaded=false;loadSessions();},1200);
     } catch(e){msg.style.color="#ef4444";msg.textContent="Error: "+e.message;}
   }
 
