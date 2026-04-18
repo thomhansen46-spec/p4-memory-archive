@@ -2,17 +2,17 @@
 const fetch = require('node-fetch');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 const NOTION_TOKEN = process.env.NOTION_TOKEN;
 const NOTION_DB    = process.env.NOTION_DATABASE_ID;
 
 async function supabaseInsert(entry) {
-  if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('Supabase env vars not set');
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) throw new Error('Supabase env vars not set');
   const r = await fetch(SUPABASE_URL + '/rest/v1/session_logs', {
     method: 'POST',
     headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
       'Content-Type': 'application/json',
       'Prefer': 'return=representation'
     },
@@ -55,7 +55,7 @@ module.exports = function(app) {
     try {
       const r = await fetch(
         SUPABASE_URL + '/rest/v1/session_logs?select=*&order=created_at.desc&limit=50',
-        { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY } }
+        { headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY } }
       );
       const logs = await r.json();
       res.json({ logs: Array.isArray(logs) ? logs : [] });

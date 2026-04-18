@@ -210,7 +210,7 @@ async function verify() {
   try {
     const { createClient } = require('@supabase/supabase-js');
     const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
-    await sb.from('session_log').insert({
+    await sb.from('session_logs').insert({
       session_date: startTime.toISOString().slice(0,10),
       status,
       notes,
