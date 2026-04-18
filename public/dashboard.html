@@ -1303,7 +1303,7 @@
     document.getElementById('sessionContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Loading session log…</div>';
     try {
      const authH = await getAuthHeaders();
-      const r = await fetch('/sessions', { headers: authH });
+      const r = await fetch('/api/session-log', { headers: authH });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const data = await r.json();
       const records = data.logs || data || [];
