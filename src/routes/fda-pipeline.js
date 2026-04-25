@@ -74,16 +74,12 @@ results: safeArr(d.results).map(r => ({ mdr_report_key: safeStr(r.mdr_report_key
 });
 
 app.get('/api/recalls', async (req, res) => {
-const limit = Math.min(Number(req.query.limit) || 1000, 1000);
+const limit = Math.min(Number(req.query.limit) || 500, 500);
 const skip = Math.max(Number(req.query.skip) || 0, 0);
 try {
-const SURL = process.env.SUPABASE_URL;
-const SKEY = process.env.SUPABASE_ANON_KEY;
-const url = SURL+'/rest/v1/recalls?product_code=in.(DSQ,DTB,DXX,LWS,MKJ)&order=event_date_initiated.desc&limit='+limit+'&offset='+skip;
-const r = await fetch(url, { headers: { apikey: SKEY, Authorization: 'Bearer '+SKEY } });
-const data = await r.json();
-res.json({ ok: true, total: data.length, count: data.length,
-results: data.map(r => ({ recall_number: r.product_res_number, recalling_firm: r.recalling_firm, product_description: r.product_description, product_code: r.product_code, classification: r.recall_status, date_initiated: r.event_date_initiated, reason: r.reason_for_recall })) });
+const d = await fdaFetch(`${BASE}/recall.json?search=${CRM_QUERY}&limit=${limit}&skip=${skip}&sort=event_date_initiated:desc`);
+res.json({ ok: true, total: d.meta?.results?.total ?? 0, count: safeArr(d.results).length,
+results: safeArr(d.results).map(r => ({ recall_number: safeStr(r.recall_number), recalling_firm: safeStr(r.recalling_firm), product_description: safeStr(r.product_description), classification: safeStr(r.classification), date_initiated: safeStr(r.event_date_initiated), reason: safeStr(r.reason_for_recall) })) });
 } catch (err) { res.status(502).json({ ok: false, error: err.message }); }
 });
 
@@ -114,4 +110,17 @@ res.json({ ok: true, openFDA_reachable: true, sample_total: d?.meta?.results?.to
 });
 
 console.log('[fda-pipeline] registered');
-};
+};thomashaenggi@thomass-MacBook-Pro p4-memory-archive % loadPma()
+function> curl -s "https://p4-memory-archive.onrender.com/api/pma" | python3 -c "import sys,json; d=json.load(sys.stdin); print(type(d), list(d.keys()) if isinstance(d,dict) else f'array len {len(d)}')"
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/__init__.py", line 293, in load
+    return loads(fp.read(),
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/decoder.py", line 337, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/json/decoder.py", line 355, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+thomashaenggi@thomass-MacBook-Pro p4-memory-archive % 

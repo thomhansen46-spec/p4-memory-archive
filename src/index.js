@@ -1,14 +1,4 @@
 'use strict';
-const cron=require('node-cron');
-const {execFile}=require('child_process');
-cron.schedule('0 2 3 * *',()=>{
-  console.log('[CRON] Monthly ingest starting...');
-  execFile('node',[require('path').join(__dirname,'ingest.js')],(err,out,err2)=>{
-    if(err){console.error('[CRON] error:',err.message);return;}
-    console.log('[CRON] done:',out.slice(-300));
-  });
-},{timezone:'UTC'});
-console.log('[CRON] Scheduled: 2am UTC, 3rd of each month');
 
 const express = require('express');
 const cors    = require('cors');
@@ -17,66 +7,42 @@ const fetch   = require('node-fetch');
 
 const app = express();
 
-console.log('P4 Memory Archive starting...');
+console.log('🚀 P4 Memory Archive starting…');
 
 app.use(cors({
+  origin: [
+    app.use(cors({
   origin: [
     'http://localhost:3000',
     'https://p4-memory-archive.onrender.com'
   ]
 }));
+
+'use strict';
+
+const express = require('express');
+const path = require('path');
+
+const app = express();
+
+console.log('🚀 P4 Memory Archive starting...');
+
+// Middleware
 app.use(express.json());
 
-// Static pages
-app.get('/',              (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html')));
-app.get('/login.html',    (req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'login.html')));
-app.get('/dashboard.html',(req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html')));
-
-// JWT auth middleware
-const SUPABASE_URL  = process.env.SUPABASE_URL  || 'https://lhgqexopbqfivoubzzeg.supabase.co';
-const SUPABASE_ANON = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZ3FleG9wYnFmaXZvdWJ6emVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MjY5ODcsImV4cCI6MjA5MDQwMjk4N30.NBh-bjOfqHbYG06r6D8GwHL3NXte2hKAoMEHpN-ueug';
-
-async function requireAuth(req, res, next) {
-  const auth  = req.headers['authorization'] || '';
-  const token = auth.replace('Bearer ', '').trim();
-  if (!token) return res.status(401).json({ error: 'No token' });
-  try {
-    const r = await fetch(SUPABASE_URL + '/auth/v1/user', {
-      headers: { 'Authorization': 'Bearer ' + token, 'apikey': SUPABASE_ANON }
-    });
-    if (!r.ok) return res.status(401).json({ error: 'Invalid session' });
-    req.user = await r.json();
-    next();
-  } catch(e) {
-    res.status(401).json({ error: 'Auth check failed' });
-  }
-}
-
-// Routes
-require('./routes/session-log')(app);
-require('./routes/sessions')(app);
-require('./routes/fda-pipeline')(app);
-require('./routes/supabase-routes')(app, requireAuth);
-require('./routes/tplc')(app);
-
-// Start
-const PORT = process.env.PORT || 10000;
-app.get('/api/rpn', async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('abbott_eu_fmea')
-      .select('*')
-      .order('rpn', { ascending: false });
-
-    if (error) {
-      console.error('Supabase error:', error);
-      return res.status(500).json(error);
-    }
-
-    res.json(data);
-  } catch (err) {
-    console.error('Server error:', err);
-    res.status(500).json({ error: 'server error' });
-  }
+// ✅ ROOT ROUTE (FIXES "Cannot GET /")
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html'));
 });
-app.listen(PORT, () => console.log('Server on port ' + PORT));
+// line ~36–38
+// ✅ SESSION LOG ROUTE 
+require('./routes/session-log')(app);
+require('./routes/fda-pipeline')(app);
+require('./routes/supabase-routes')(app);
+// Start server
+const PORT = process.env.PORT || 10000;
+
+app.listen(PORT, () => {
+  console.log(`✅ Server on port ${PORT}`);
+});
+
