@@ -71,4 +71,29 @@ app.get('/api/samd-devices', async (req, res) => {
 
 app.use(express.static('public'));
 
+
+app.get('/api/pma', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('pma_approvals').select('*').order('decision_date', { ascending: false }).limit(200);
+    if (error) throw error;
+    res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/maude', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('maude_events').select('*').order('date_received', { ascending: false }).limit(200);
+    if (error) throw error;
+    res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.get('/api/recalls', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('recalls').select('*').limit(200);
+    if (error) throw error;
+    res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.listen(PORT, () => console.log('Server running on port ' + PORT));
