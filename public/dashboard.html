@@ -507,6 +507,8 @@
   <div class="tab" data-tab="recalls">Recalls</div>
   <div class="tab" data-tab="samd">SaMD Analysis</div>
   <div class="tab" data-tab="sessions">Session Log</div>
+  <div class="tab" data-tab="ssed">SSED Library</div>
+  <div class="tab" data-tab="samd-devices">SaMD Devices</div>
 </nav>
 <div id="sidebar" class="sidebar">
   <button id="sidebarToggle" onclick="toggleSidebar()" title="Collapse sidebar">&#9776;</button>
@@ -583,6 +585,16 @@
       <button class="refresh-btn" onclick="loadPma()">↺ Refresh</button>
     </div>
     <div class="stats-row" id="pmaStats"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="pmaCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by approval count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="pmaCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">approvals span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="pmaCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">CRM PMA records</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="pmaCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by approval count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="pmaCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">approvals span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="pmaCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">CRM PMA records</div></div>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px" id="pmaCards">
       <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="pmaCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by approval count</div></div>
       <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="pmaCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">approvals span</div></div>
@@ -630,6 +642,16 @@
       <button class="refresh-btn" onclick="loadMaude()">↺ Refresh</button>
     </div>
     <div class="stats-row" id="maudeStats"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="maudeCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by event count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="maudeCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">events span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="maudeCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">MAUDE events</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="maudeCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by event count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="maudeCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">events span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="maudeCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">MAUDE events</div></div>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px" id="maudeCards">
       <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="maudeCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by event count</div></div>
       <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="maudeCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">events span</div></div>
@@ -656,6 +678,16 @@
       <button class="refresh-btn" onclick="loadRecalls()">↺ Refresh</button>
     </div>
     <div class="stats-row" id="recallStats"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="recallCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by recall count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="recallCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recalls span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="recallCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recall actions</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="recallCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by recall count</div></div>
+      <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="recallCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recalls span</div></div>
+      <div class="stat-card"><div class="stat-label">RECORD COUNT</div><div class="stat-value" id="recallCardCount">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recall actions</div></div>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px" id="recallCards">
       <div class="stat-card"><div class="stat-label">TOP MANUFACTURER</div><div class="stat-value" id="recallCardMfr">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">by recall count</div></div>
       <div class="stat-card"><div class="stat-label">DATE RANGE</div><div class="stat-value" id="recallCardRange" style="font-size:15px">—</div><div style="color:#8888aa;font-size:11px;margin-top:4px;font-family:var(--mono)">recalls span</div></div>
@@ -699,12 +731,42 @@
       </div>
       <div style="display:flex;gap:8px;">
         <button class="refresh-btn" onclick="loadSessions()">↺ Refresh</button>
-        <button class="refresh-btn" style="background:rgba(139,92,246,0.2);border-color:rgba(139,92,246,0.5);" onclick="openSessionModal()">+ Log Session</button>
+        <button class="refresh-btn" style="background:rgba(139,92,246,0.2);border-color:rgba(139,92,246,0.5);" onclick="document.getElementById('sessionModal').style.display='flex'">+ Log Session</button>
       </div>
     </div>
     <div id="sessionContent"><div class="state-box"><div class="spinner"></div>Loading sessions…</div></div>
   </div>
 
+
+  <!-- SSED Library Panel -->
+  <div class="panel" id="panel-ssed">
+    <div class="section-header">
+      <div>
+        <div class="section-title">EndpointIQ™ · CV Advisory Committee</div>
+        <div class="section-name">SSED <span>Library</span></div>
+      </div>
+      <button class="refresh-btn" onclick="loadSSED()">↺ Refresh</button>
+    </div>
+    <div id="ssedContent"><div class="state-box"><div class="spinner"></div>Loading SSED records…</div></div>
+  </div>
+
+  <!-- SaMD Devices Panel -->
+  <div class="panel" id="panel-samd-devices">
+    <div class="section-header">
+      <div>
+        <div class="section-title">SaMD Intelligence™ · FDA AI/ML Devices</div>
+        <div class="section-name">SaMD <span>Devices</span></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <label style="color:#94a3b8;font-size:12px;">
+          <input type="checkbox" id="cardioOnly" onchange="loadSaMDDevices()" checked style="margin-right:4px;">
+          Cardiology only
+        </label>
+        <button class="refresh-btn" onclick="loadSaMDDevices()">↺ Refresh</button>
+      </div>
+    </div>
+    <div id="samdDevicesContent"><div class="state-box"><div class="spinner"></div>Loading SaMD devices…</div></div>
+  </div>
 </main>
 <!-- Session Log Modal -->
 <div id="sessionModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;">
@@ -714,9 +776,8 @@
       <button onclick="document.getElementById('sessionModal').style.display='none'" style="background:none;border:none;color:#94a3b8;font-size:20px;cursor:pointer;">x</button>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;">
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div style="display:flex;gap:8px;"><input id="s_date" type="date" style="background:rgba(255,255,255,0.05);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:10px 12px;color:#e2e8f0;font-size:13px;flex:0 0 150px;box-sizing:border-box;"><input id="s_title" placeholder="Title" style="background:rgba(255,255,255,0.05);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:10px 12px;color:#e2e8f0;font-size:13px;flex:1;box-sizing:border-box;"></div>
-      <div style="display:flex;flex-direction:column;gap:6px;"><textarea id="s_paste" placeholder="Paste raw session notes here → click Parse to auto-fill fields" rows="3" style="background:rgba(139,92,246,0.07);border:1px dashed rgba(139,92,246,0.4);border-radius:6px;padding:10px 12px;color:#cbd5e1;font-size:12px;width:100%;box-sizing:border-box;resize:vertical;"></textarea><button onclick="parseSessionNotes()" style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.4);border-radius:6px;padding:7px;color:#a78bfa;font-size:12px;font-weight:600;cursor:pointer;">✦ AI Parse Notes</button><div id="parseMsg" style="color:#06b6d4;font-size:11px;min-height:14px;text-align:center;"></div></div>
+      <input id="s_title" placeholder="Title" style="background:rgba(255,255,255,0.05);border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:10px 12px;color:#e2e8f0;font-size:13px;width:100%;box-sizing:border-box;">
+      <select id="s_module" style="background:#0f0a1e;border:1px solid rgba(139,92,246,0.25);border-radius:6px;padding:10px 12px;color:#e2e8f0;font-size:13px;width:100%;">
         <option value="">Module</option>
         <option>SpectrumPMA</option><option>PulseMAUDE</option><option>CAPA Radar</option>
         <option>SentinelRWE</option><option>Platform</option><option>Infrastructure</option><option>Data Pipeline</option>
@@ -926,7 +987,7 @@
     var el=document.getElementById('pmaTrendChart');
     if(!el)return;
     ecDispose('pmaTrendChart');
-    _ecCharts['pmaTrendChart']=echarts.init(el,null,{renderer:'canvas'}); setTimeout(function(){if(_ecCharts['pmaTrendChart'])_ecCharts['pmaTrendChart'].resize();},200);
+    _ecCharts['pmaTrendChart']=echarts.init(el,null,{renderer:'canvas'});
     _ecCharts['pmaTrendChart'].setOption({
       backgroundColor:'transparent',
       tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
@@ -966,7 +1027,7 @@
     document.getElementById('pmaContent').innerHTML = `<div class="state-box"><div class="spinner"></div>Fetching PMA records…</div>`;
     try {
       const data = await apiFetch('/api/pma');
-      const records = data.logs || data.results || data.data || [];
+      const records = Array.isArray(data) ? data : (data.logs || data.results || data.data || []);
       renderStats('pmaStats', [
         { label: 'Total Records', value: records.length },
         { label: 'Data Source',   value: 'openFDA', accent: true },
@@ -1019,7 +1080,7 @@
     if(lbl)lbl.textContent=company.length>22?company.slice(0,20)+String.fromCharCode(8230):company;
     var el=document.getElementById('pmaHistChart'+i); if(!el)return;
     if(window['_ecPmaHist'+i])window['_ecPmaHist'+i].dispose();
-    window['_ecPmaHist'+i]=echarts.init(el,null,{renderer:'canvas'}); setTimeout(function(){if(window['_ecPmaHist'+i])window['_ecPmaHist'+i].resize();},200);
+    window['_ecPmaHist'+i]=echarts.init(el,null,{renderer:'canvas'});
     window['_ecPmaHist'+i].setOption({
       backgroundColor:'transparent',
       tooltip:{trigger:'item',backgroundColor:'#1a1035',borderColor:colors[i],textStyle:{color:'#e2e8f0',fontSize:11}},
@@ -1072,9 +1133,10 @@
         grid:{left:'2%',right:'4%',top:'12px',bottom:'4%',containLabel:true},
         xAxis:{type:'category',data:yrs,axisLabel:{color:'#a78bfa',fontSize:9},axisLine:{lineStyle:{color:'#2a2240'}}},
         yAxis:{type:'value',name:'PMA Count',nameTextStyle:{color:'#6a5f8a',fontSize:9},axisLabel:{color:'#a78bfa',fontSize:9},splitLine:{lineStyle:{color:'rgba(139,92,246,0.1)'}}},
-        series:[{type:'bar',data:yrs.map(function(y){return byYear[y]||0;}),barMaxWidth:32,
-          itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:colors[i]},{offset:1,color:colors[i]+'33'}])},
-          label:{show:true,position:'top',color:'#e2e8f0',fontSize:9,formatter:function(p){return p.value>0?p.value:'';}}}]
+        series:[{type:'line',data:yrs.map(function(y){return byYear[y]||0;}),smooth:true,
+          lineStyle:{color:colors[i],width:2},itemStyle:{color:colors[i]},
+          areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:colors[i]+'55'},{offset:1,color:colors[i]+'05'}])},
+          symbol:'circle',symbolSize:5}]
       });
     });
     var totByYear = {};
@@ -1086,7 +1148,7 @@
     var elT = document.getElementById('pmaTotalsChart');
     if (elT) {
       if (window._ecPmaTotal) window._ecPmaTotal.dispose();
-      window._ecPmaTotal = echarts.init(elT, null, {renderer:'canvas'}); setTimeout(function(){if(window._ecPmaTotal)window._ecPmaTotal.resize();},200);
+      window._ecPmaTotal = echarts.init(elT, null, {renderer:'canvas'});
       window._ecPmaTotal.setOption({
         backgroundColor:'transparent',
         tooltip:{trigger:'axis',backgroundColor:'#1a1035',borderColor:'#8b5cf6',textStyle:{color:'#e2e8f0',fontSize:11}},
@@ -1180,7 +1242,7 @@
     document.getElementById('samdContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Fetching SaMD data...</div>';
     try {
       var data    = await apiFetch('/api/samd-events');
-      var records = data.results || [];
+      var records = Array.isArray(data) ? data : (data.results || []);
       var total   = data.total   || records.length;
       var byMfr={}, byYear={}, byType={};
       records.forEach(function(r) {
@@ -1246,55 +1308,15 @@
     }
   }
 
-  function todayISO() {
-    const d = new Date(); return d.toISOString().split('T')[0];
-  }
-  function defaultTitle() {
-    const d = new Date();
-    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) + ' — Build Session';
-  }
-  function openSessionModal() {
-    const modal = document.getElementById('sessionModal');
-    modal.style.display = 'flex';
-    const dateEl = document.getElementById('s_date');
-    const titleEl = document.getElementById('s_title');
-    if (!dateEl.value) dateEl.value = todayISO();
-    if (!titleEl.value) titleEl.value = defaultTitle();
-  }
-  async function parseSessionNotes() {
-    const paste = document.getElementById('s_paste').value.trim();
-    const msg = document.getElementById('parseMsg');
-    if (!paste) { msg.style.color='#ef4444'; msg.textContent='Paste some notes first.'; return; }
-    msg.style.color='#06b6d4'; msg.textContent='Parsing…';
-    try {
-      const resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514', max_tokens: 400,
-          system: 'You parse raw build session notes for a MedTech SaaS dashboard (P4 Intelligence Platform). Return ONLY valid JSON with keys: title (string), summary (string, 2-3 sentences), focus (string, <6 words), module (one of: SpectrumPMA, PulseMAUDE, CAPA Radar, SentinelRWE, Platform, Infrastructure, Data Pipeline). No markdown.',
-          messages: [{role:'user', content: paste}]
-        })
-      });
-      const data = await resp.json();
-      const text = data.content[0].text.replace(/```json|```/g,'').trim();
-      const parsed = JSON.parse(text);
-      if (parsed.title) document.getElementById('s_title').value = parsed.title;
-      if (parsed.summary) document.getElementById('s_summary').value = parsed.summary;
-      if (parsed.focus) document.getElementById('s_focus').value = parsed.focus;
-      if (parsed.module) { const sel=document.getElementById('s_module'); for(let o of sel.options){if(o.value===parsed.module||o.text===parsed.module){sel.value=o.value;break;}} }
-      msg.style.color='#22c55e'; msg.textContent='✓ Fields filled — review and save.';
-    } catch(e) { msg.style.color='#ef4444'; msg.textContent='Parse failed: '+e.message; }
-  }
   async function submitSession() {
-    const body={date:document.getElementById("s_date").value,title:document.getElementById("s_title").value,module:document.getElementById("s_module").value,summary:document.getElementById("s_summary").value,focus:document.getElementById("s_focus").value,status:document.getElementById("s_status").value};
+    const body={title:document.getElementById("s_title").value,module:document.getElementById("s_module").value,summary:document.getElementById("s_summary").value,focus:document.getElementById("s_focus").value,status:document.getElementById("s_status").value};
     const msg=document.getElementById("sessionSaveMsg");
     try {
       const authH=await getAuthHeaders();
       const r=await fetch("/sessions",{method:"POST",headers:{...authH,"Content-Type":"application/json"},body:JSON.stringify(body)});
       if(!r.ok) throw new Error("HTTP "+r.status);
       msg.textContent="Session saved!";
-      setTimeout(()=>{document.getElementById("sessionModal").style.display="none";msg.textContent="";document.getElementById("s_date").value=todayISO();document.getElementById("s_title").value=defaultTitle();document.getElementById("s_summary").value="";document.getElementById("s_focus").value="";document.getElementById("s_paste").value="";sessionsLoaded=false;loadSessions();},1200);
+      setTimeout(()=>{document.getElementById("sessionModal").style.display="none";msg.textContent="";document.getElementById("s_title").value="";document.getElementById("s_summary").value="";document.getElementById("s_focus").value="";sessionsLoaded=false;loadSessions();},1200);
     } catch(e){msg.style.color="#ef4444";msg.textContent="Error: "+e.message;}
   }
 
@@ -1303,7 +1325,7 @@
     document.getElementById('sessionContent').innerHTML = '<div class="state-box"><div class="spinner"></div>Loading session log…</div>';
     try {
      const authH = await getAuthHeaders();
-      const r = await fetch('/api/session-log', { headers: authH });
+      const r = await fetch('/sessions', { headers: authH });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       const data = await r.json();
       const records = data.logs || data || [];
@@ -1316,20 +1338,18 @@
 
   function renderSession(s) {
     const id = s.id ? s.id.slice(0,8) + '…' : '—';
-    const date = s.created_at || s.created || '';
-    const module = s.module || s.source || '—';
-    const title = s.title || '—';
-    const summary = s.summary || s.response || 'No summary recorded.';
-    const focus = s.focus || '';
+    const date = s.created || '';
+    const module = s.module || '—';
+    const prompt = s.prompt || '';
+    const response = s.response || 'No response recorded.';
     return `
     <div class="log-card">
       <div class="log-card-header">
         <span class="log-session-id">${module}</span>
         <span class="log-date">${date ? new Date(date).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : ''}</span>
       </div>
-      <div style="color:#e2e8f0;font-size:13px;font-weight:600;margin-bottom:6px;">${title}</div>
-      ${focus ? `<div class="log-summary" style="color:var(--accent);font-size:11px;margin-bottom:6px;">▸ ${focus}</div>` : ''}
-      <div class="log-summary">${summary}</div>
+      ${prompt ? `<div class="log-summary" style="color:var(--accent);font-size:11px;margin-bottom:6px;">▸ ${prompt}</div>` : ''}
+      <div class="log-summary">${response}</div>
       <div class="log-meta">
         <div class="log-meta-item">ID: <span>${id}</span></div>
       </div>
@@ -1484,6 +1504,81 @@ async function loadExecutive() {
   waitForSb(function(){ loadAllOverview(); loadExecutive(); });
   window.addEventListener('resize', function(){ Object.values(_ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();}); });
   window.addEventListener('resize', function(){ Object.values(_ecCharts||{}).forEach(function(c){if(c&&c.resize)c.resize();}); });
+</script>
+
+<script>
+async function loadSSED() {
+  const el = document.getElementById('ssedContent');
+  el.innerHTML = '<div class="state-box"><div class="spinner"></div>Loading…</div>';
+  try {
+    const res = await fetch('/api/endpoint-library');
+    const data = await res.json();
+    if (!data.length) { el.innerHTML = '<div class="state-box">No records found.</div>'; return; }
+    const rows = data.map(r => `
+      <tr>
+        <td>${r.ssed_url ? `<a href="${r.ssed_url}" target="_blank" style="color:#8b5cf6;text-decoration:none;">📄 PDF</a>` : '-'}</td>
+        <td>${r.pma_number || '-'}</td>
+        <td>${r.product_code || '-'}</td>
+        <td>${r.sponsor || '-'}</td>
+        <td>${r.indication ? r.indication.substring(0,80)+'…' : '-'}</td>
+        <td>${r.endpoint ? r.endpoint.substring(0,80)+'…' : '-'}</td>
+        <td>${r.follow_up || '-'}</td>
+        <td>${r.parse_null_pct != null ? r.parse_null_pct+'%' : '-'}</td>
+      </tr>`).join('');
+    el.innerHTML = `
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>SSED</th><th>PMA#</th><th>Code</th><th>Sponsor</th><th>Indication</th>
+            <th>Endpoint</th><th>Follow-up</th><th>Null%</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  } catch(e) { el.innerHTML = '<div class="state-box">Error loading data.</div>'; }
+}
+
+async function loadSaMDDevices() {
+  const el = document.getElementById('samdDevicesContent');
+  el.innerHTML = '<div class="state-box"><div class="spinner"></div>Loading…</div>';
+  const cardio = document.getElementById('cardioOnly')?.checked ? 'true' : 'false';
+  try {
+    const res = await fetch(`/api/samd-devices?cardiology=${cardio}`);
+    const data = await res.json();
+    if (!data.length) { el.innerHTML = '<div class="state-box">No records found.</div>'; return; }
+    const rows = data.map(r => `
+      <tr>
+        <td>${r.submission_number || '-'}</td>
+        <td>${r.device_name ? r.device_name.substring(0,50) : '-'}</td>
+        <td>${r.company ? r.company.substring(0,40) : '-'}</td>
+        <td>${r.product_code || '-'}</td>
+        <td>${r.decision_date || '-'}</td>
+        <td>${r.panel || '-'}</td>
+        <td>${r.is_cardiology ? '<span style="color:#06b6d4;">✓</span>' : ''}</td>
+      </tr>`).join('');
+    el.innerHTML = `
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Submission#</th><th>Device</th><th>Company</th>
+            <th>Code</th><th>Decision Date</th><th>Panel</th><th>Cardio</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  } catch(e) { el.innerHTML = '<div class="state-box">Error loading data.</div>'; }
+}
+
+// Auto-load when tabs are clicked
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const t = tab.dataset.tab;
+      if (t === 'ssed') loadSSED();
+      if (t === 'samd-devices') loadSaMDDevices();
+    });
+  });
+});
 </script>
 </body>
 </html>

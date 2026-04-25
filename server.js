@@ -96,4 +96,13 @@ app.get('/api/recalls', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+
+app.get('/api/rpn', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('abbott_eu_fmea').select('*').order('rpn', { ascending: false });
+    if (error) throw error;
+    res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.listen(PORT, () => console.log('Server running on port ' + PORT));
