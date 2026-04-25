@@ -1349,8 +1349,8 @@
         <span class="log-session-id">${title}</span>
         <span class="log-date">${date ? new Date(date).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}) : ''}</span>
       </div>
-      ${focus ? `<div class="log-summary" style="color:var(--accent);font-size:11px;margin-bottom:6px;">▸ ${focus}</div>` : ''}
-      <div class="log-summary">${summary}</div>
+      ${focus ? `<div class="log-summary" style="color:var(--accent);font-size:12px;margin-bottom:8px;">${focus.replace(/\|/g, '<br>▸ ')}</div>` : ''}
+      <div class="log-summary">${summary.replace(/\|/g, '<br>')}</div>
       <div class="log-meta">
         <div class="log-meta-item">ID: <span>${id}</span></div>
         ${status ? `<div class="log-meta-item">Status: <span>${status}</span></div>` : ''}
