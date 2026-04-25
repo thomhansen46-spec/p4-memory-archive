@@ -105,4 +105,13 @@ app.get('/api/rpn', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+
+app.get('/api/session-logs', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('session_logs').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.listen(PORT, () => console.log('Server running on port ' + PORT));
