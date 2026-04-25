@@ -12,12 +12,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html'));
 });
 
-const sessionLog = require('./routes/session-log');
-if (typeof sessionLog === 'function') {
-  sessionLog(app);
-} else {
-  app.use('/session-log', sessionLog);
-}
+app.use('/session-log', require('./routes/session-log'));
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
