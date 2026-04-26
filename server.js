@@ -1,3 +1,5 @@
+process.env.SUPABASE_URL = process.env.SUPABASE_URL || 'https://lhgqexopbqfivoubzzeg.supabase.co';
+process.env.SUPABASE_KEY = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoZ3FleG9wYnFmaXZvdWJ6emVnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDgyNjk4NywiZXhwIjoyMDkwNDAyOTg3fQ.QU44SwpyZsu8YqbnBiLBISzq2npVLJ0QXIg5-m0O680';
 const express = require('express');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
@@ -11,7 +13,6 @@ const supabase = createClient(
 );
 
 app.use(express.json());
-app.use('/session-log', require('./src/routes/session-log'));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
@@ -127,4 +128,5 @@ app.get('/api/indication-monitor', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.listen(PORT, () => console.log('Server running on port ' + PORT));
+const server = app.listen(PORT, () => console.log('Server running on port ' + PORT));
+setInterval(() => {}, 1000);
