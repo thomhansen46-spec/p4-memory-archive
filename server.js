@@ -114,4 +114,17 @@ app.get('/api/session-logs', async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+
+app.get('/api/indication-monitor', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('pma_supplements')
+      .select('*')
+      .ilike('supplement_reason', '%Indication%')
+      .order('decision_date', { ascending: false });
+    if (error) throw error;
+    res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.listen(PORT, () => console.log('Server running on port ' + PORT));
