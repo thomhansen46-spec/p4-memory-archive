@@ -1,10 +1,8 @@
+node_modules/
 .env
-extract_*.js
-seed_*.js
-ssed_extractor*.js
-parallel_*.js
-/tmp/*.pdf
-session_*.log
-node_modules/
-node_modules/
-data/ssed/*.pdf
+.env
+.env
+src/data/raw/
+src/data/sql/
+recalls_bulk.zip
+device-recall-0001-of-0001.json
