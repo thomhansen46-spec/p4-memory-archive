@@ -52,3 +52,4 @@ module.exports = function(app) {
     } catch (err) { res.status(500).json({ error: err.message }); }
   });
 };
+curl -s https://p4-memory-archive.onrender.com/api/metrics
