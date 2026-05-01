@@ -12,10 +12,10 @@ module.exports = function(app) {
         supabase.from('ssed_events').select('id', { count: 'exact', head: true }),
         supabase.from('pma_approvals').select('id', { count: 'exact', head: true }),
         supabase.from('maude_events').select('id', { count: 'exact', head: true }),
-        supabase.from('device_recalls').select('id', { count: 'exact', head: true }),
+        supabase.from('recalls').select('id', { count: 'exact', head: true }),
         supabase.from('clinical_trials').select('nct_id', { count: 'exact', head: true }),
       ]);
-      res.json({ ssed_events: ssed.count, pma_approvals: pma.count, maude_events: maude.count, device_recalls: recalls.count, clinical_trials: trials.count });
+      res.json({ ssed_events: ssed.count, pma_approvals: pma.count, maude_events: maude.count, recalls: recalls.count, clinical_trials: trials.count });
     } catch (err) { res.status(500).json({ error: err.message }); }
   });
 
@@ -45,7 +45,7 @@ module.exports = function(app) {
 
   app.get('/api/recalls', async (req, res) => {
     try {
-      const { data, error } = await supabase.from('device_recalls').select('*').order('created_at', { ascending: false }).limit(100);
+      const { data, error } = await supabase.from('recalls').select('*').order('created_at', { ascending: false }).limit(100);
       if (error) return res.status(500).json({ error: error.message });
       res.json(data);
     } catch (err) { res.status(500).json({ error: err.message }); }
