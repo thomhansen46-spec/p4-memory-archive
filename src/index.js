@@ -12,7 +12,8 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'dashboard.html'));
 });
 
-app.use('/session-log', require('./routes/session-log'));
+app.use("/session-log", require("./routes/session-log"));
+require("./routes/supabase-routes")(app);
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {

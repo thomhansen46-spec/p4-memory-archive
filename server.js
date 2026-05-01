@@ -32,9 +32,11 @@ app.post('/save-session', async (req, res) => {
 });
 
 app.get('/sessions', async (req, res) => {
-  const { data, error } = await supabase.from('sessions').select('*').order('created_at', { ascending: false });
-  if (error) return res.status(500).json({ error });
-  res.json(data);
+  try {
+    const { data, error } = await supabase.from('sessions').select('*').order('created_at', { ascending: false });
+    if (error) throw error;
+    res.json(data);
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.get('/api/samd-events', async (req, res) => {
@@ -129,4 +131,4 @@ app.get('/api/indication-monitor', async (req, res) => {
 });
 
 const server = app.listen(PORT, () => console.log('Server running on port ' + PORT));
-setInterval(() => {}, 1000);
+
