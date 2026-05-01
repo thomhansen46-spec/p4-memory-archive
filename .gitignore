@@ -7,3 +7,4 @@ parallel_*.js
 session_*.log
 node_modules/
 node_modules/
+data/ssed/*.pdf
